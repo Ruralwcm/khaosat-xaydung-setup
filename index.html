@@ -107,8 +107,9 @@ textarea{min-height:60px;resize:vertical}
 </div>
 
 <script>
-// ⚠️ THAY URL NÀY BẰNG URL GAS WEB APP SAU KHI DEPLOY
+// GAS API chỉ dùng để GHI data (POST). ĐỌC data dùng CSV public (không cần auth)
 const GAS_API = 'https://script.google.com/macros/s/AKfycbxwsl_9SNY-WACykxbdnXAhJ2u8Dxrw7ZEBVb8CDvqGQ-FnMwdfn6NNizdklsvtfbdqQ/exec';
+const STORES_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
 let cascadeData = {};
 let evaluations = {};
@@ -148,13 +149,29 @@ const areas = [
   ]}
 ];
 
-// ── INIT ──
+// ── INIT: Đọc data từ CSV public (luôn hoạt động, không cần auth) ──
 async function init() {
   try {
-    const resp = await fetch(GAS_API);
+    const resp = await fetch(STORES_CSV);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const rows = await resp.json();
-    if (!rows || rows.length === 0) throw new Error('No data');
+    const text = await resp.text();
+    const lines = text.split('\n').slice(1);
+    const rows = [];
+    for (const line of lines) {
+      const cols = line.split(',');
+      const ma = (cols[0]||'').replace(/"/g,'').trim();
+      const tt = (cols[2]||'').replace(/"/g,'').trim();
+      const mien = (cols[4]||'').replace(/"/g,'').trim();
+      if (!ma || tt !== 'Đang hoạt động' || !mien.includes('Bắc')) continue;
+      rows.push({
+        ma: ma,
+        ten: (cols[1]||'').replace(/"/g,'').trim(),
+        tinh: (cols[5]||'').replace(/"/g,'').trim(),
+        qlkv: (cols[7]||'').replace(/"/g,'').trim(),
+        gdv: (cols[8]||'').replace(/"/g,'').trim()
+      });
+    }
+    if (rows.length === 0) throw new Error('No data');
     
     cascadeData = {};
     for (const r of rows) {
