@@ -149,7 +149,28 @@ const areas = [
   ]}
 ];
 
-// ── INIT: Đọc data từ CSV public (luôn hoạt động, không cần auth) ──
+// ── INIT: Đọc data từ CSV public (parse CSV chuẩn, không split đơn giản) ──
+function parseCSVLine(line) {
+  var result = [];
+  var current = '';
+  var inQuotes = false;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
+        else { inQuotes = false; }
+      } else { current += ch; }
+    } else {
+      if (ch === '"') { inQuotes = true; }
+      else if (ch === ',') { result.push(current.trim()); current = ''; }
+      else { current += ch; }
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
 async function init() {
   try {
     const resp = await fetch(STORES_CSV);
@@ -157,19 +178,20 @@ async function init() {
     const text = await resp.text();
     const lines = text.split('\n').slice(1);
     const rows = [];
-    for (const line of lines) {
-      const cols = line.split(',');
-      const ma = (cols[0]||'').replace(/"/g,'').trim();
-      const tt = (cols[2]||'').replace(/"/g,'').trim();
-      const mien = (cols[4]||'').replace(/"/g,'').trim();
-      if (!ma || tt !== 'Đang hoạt động' || !mien.includes('Bắc')) continue;
-      rows.push({
-        ma: ma,
-        ten: (cols[1]||'').replace(/"/g,'').trim(),
-        tinh: (cols[5]||'').replace(/"/g,'').trim(),
-        qlkv: (cols[7]||'').replace(/"/g,'').trim(),
-        gdv: (cols[8]||'').replace(/"/g,'').trim()
-      });
+    for (var li = 0; li < lines.length; li++) {
+      var cols = parseCSVLine(lines[li]);
+      if (cols.length < 9) continue;
+      var ma = cols[0] || '';
+      var ten = cols[1] || '';
+      var tt = cols[2] || '';
+      var mien = cols[4] || '';
+      var tinh = cols[5] || '';
+      var qlkv = cols[7] || '';
+      var gdv = cols[8] || '';
+      if (!ma) continue;
+      if (tt !== 'Đang hoạt động' && tt !== 'đang hoạt động') continue;
+      if (!mien.includes('Bắc')) continue;
+      rows.push({ ma:ma, ten:ten, tinh:tinh, qlkv:qlkv, gdv:gdv });
     }
     if (rows.length === 0) throw new Error('No data');
     
