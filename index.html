@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khảo sát CSVC - WinRural</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh}
+.header{background:linear-gradient(135deg,#1a3a5c,#1e5799);color:#fff;padding:16px 24px;text-align:center}
+.header h1{font-size:20px;font-weight:800}
+.header p{font-size:13px;opacity:.85;margin-top:4px}
+.container{max-width:750px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.card h3{font-size:15px;color:#1a3a5c;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;display:flex;align-items:center;gap:8px}
+.card h3 .num{background:#1e5799;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+label{display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px;margin-top:10px}
+select,input,textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;transition:border-color .2s;font-family:inherit}
+select:focus,input:focus,textarea:focus{outline:none;border-color:#1e5799;box-shadow:0 0 0 3px rgba(30,87,153,.1)}
+select:disabled{background:#f1f5f9;color:#94a3b8}
+textarea{min-height:60px;resize:vertical}
+.progress-bar{background:#e2e8f0;border-radius:8px;height:8px;margin:8px 0 4px;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,#1e5799,#38a169);height:100%;border-radius:8px;transition:width .3s}
+.progress-text{font-size:12px;color:#64748b;text-align:right}
+.area-group{margin-bottom:20px}
+.area-title{font-size:14px;font-weight:700;color:#1e5799;margin-bottom:10px;padding:8px 12px;background:#e8f0fe;border-radius:6px;display:flex;align-items:center;gap:6px}
+.area-title .area-count{font-size:12px;font-weight:400;color:#64748b;margin-left:auto}
+.item-row{border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:8px;transition:all .2s}
+.item-row.evaluated{border-left:3px solid #38a169;background:#f0fdf4}
+.item-row.issue{border-left:3px solid #dc2626;background:#fef2f2}
+.item-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.item-number{background:#e2e8f0;color:#475569;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.item-name{flex:1;font-size:13px;font-weight:600;color:#1e293b;min-width:120px}
+.toggle-group{display:flex;gap:0;flex-shrink:0}
+.toggle-btn{padding:6px 14px;border:1px solid #cbd5e1;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;background:#fff;color:#64748b}
+.toggle-btn:first-child{border-radius:6px 0 0 6px}
+.toggle-btn:last-child{border-radius:0 6px 6px 0}
+.toggle-btn.active-pass{background:#16a34a;color:#fff;border-color:#16a34a}
+.toggle-btn.active-fail{background:#dc2626;color:#fff;border-color:#dc2626}
+.pass-text{font-size:13px;color:#16a34a;font-weight:600;display:none;margin-top:6px;padding:6px 10px;background:#f0fdf4;border-radius:6px}
+.pass-text.show{display:block}
+.issue-detail{display:none;margin-top:8px;padding:10px;background:#fff5f5;border-radius:6px;border:1px dashed #fca5a5}
+.issue-detail.show{display:block}
+.issue-detail textarea{font-size:13px;min-height:50px;margin-top:4px}
+.issue-detail label{font-size:12px;margin-top:4px}
+.store-info{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;margin-top:8px;font-size:13px;display:none}
+.store-info span{font-weight:600}
+.hint{font-size:11px;color:#94a3b8;margin-top:4px}
+.btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,#1e5799,#2b6cb0);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:transform .1s}
+.btn-submit:hover{transform:scale(1.01)}
+.btn-submit:active{transform:scale(.98)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.loading{display:none;text-align:center;padding:20px}
+.spinner{width:40px;height:40px;border:4px solid #e2e8f0;border-top:4px solid #1e5799;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success{display:none;text-align:center;padding:20px;color:#16a34a;font-weight:700;font-size:18px}
+.success .count{font-size:14px;font-weight:400;color:#64748b;margin-top:8px}
+.validation-error{color:#dc2626;font-size:12px;margin-top:8px;display:none;padding:10px;background:#fef2f2;border-radius:8px}
+@media (max-width:480px){
+  .toggle-btn{padding:6px 10px;font-size:11px}
+  .item-row{padding:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏪 Khảo sát Cơ sở Vật chất Cửa hàng</h1>
+  <p>WinRural · Rà soát TOÀN BỘ hạng mục · Đạt/Không đạt</p>
+</div>
+
+<div class="container" id="formContainer">
+  <div class="card">
+    <h3><span class="num">1</span> Thông tin Cửa hàng</h3>
+    <label>GĐV (Giám đốc Vùng)</label>
+    <select id="gdvSelect"><option value="">-- Đang tải dữ liệu... --</option></select>
+    <label>QLKV (Quản lý Khu vực)</label>
+    <select id="qlkvSelect" disabled><option value="">-- Chọn QLKV --</option></select>
+    <label>Cửa hàng</label>
+    <select id="storeSelect" disabled><option value="">-- Chọn Cửa hàng --</option></select>
+    <div class="store-info" id="storeInfo">
+      Mã CH: <span id="siCode">-</span> · Tỉnh: <span id="siProvince">-</span> · Tên: <span id="siName">-</span>
+    </div>
+    <div class="hint" id="dataHint">Đang tải dữ liệu...</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">2</span> Checklist CSVC — Toàn bộ hạng mục</h3>
+    <div class="hint" style="margin-bottom:8px">⚠️ Bắt buộc đánh giá TẤT CẢ. Đạt → tiêu chuẩn · Không đạt → Diễn giải</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">0/22 hạng mục đã đánh giá</div>
+    <div class="checklist" id="checklist"></div>
+    <div class="validation-error" id="validationError"></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">3</span> Ghi chú chung</h3>
+    <textarea id="generalNote" placeholder="Ghi chú chung (nếu có)..."></textarea>
+  </div>
+
+  <button class="btn-submit" id="btnSubmit" onclick="submitForm()">📤 Gửi kết quả khảo sát</button>
+  <div class="loading" id="loading"><div class="spinner"></div><p style="margin-top:8px;color:#64748b">Đang gửi dữ liệu...</p></div>
+  <div class="success" id="success">
+    ✅ Đã gửi khảo sát thành công!
+    <div class="count" id="successDetail"></div>
+  </div>
+</div>
+
+<script>
+// ⚠️ THAY URL NÀY BẰNG URL GAS WEB APP SAU KHI DEPLOY
+const GAS_API = 'https://script.google.com/macros/s/AKfycbxwsl_9SNY-WACykxbdnXAhJ2u8Dxrw7ZEBVb8CDvqGQ-FnMwdfn6NNizdklsvtfbdqQ/exec';
+
+let cascadeData = {};
+let evaluations = {};
+let itemNotes = {};
+let totalItems = 0;
+
+const areas = [
+  { name:'Mặt tiền & Bên ngoài', items:[
+    {name:'Biển hiệu WM',pass:'Đèn sáng đầy đủ, không nứt vỡ, logo/màu sắc rõ nét, chữ không bong tróc, khung biển chắc chắn'},
+    {name:'Mặt tiền/Sơn tường ngoài',pass:'Sơn đều màu, không bong tróc hay ố vàng, không nứt tường, mặt tiền sạch sẽ'},
+    {name:'Cửa kính/Cửa cuốn',pass:'Đóng/mở trơn tru không kẹt, kính không nứt vỡ, khung cửa chắc chắn, khóa hoạt động tốt'},
+    {name:'Mái hiên',pass:'Không rách hay dột, khung mái chắc chắn không xiêu vẹo, sạch sẽ không rêu mốc'},
+    {name:'Đèn chiếu sáng ngoài',pass:'Tất cả bóng sáng đều, không chập chờn, vỏ đèn nguyên vẹn, cảm biến/timer hoạt động'},
+    {name:'Bãi đỗ xe',pass:'Mặt bằng phẳng, vạch kẻ rõ ràng, đủ chỗ đỗ, không ngập úng, có mái che nếu thiết kế'},
+    {name:'Vỉa hè/Lối vào',pass:'Không bong tróc hay lún nứt, sạch sẽ, dễ lên xuống, có lối cho xe hàng nếu cần'}
+  ]},
+  { name:'Khu vực Bán hàng', items:[
+    {name:'Kệ/Sạp trưng bày',pass:'Chắc chắn không xiêu vẹo, sạch sẽ, đủ tầng/kệ, sắp xếp gọn gàng theo planogram'},
+    {name:'Đèn chiếu sáng trong',pass:'Đủ độ sáng, không chập chờn, ballast không ồn, vỏ đèn sạch không bám bụi dày'},
+    {name:'Sàn nhà',pass:'Phẳng không nứt vỡ, sạch sẽ, không trơn trượt, gạch không bong rộp'},
+    {name:'Điều hòa/Quạt',pass:'Hoạt động ổn định, đủ mát, không ồn bất thường, remote/dây điều khiển hoạt động'},
+    {name:'Bảng giá/Tag giá',pass:'Đầy đủ tất cả mặt hàng, rõ ràng dễ đọc, đúng vị trí quy định, không rách hay phai màu'},
+    {name:'Tủ mát/Tủ đông',pass:'Chạy ổn định, nhiệt độ đúng chuẩn, gioăng kín không hở, không đọng nước, vệ sinh sạch'},
+    {name:'Giỏ hàng/Xe đẩy',pass:'Bánh xe trơn tru, tay cầm chắc chắn, sạch sẽ, đủ số lượng phục vụ khách'}
+  ]},
+  { name:'Kho & Hậu cần', items:[
+    {name:'Cửa kho',pass:'Chắc chắn, khóa hoạt động tốt, không mối mọt hay ẩm mốc, đóng/mở dễ dàng'},
+    {name:'Kệ kho',pass:'Chịu tải tốt, không xiêu vẹo, sắp xếp gọn gàng, có nhãn/dán mã hàng rõ ràng'},
+    {name:'Đèn kho',pass:'Đủ sáng toàn bộ khu vực kho, không chập chờn, công tắc hoạt động tốt'},
+    {name:'Hệ thống PCCC',pass:'Bình chữa cháy còn hạn sử dụng, chuông/còi báo hoạt động, lối thoát hiểm thông thoáng'},
+    {name:'Camera an ninh',pass:'Hoạt động 24/7, góc quay bao phủ khu vực quan trọng, đầu ghi lưu trữ đầy đủ'}
+  ]},
+  { name:'Khu vực Khác', items:[
+    {name:'Nhà vệ sinh',pass:'Sạch sẽ, vòi nước/xả hoạt động tốt, không rò rỉ, có giấy vệ sinh và xà phòng'},
+    {name:'Khu vực nhân viên',pass:'Gọn gàng ngăn nắp, tủ đồ cá nhân nguyên vẹn, có quạt/điều hòa, đủ chỗ nghỉ'},
+    {name:'Bảng nội quy/Thông báo',pass:'Đầy đủ nội quy, giấy phép, thông báo mới nhất, rõ ràng, đúng vị trí quy định, không rách'}
+  ]}
+];
+
+// ── INIT ──
+async function init() {
+  try {
+    const resp = await fetch(GAS_API);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const rows = await resp.json();
+    if (!rows || rows.length === 0) throw new Error('No data');
+    
+    cascadeData = {};
+    for (const r of rows) {
+      const gdv = r.gdv || 'Chưa phân công';
+      const qlkv = r.qlkv || 'Chưa phân công';
+      if (!cascadeData[gdv]) cascadeData[gdv] = {};
+      if (!cascadeData[gdv][qlkv]) cascadeData[gdv][qlkv] = [];
+      cascadeData[gdv][qlkv].push({ sid: r.ma, name: r.ten, tinh: r.tinh });
+    }
+    
+    const sel = document.getElementById('gdvSelect');
+    sel.innerHTML = '<option value="">-- Chọn GĐV --</option>';
+    for (const g of Object.keys(cascadeData).sort()) {
+      sel.innerHTML += `<option value="${g}">${g} (${Object.keys(cascadeData[g]).length} QLKV)</option>`;
+    }
+    document.getElementById('dataHint').textContent = `✅ Dữ liệu từ Storelist (${rows.length} CH Miền Bắc)`;
+    document.getElementById('dataHint').style.color = '#16a34a';
+  } catch(e) {
+    document.getElementById('dataHint').textContent = '⚠️ Lỗi tải dữ liệu. Vui lòng thử lại sau.';
+    document.getElementById('gdvSelect').innerHTML = '<option value="">-- Lỗi kết nối --</option>';
+  }
+  buildChecklist();
+}
+
+function buildChecklist() {
+  const cl = document.getElementById('checklist');
+  cl.innerHTML = '';
+  totalItems = 0;
+  evaluations = {};
+  itemNotes = {};
+  
+  for (const area of areas) {
+    let h = `<div class="area-group"><div class="area-title">📍 ${area.name}<span class="area-count">${area.items.length} mục</span></div>`;
+    for (const item of area.items) {
+      totalItems++;
+      const id = item.name.replace(/[^a-z0-9]/gi,'_');
+      evaluations[id] = null;
+      itemNotes[id] = '';
+      h += `<div class="item-row" id="row_${id}">
+        <div class="item-header">
+          <span class="item-number">${totalItems}</span>
+          <span class="item-name">${item.name}</span>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="pass_${id}" onclick="setEval('${id}','pass')">✅ Đạt</button>
+            <button class="toggle-btn" id="fail_${id}" onclick="setEval('${id}','fail')">❌ Không đạt</button>
+          </div>
+        </div>
+        <div class="pass-text" id="passText_${id}">✅ Đạt: ${item.pass}</div>
+        <div class="issue-detail" id="issue_${id}">
+          <label>📝 Diễn giải tình trạng <span style="color:#dc2626">*</span></label>
+          <textarea id="note_${id}" placeholder="Mô tả cụ thể tình trạng hư hỏng/xuống cấp..." oninput="itemNotes['${id}']=this.value;updateProgress()"></textarea>
+        </div>
+      </div>`;
+    }
+    cl.innerHTML += h + '</div>';
+  }
+}
+
+// ── CASCADE ──
+document.getElementById('gdvSelect').addEventListener('change', function(){
+  const gdv = this.value;
+  const qSel = document.getElementById('qlkvSelect');
+  const sSel = document.getElementById('storeSelect');
+  qSel.innerHTML = '<option value="">-- Chọn QLKV --</option>';
+  sSel.innerHTML = '<option value="">-- Chọn Cửa hàng --</option>';
+  sSel.disabled = true;
+  document.getElementById('storeInfo').style.display = 'none';
+  
+  if (!gdv || !cascadeData[gdv]) { qSel.disabled = true; return; }
+  qSel.disabled = false;
+  for (const q of Object.keys(cascadeData[gdv]).sort()) {
+    qSel.innerHTML += `<option value="${q}">${q} (${cascadeData[gdv][q].length} CH)</option>`;
+  }
+});
+
+document.getElementById('qlkvSelect').addEventListener('change', function(){
+  const gdv = document.getElementById('gdvSelect').value;
+  const qlkv = this.value;
+  const sSel = document.getElementById('storeSelect');
+  sSel.innerHTML = '<option value="">-- Chọn Cửa hàng --</option>';
+  document.getElementById('storeInfo').style.display = 'none';
+  
+  if (!gdv || !qlkv || !cascadeData[gdv] || !cascadeData[gdv][qlkv]) { sSel.disabled = true; return; }
+  sSel.disabled = false;
+  for (const s of cascadeData[gdv][qlkv].sort((a,b) => a.sid.localeCompare(b.sid))) {
+    sSel.innerHTML += `<option value="${s.sid}" data-name="${s.name}" data-tinh="${s.tinh}">${s.sid} - ${s.name}</option>`;
+  }
+});
+
+document.getElementById('storeSelect').addEventListener('change', function(){
+  const opt = this.selectedOptions[0];
+  const info = document.getElementById('storeInfo');
+  if (opt && opt.dataset.name) {
+    document.getElementById('siCode').textContent = opt.value;
+    document.getElementById('siProvince').textContent = opt.dataset.tinh;
+    document.getElementById('siName').textContent = opt.dataset.name;
+    info.style.display = 'block';
+  } else { info.style.display = 'none'; }
+});
+
+// ── EVAL ──
+function setEval(id, val) {
+  evaluations[id] = val;
+  const r = document.getElementById('row_'+id);
+  r.classList.remove('evaluated','issue');
+  document.getElementById('pass_'+id).classList.remove('active-pass');
+  document.getElementById('fail_'+id).classList.remove('active-fail');
+  document.getElementById('passText_'+id).classList.remove('show');
+  document.getElementById('issue_'+id).classList.remove('show');
+  
+  if (val==='pass') {
+    document.getElementById('pass_'+id).classList.add('active-pass');
+    document.getElementById('passText_'+id).classList.add('show');
+    r.classList.add('evaluated');
+  } else {
+    document.getElementById('fail_'+id).classList.add('active-fail');
+    document.getElementById('issue_'+id).classList.add('show');
+    r.classList.add('issue');
+  }
+  updateProgress();
+  document.getElementById('validationError').style.display = 'none';
+}
+
+function updateProgress() {
+  let done = 0;
+  for (const k of Object.keys(evaluations)) { if (evaluations[k]) done++; }
+  const pct = totalItems ? Math.round(done/totalItems*100) : 0;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = `${done}/${totalItems} hạng mục đã đánh giá`;
+}
+
+function showError(msg) {
+  const el = document.getElementById('validationError');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── SUBMIT ──
+async function submitForm() {
+  const gdv = document.getElementById('gdvSelect').value;
+  const qlkv = document.getElementById('qlkvSelect').value;
+  const store = document.getElementById('storeSelect').value;
+  
+  if (!gdv || !qlkv || !store) { showError('⚠️ Vui lòng chọn đầy đủ GĐV, QLKV và Cửa hàng!'); return; }
+  
+  const uneval = Object.keys(evaluations).filter(k => !evaluations[k]);
+  if (uneval.length) {
+    showError(`⚠️ Còn ${uneval.length} hạng mục chưa đánh giá!`);
+    document.getElementById('row_'+uneval[0])?.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  
+  const noNote = Object.keys(evaluations).filter(k => evaluations[k]==='fail' && !itemNotes[k]?.trim());
+  if (noNote.length) {
+    showError(`⚠️ ${noNote.length} hạng mục "Không đạt" chưa có diễn giải!`);
+    document.getElementById('row_'+noNote[0])?.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  
+  const storeOpt = document.getElementById('storeSelect').selectedOptions[0];
+  const storeName = storeOpt?.dataset?.name || '';
+  const tinh = storeOpt?.dataset?.tinh || '';
+  const generalNote = document.getElementById('generalNote').value;
+  
+  const items = [];
+  for (const area of areas) {
+    for (const item of area.items) {
+      const id = item.name.replace(/[^a-z0-9]/gi,'_');
+      items.push({
+        area: area.name, item: item.name,
+        result: evaluations[id]==='pass'?'Đạt':'Không đạt',
+        note: evaluations[id]==='pass'?item.pass:(itemNotes[id]||''),
+        photos: 0
+      });
+    }
+  }
+  
+  const payload = {
+    gdv, qlkv, store, storeName, tinh, items, generalNote,
+    totalItems,
+    passCount: items.filter(i=>i.result==='Đạt').length,
+    failCount: items.filter(i=>i.result==='Không đạt').length
+  };
+  
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('validationError').style.display = 'none';
+  
+  try {
+    const resp = await fetch(GAS_API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.error);
+    
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    document.getElementById('successDetail').textContent = 
+      `Đã lưu ${result.rowCount} dòng vào Sheet · ${store} - ${storeName}`;
+    document.getElementById('formContainer').style.display = 'none';
+  } catch(e) {
+    alert('Lỗi gửi dữ liệu: ' + e.message + '\nVui lòng thử lại.');
+    document.getElementById('btnSubmit').disabled = false;
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
