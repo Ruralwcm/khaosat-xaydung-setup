@@ -37,16 +37,20 @@ function doPost(e) {
   }
 }
 
-// ── GET CHECKLIST từ Sheet ──
+// ── GET CHECKLIST từ Sheet (auto-create nếu chưa có) ──
 function getChecklist() {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_ITEMS);
-    if (!sheet) return null;
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_ITEMS);
+    
+    // Auto-create HANG_MUC tab with default data if missing or empty
+    if (!sheet || sheet.getLastRow() < 2) {
+      sheet = createDefaultChecklist(ss);
+    }
     
     const data = sheet.getDataRange().getValues();
     if (data.length < 2) return null;
     
-    // Header: Khu vực, Hạng mục, Mã HM
     const areas = {};
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
@@ -58,7 +62,6 @@ function getChecklist() {
       areas[khuVuc].push(hangMuc);
     }
     
-    // Convert to array format
     const result = [];
     for (const [name, items] of Object.entries(areas)) {
       result.push({ name, items });
@@ -67,6 +70,60 @@ function getChecklist() {
   } catch(e) {
     return null;
   }
+}
+
+function createDefaultChecklist(ss) {
+  let sheet = ss.getSheetByName(SHEET_ITEMS);
+  if (!sheet) sheet = ss.insertSheet(SHEET_ITEMS);
+  sheet.clear();
+  
+  // Header
+  sheet.appendRow(['Khu vực', 'Hạng mục', 'Mã HM']);
+  
+  // 33 hạng mục gốc từ phiếu khảo sát
+  const items = [
+    ['Trước CH', 'Biển hiệu WM', 'HM01'],
+    ['Trước CH', 'Mặt tiền/Sơn tường ngoài', 'HM02'],
+    ['Trước CH', 'Cửa kính/Cửa cuốn', 'HM03'],
+    ['Trước CH', 'Mái hiên/Mái che', 'HM04'],
+    ['Trước CH', 'Đèn chiếu sáng ngoài', 'HM05'],
+    ['Trước CH', 'Bãi đỗ xe/Vỉa hè', 'HM06'],
+    ['Trước CH', 'Biển quảng cáo/Poster', 'HM07'],
+    ['Trước CH', 'Cây xanh/Cảnh quan', 'HM08'],
+    ['Trước CH', 'Thùng rác ngoài', 'HM09'],
+    ['Trước CH', 'Camera an ninh ngoài', 'HM10'],
+    ['Trước CH', 'Lối vào/Cửa thoát hiểm', 'HM11'],
+    ['Trong CH', 'Sàn nhà/Gạch lát', 'HM12'],
+    ['Trong CH', 'Trần nhà/Thạch cao', 'HM13'],
+    ['Trong CH', 'Tường trong/Sơn nội thất', 'HM14'],
+    ['Trong CH', 'Đèn chiếu sáng trong', 'HM15'],
+    ['Trong CH', 'Điều hòa/Quạt/Thông gió', 'HM16'],
+    ['Trong CH', 'Kệ trưng bày/Sạp hàng', 'HM17'],
+    ['Trong CH', 'Tủ mát/Tủ đông/Tủ lạnh', 'HM18'],
+    ['Trong CH', 'Bảng giá/Tag giá điện tử', 'HM19'],
+    ['Trong CH', 'Giỏ hàng/Xe đẩy', 'HM20'],
+    ['Trong CH', 'Quầy thu ngân/POS', 'HM21'],
+    ['Trong CH', 'Cân điện tử', 'HM22'],
+    ['Trong CH', 'Wifi/Mạng/Thiết bị CNTT', 'HM23'],
+    ['Trong CH', 'Hệ thống âm thanh', 'HM24'],
+    ['Trong CH', 'Bình chữa cháy/PCCC', 'HM25'],
+    ['Trong CH', 'Biển báo lối thoát hiểm', 'HM26'],
+    ['Trong CH', 'Ổ điện/Hệ thống điện', 'HM27'],
+    ['Trong CH', 'Camera an ninh trong', 'HM28'],
+    ['Kho & Khu vực Nhân viên', 'Cửa kho', 'HM29'],
+    ['Kho & Khu vực Nhân viên', 'Kệ kho/Pallet', 'HM30'],
+    ['Kho & Khu vực Nhân viên', 'Đèn kho', 'HM31'],
+    ['Kho & Khu vực Nhân viên', 'Nhà vệ sinh nhân viên', 'HM32'],
+    ['Kho & Khu vực Nhân viên', 'Khu vực nghỉ nhân viên', 'HM33']
+  ];
+  
+  for (const row of items) {
+    sheet.appendRow(row);
+  }
+  
+  sheet.setFrozenRows(1);
+  sheet.autoResizeColumns(1, 3);
+  return sheet;
 }
 
 // ── SAVE SUBMISSION ──
