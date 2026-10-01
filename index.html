@@ -151,9 +151,8 @@ textarea{min-height:50px;resize:vertical}
 <script>
 // ── CONFIG ──
 // === GOOGLE APPS SCRIPT WEB APP URL ===
-// Deploy script tại: https://script.google.com/ → Publish → Deploy as web app
-// Copy URL vào đây:
-const GAS_URL = '';
+// Deploy Code.gs trên script.google.com → Deploy as web app → Copy URL:
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbz6r9PO6vqZ4XzJF0E5vK8xI2jL3mN7yQ1wR0tU8hB/exec';
 
 const SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
@@ -599,18 +598,21 @@ async function submitForm() {
     localStorage.setItem('csvc_v5_history', JSON.stringify(history));
   } catch(e) { /* quota exceeded, ignore */ }
   
-  // ── Send to Google Sheets (if GAS_URL configured) ──
-  let gasOk = false;
+  // ── GỬI LÊN GOOGLE SHEETS + DRIVE (qua GAS) ──
+  let serverMsg = '';
+  let serverOk = false;
+  
   if (GAS_URL) {
     try {
+      // Build payload WITH photos (base64)
       const gasPayload = {
-        timestamp: new Date().toISOString(),
         gdv, qlkv, store, storeName, tinh,
         items: items.map(it => ({
           area: it.area,
           item: it.item,
           result: it.result,
-          note: it.note
+          note: it.note,
+          photos: it.photos.map(p => ({ dataUrl: p.dataUrl, name: p.name }))
         })),
         generalNote,
         passCount,
@@ -620,65 +622,73 @@ async function submitForm() {
       
       const resp = await fetch(GAS_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(gasPayload)
       });
-      gasOk = true;
+      
+      if (resp.ok) {
+        const result = await resp.json();
+        if (result.success) {
+          serverOk = true;
+          serverMsg = `📊 ${result.rowsSaved} dòng đã lưu vào Sheet · 📸 ${result.savedPhotos} ảnh đã lưu Drive`;
+        } else {
+          serverMsg = '⚠️ Server báo lỗi: ' + (result.error || 'Không rõ');
+        }
+      } else {
+        serverMsg = '⚠️ Server trả về lỗi HTTP ' + resp.status;
+      }
     } catch(e) {
-      console.warn('GAS submit failed, falling back to CSV download:', e.message);
+      serverMsg = '⚠️ Không kết nối được server: ' + e.message;
+      console.warn('GAS submit failed:', e.message);
     }
+  } else {
+    serverMsg = '⚠️ Chưa cấu hình GAS_URL — dữ liệu chỉ lưu vào máy';
   }
   
-  // ── Download CSV ──
-  const bom = '\ufeff';
-  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `CSVC_v5_${store}_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // ── Kết quả ──
+  document.getElementById('loading').style.display = 'none';
   
-  // ── Show result ──
-  setTimeout(() => {
-    document.getElementById('loading').style.display = 'none';
+  if (serverOk) {
+    document.getElementById('success').innerHTML = `✅ Đã gửi khảo sát thành công!<br><small style="font-weight:400;color:#64748b">${passCount}/${totalItems} Đạt · ${failCount} Không đạt</small><br><small style="font-weight:400;color:#16a34a">${serverMsg}</small>`;
+  } else {
+    // Fallback: download CSV
+    const bom = '\ufeff';
+    const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `CSVC_v5_${store}_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     
-    if (gasOk) {
-      document.getElementById('success').innerHTML = `✅ Đã gửi khảo sát thành công!<br><small style="font-weight:400;color:#64748b">${passCount}/${totalItems} Đạt · ${failCount} Không đạt · CSV đã tải về</small>`;
-    } else if (GAS_URL) {
-      document.getElementById('success').innerHTML = `⚠️ Đã lưu dữ liệu & tải CSV<br><small style="font-weight:400;color:#e67e22">Gửi lên server thất bại — vui lòng gửi file CSV riêng hoặc thử lại sau</small>`;
-    } else {
-      document.getElementById('success').innerHTML = `✅ Đã hoàn tất khảo sát!<br><small style="font-weight:400;color:#64748b">${passCount}/${totalItems} Đạt · ${failCount} Không đạt · CSV đã tải về máy</small>`;
-    }
-    document.getElementById('success').style.display = 'block';
-    
-    // Show reset button
-    const resetBtn = document.createElement('button');
-    resetBtn.textContent = '🔄 Khảo sát mới';
-    resetBtn.style.cssText = 'display:block;margin:12px auto;padding:10px 24px;background:#e2e8f0;border:none;border-radius:8px;font-size:13px;cursor:pointer';
-    resetBtn.onclick = function() {
-      document.getElementById('success').style.display = 'none';
-      document.getElementById('formContainer').style.display = 'block';
-      btnSubmit.disabled = false;
-      resetBtn.remove();
-      // Reset form
-      document.getElementById('gdvSelect').value = '';
-      document.getElementById('qlkvSelect').innerHTML = '<option value="">-- Chọn QLKV --</option>';
-      document.getElementById('qlkvSelect').disabled = true;
-      document.getElementById('storeSelect').innerHTML = '<option value="">-- Chọn Cửa hàng --</option>';
-      document.getElementById('storeSelect').disabled = true;
-      document.getElementById('storeInfo').style.display = 'none';
-      document.getElementById('generalNote').value = '';
-      document.getElementById('validationError').style.display = 'none';
-      buildChecklist();
-      window.scrollTo(0, 0);
-    };
-    document.getElementById('success').appendChild(resetBtn);
-    
-  }, 500);
+    document.getElementById('success').innerHTML = `⚠️ Gửi server thất bại<br><small style="font-weight:400;color:#e67e22">${serverMsg}</small><br><small style="font-weight:400">Đã tải file CSV về máy — gửi file này cho GĐV/Admin</small>`;
+  }
+  
+  document.getElementById('success').style.display = 'block';
+  
+  // Reset button
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = '🔄 Khảo sát mới';
+  resetBtn.style.cssText = 'display:block;margin:12px auto;padding:10px 24px;background:#e2e8f0;border:none;border-radius:8px;font-size:13px;cursor:pointer;color:#334155';
+  resetBtn.onclick = function() {
+    document.getElementById('success').style.display = 'none';
+    document.getElementById('formContainer').style.display = 'block';
+    btnSubmit.disabled = false;
+    resetBtn.remove();
+    document.getElementById('gdvSelect').value = '';
+    document.getElementById('qlkvSelect').innerHTML = '<option value="">-- Chọn QLKV --</option>';
+    document.getElementById('qlkvSelect').disabled = true;
+    document.getElementById('storeSelect').innerHTML = '<option value="">-- Chọn Cửa hàng --</option>';
+    document.getElementById('storeSelect').disabled = true;
+    document.getElementById('storeInfo').style.display = 'none';
+    document.getElementById('generalNote').value = '';
+    document.getElementById('validationError').style.display = 'none';
+    buildChecklist();
+    window.scrollTo(0, 0);
+  };
+  document.getElementById('success').appendChild(resetBtn);
 }
 
 // ── START ──
