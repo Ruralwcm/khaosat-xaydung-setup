@@ -1,14 +1,23 @@
 // ============================================================
-// Code.gs — Google Apps Script for CSVC Survey (v5)
-// Deploy: Publish → Deploy as web app → Execute as "Me" → Anyone
-// Copy URL & paste into index.html GAS_URL variable
+// Code.gs — Google Apps Script for CSVC Survey (v5.1)
+// Checklist đọc từ Sheet tab "HANG_MUC" → sửa Sheet là form tự update
 // ============================================================
 
 // ── CONFIG ──
-const SHEET_NAME = 'CSVC_Tracking';   // Sheet tab name for submissions
-const DRIVE_FOLDER_NAME = 'CSVC_Khao_Sat_Anh';  // Drive folder for photos
+const SHEET_DATA   = 'CSVC_Tracking';      // Tab lưu kết quả khảo sát
+const SHEET_ITEMS  = 'HANG_MUC';           // Tab lưu danh sách hạng mục (Khu vực, Hạng mục)
+const DRIVE_FOLDER = 'CSVC_Khao_Sat_Anh';  // Folder lưu ảnh trên Drive
 
+// ── WEB APP ──
 function doGet(e) {
+  // ?action=checklist → trả về JSON danh sách hạng mục từ Sheet
+  if (e && e.parameter && e.parameter.action === 'checklist') {
+    const items = getChecklist();
+    return ContentService.createTextOutput(JSON.stringify(items))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  // Mặc định → trả về form HTML
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('Khao sat CSVC - WinRural v5')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -28,11 +37,42 @@ function doPost(e) {
   }
 }
 
+// ── GET CHECKLIST từ Sheet ──
+function getChecklist() {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_ITEMS);
+    if (!sheet) return null;
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length < 2) return null;
+    
+    // Header: Khu vực, Hạng mục, Mã HM
+    const areas = {};
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const khuVuc = String(row[0] || '').trim();
+      const hangMuc = String(row[1] || '').trim();
+      if (!khuVuc || !hangMuc) continue;
+      
+      if (!areas[khuVuc]) areas[khuVuc] = [];
+      areas[khuVuc].push(hangMuc);
+    }
+    
+    // Convert to array format
+    const result = [];
+    for (const [name, items] of Object.entries(areas)) {
+      result.push({ name, items });
+    }
+    return result;
+  } catch(e) {
+    return null;
+  }
+}
+
 // ── SAVE SUBMISSION ──
 function saveSubmission(data) {
-  const sheet = getOrCreateSheet(SHEET_NAME);
-  const folder = getOrCreateFolder(DRIVE_FOLDER_NAME);
-  const timestamp = new Date().toISOString();
+  const sheet = getOrCreateSheet(SHEET_DATA);
+  const folder = getOrCreateFolder(DRIVE_FOLDER);
   
   const results = [];
   let savedPhotos = 0;
@@ -47,45 +87,40 @@ function saveSubmission(data) {
           try {
             const blob = dataUrlToBlob(photo.dataUrl);
             const safeFileName = sanitizeFileName(
-              `${data.store}_${item.item.replace(/[^a-z0-9]/gi,'_')}_${i+1}.jpg`
+              `${data.store}_${String(item.item).replace(/[^a-z0-9]/gi,'_')}_${i+1}.jpg`
             );
             const file = folder.createFile(blob.setName(safeFileName));
             photoUrls.push(file.getUrl());
             savedPhotos++;
           } catch(pe) {
-            photoUrls.push('Lưu lỗi: ' + pe.toString().substring(0, 50));
+            photoUrls.push('Lỗi: ' + pe.toString().substring(0, 50));
           }
         }
       }
     }
     
-    // Append row to sheet
     const row = [
       new Date().toLocaleString('vi-VN'),
-      data.store,           // Mã CH
-      data.storeName,       // Tên CH
-      data.tinh,            // Tỉnh
-      data.gdv,             // GĐV
-      data.qlkv,            // QLKV
-      item.area,            // Khu vực
-      item.item,            // Hạng mục
-      item.result,          // Đánh giá (Đạt/Không đạt)
-      item.note || '',      // Diễn giải
-      photoUrls.join('\n'), // Ảnh Drive URLs
-      data.generalNote || '' // Ghi chú chung
+      data.store,
+      data.storeName,
+      data.tinh,
+      data.gdv,
+      data.qlkv,
+      item.area,
+      item.item,
+      item.result,
+      item.note || '',
+      photoUrls.join('\n'),
+      data.generalNote || ''
     ];
     sheet.appendRow(row);
     
-    results.push({
-      item: item.item,
-      result: item.result,
-      photos: photoUrls.length
-    });
+    results.push({ item: item.item, result: item.result, photos: photoUrls.length });
   }
   
   return {
     success: true,
-    timestamp: timestamp,
+    timestamp: new Date().toISOString(),
     store: data.store,
     totalItems: data.totalItems,
     passCount: data.passCount,
@@ -96,13 +131,11 @@ function saveSubmission(data) {
 }
 
 // ── HELPERS ──
-
 function getOrCreateSheet(name) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(name);
   if (!sheet) {
     sheet = ss.insertSheet(name);
-    // Create headers
     sheet.appendRow([
       'Ngày báo', 'Mã CH', 'Tên CH', 'Tỉnh', 'GĐV', 'QLKV',
       'Khu vực', 'Hạng mục', 'Đánh giá', 'Diễn giải',
@@ -123,10 +156,7 @@ function getOrCreateFolder(name) {
 function dataUrlToBlob(dataUrl) {
   const match = dataUrl.match(/^data:(.+);base64,(.+)$/);
   if (!match) throw new Error('Invalid data URL');
-  const mimeType = match[1];
-  const base64 = match[2];
-  const bytes = Utilities.base64Decode(base64);
-  return Utilities.newBlob(bytes, mimeType);
+  return Utilities.newBlob(Utilities.base64Decode(match[2]), match[1]);
 }
 
 function sanitizeFileName(name) {
