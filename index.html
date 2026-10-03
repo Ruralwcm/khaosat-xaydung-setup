@@ -31,6 +31,21 @@ textarea{min-height:50px;resize:vertical}
 .area-title .area-count{font-size:11px;font-weight:400;color:#64748b;margin-left:auto}
 .area-progress{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;transition:all .3s;background:#f1f5f9;color:#64748b;margin-left:4px}
 
+/* Collapsible area cards */
+.area-card{border:2px solid #e2e8f0;border-radius:12px;margin-bottom:10px;overflow:hidden;transition:all .2s}
+.area-card.open{border-color:#1e5799}
+.area-card.complete{border-color:#16a34a;background:#f0fdf4}
+.area-card-header{display:flex;align-items:center;gap:8px;padding:14px 14px;cursor:pointer;user-select:none;transition:background .2s}
+.area-card-header:hover{background:#f8fafc}
+.area-card-header .area-icon{font-size:24px;flex-shrink:0}
+.area-card-header .area-label{flex:1;font-size:14px;font-weight:700;color:#1e293b}
+.area-card-header .area-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;transition:all .3s;background:#f1f5f9;color:#64748b}
+.area-card-header .area-arrow{font-size:14px;color:#94a3b8;transition:transform .3s;flex-shrink:0}
+.area-card.open .area-card-header .area-arrow{transform:rotate(180deg);color:#1e5799}
+.area-card-body{display:none;padding:0 14px 14px;border-top:1px solid #e2e8f0}
+.area-card.open .area-card-body{display:block}
+.area-card-body .item-row:last-child{margin-bottom:0}
+
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
 .item-row:hover{border-color:#cbd5e1}
@@ -128,10 +143,10 @@ textarea{min-height:50px;resize:vertical}
     <div class="hint">Dữ liệu từ Storelist Google Sheets</div>
   </div>
 
-  <!-- ② Checklist 34 hạng mục -->
+  <!-- ② Checklist — 3 khu vực collapsible -->
   <div class="card">
     <h3><span class="num">2</span> Checklist CSVC — 34 hạng mục</h3>
-    <div class="hint" style="margin-bottom:6px">⚠️ Bắt buộc đánh giá TẤT CẢ hạng mục</div>
+    <div class="hint" style="margin-bottom:6px">👆 Bấm vào từng khu vực để khảo sát chi tiết</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     <div class="progress-text" id="progressText">0/34 hạng mục đã đánh giá</div>
     <div class="checklist" id="checklist"></div>
@@ -279,11 +294,13 @@ function buildChecklist() {
   itemAreaIdx = {};
   areaCounts = [];
   
+  const areaIcons = ['🏪','🛒','📦'];
+  
   for (let a = 0; a < areas.length; a++) {
     const area = areas[a];
     areaCounts.push({ total: area.items.length, done: 0 });
-    let areaHtml = `<div class="area-group"><div class="area-title">📍 ${area.name}<span class="area-progress" id="aprog_${a}">0/${area.items.length}</span></div>`;
     
+    let itemsHtml = '';
     for (const item of area.items) {
       totalItems++;
       const itemId = item.replace(/[^a-z0-9]/gi,'_');
@@ -292,14 +309,14 @@ function buildChecklist() {
       itemPhotos[itemId] = [];
       itemAreaIdx[itemId] = a;
       
-      areaHtml += `
+      itemsHtml += `
         <div class="item-row" id="row_${itemId}">
           <div class="item-header">
             <span class="item-number">${totalItems}</span>
             <span class="item-name">${item}</span>
             <div class="toggle-group">
-              <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass')">✅ Đạt</button>
-              <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail')">❌ Ko đạt</button>
+              <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass');event.stopPropagation()">✅ Đạt</button>
+              <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail');event.stopPropagation()">❌ Ko đạt</button>
             </div>
           </div>
           <div class="pass-text" id="passText_${itemId}">✅ Đạt</div>
@@ -317,7 +334,17 @@ function buildChecklist() {
           </div>
         </div>`;
     }
-    cl.innerHTML += areaHtml + `</div>`;
+    
+    cl.innerHTML += `
+      <div class="area-card" id="acard_${a}">
+        <div class="area-card-header" onclick="toggleArea(${a})">
+          <span class="area-icon">${areaIcons[a] || '📍'}</span>
+          <span class="area-label">${area.name}</span>
+          <span class="area-badge" id="ab_${a}">0/${area.items.length}</span>
+          <span class="area-arrow">▼</span>
+        </div>
+        <div class="area-card-body">${itemsHtml}</div>
+      </div>`;
   }
 }
 
@@ -508,16 +535,33 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${done}/${totalItems} hạng mục đã đánh giá`;
   
-  // Per-area progress badges
+  // Per-area badges + card styling
   for (let a = 0; a < areaCounts.length; a++) {
-    const el = document.getElementById('aprog_' + a);
-    if (!el) continue;
+    const badge = document.getElementById('ab_' + a);
+    const card = document.getElementById('acard_' + a);
+    if (!badge) continue;
     const ac = areaCounts[a];
-    el.textContent = ac.done + '/' + ac.total;
-    if (ac.done === ac.total) { el.style.background = '#dcfce7'; el.style.color = '#16a34a'; }
-    else if (ac.done > 0) { el.style.background = '#fef9c3'; el.style.color = '#ca8a04'; }
-    else { el.style.background = '#f1f5f9'; el.style.color = '#64748b'; }
+    badge.textContent = ac.done + '/' + ac.total;
+    if (ac.done === ac.total) { 
+      badge.style.background = '#dcfce7'; badge.style.color = '#16a34a';
+      if (card) { card.classList.add('complete'); card.classList.remove('open'); }
+    } else if (ac.done > 0) { 
+      badge.style.background = '#fef9c3'; badge.style.color = '#ca8a04';
+    } else { 
+      badge.style.background = '#f1f5f9'; badge.style.color = '#64748b';
+    }
   }
+}
+
+// ── TOGGLE AREA ──
+function toggleArea(a) {
+  const card = document.getElementById('acard_' + a);
+  if (!card) return;
+  const wasOpen = card.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.area-card').forEach(c => c.classList.remove('open'));
+  // Toggle clicked (or close if was open)
+  if (!wasOpen) card.classList.add('open');
 }
 
 // ── SUBMIT ──
