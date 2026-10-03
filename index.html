@@ -51,7 +51,7 @@ textarea{min-height:50px;resize:vertical}
 .btn-done-area:active{transform:scale(.98)}
 
 /* Done item button + collapsed state */
-.btn-done-item{min-width:32px;height:32px;border-radius:50%;background:#16a34a;color:#fff;border:none;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:4px}
+.btn-done-item{display:inline-flex;align-items:center;gap:3px;padding:5px 12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:4px;white-space:nowrap}
 .item-row.done{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px;cursor:pointer}
 .item-row.done .item-header{opacity:.85}
 .item-row.done .toggle-group,.item-row.done .btn-done-item,.item-row.done .pass-text,.item-row.done .issue-detail{display:none !important}
@@ -365,7 +365,7 @@ function buildChecklist() {
               <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass');event.stopPropagation()">✅ Đạt</button>
               <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail');event.stopPropagation()">❌ Ko đạt</button>
             </div>
-            <button class="btn-done-item" id="done_${itemId}" onclick="doneItem('${itemId}');event.stopPropagation()" style="display:none">✔</button>
+            <button class="btn-done-item" id="done_${itemId}" onclick="doneItem('${itemId}');event.stopPropagation()" style="display:none">✔ Hoàn tất</button>
           </div>
           <div class="pass-text" id="passText_${itemId}">✅ Đạt</div>
           <div class="issue-detail" id="issue_${itemId}">
