@@ -282,28 +282,38 @@ function parseCSV(text) {
 
 // ── INIT ──
 async function init() {
+  const hint = document.querySelector('.hint');
   await fetchChecklist();
   try {
     const resp = await fetch(SHEETS_CSV);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const text = await resp.text();
     const allRows = parseCSV(text);
-    if (allRows.length < 2) throw new Error('No data');
+    if (allRows.length < 2) throw new Error('CSV rỗng: ' + allRows.length + ' dòng');
     
     const rows = allRows.slice(1).map(cols => ({
       ma: cols[0], ten: cols[1], tt: cols[2], mien: cols[4], tinh: cols[5], qlkv: cols[7], gdv: cols[8]
     })).filter(r => r.ma && r.tt === 'Đang hoạt động' && r.mien?.includes('Bắc'));
     
-    if (rows.length === 0) throw new Error('No data');
+    if (rows.length === 0) throw new Error('0 CH Miền Bắc active');
     
     cascadeData = parseStoreData(rows);
+    const gdvCount = Object.keys(cascadeData).length;
     const gdvSel = document.getElementById('gdvSelect');
     for (const gdv of Object.keys(cascadeData).sort()) {
       gdvSel.innerHTML += `<option value="${gdv}">${gdv} (${Object.keys(cascadeData[gdv]).length} QLKV)</option>`;
     }
+    if (hint) {
+      hint.textContent = `✅ ${rows.length} CH · ${gdvCount} GĐV · Storelist`;
+      hint.style.color = '#16a34a';
+    }
     buildChecklist();
   } catch(e) {
-    console.warn('Fetch thất bại, dùng data mẫu:', e.message);
+    console.warn('Fetch thất bại:', e.message);
+    if (hint) {
+      hint.textContent = '⚠️ ' + e.message + ' — dùng dữ liệu mẫu';
+      hint.style.color = '#e67e22';
+    }
     loadSampleData();
   }
 }
