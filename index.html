@@ -52,11 +52,11 @@ textarea{min-height:50px;resize:vertical}
 
 /* Done item button + collapsed state */
 .btn-done-item{min-width:32px;height:32px;border-radius:50%;background:#16a34a;color:#fff;border:none;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:4px}
-.item-row.done{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px}
+.item-row.done{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px;cursor:pointer}
 .item-row.done .item-header{opacity:.85}
 .item-row.done .toggle-group,.item-row.done .btn-done-item,.item-row.done .pass-text,.item-row.done .issue-detail{display:none !important}
 .item-row.done .item-name{font-size:11px}
-.item-row.done .item-name::after{content:' ✅';color:#16a34a;margin-left:4px}
+.item-row.done .item-summary{display:inline !important;font-size:10px;color:#64748b;margin-left:8px}
 
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
@@ -356,10 +356,11 @@ function buildChecklist() {
       itemAreaIdx[itemId] = a;
       
       itemsHtml += `
-        <div class="item-row" id="row_${itemId}">
+        <div class="item-row" id="row_${itemId}" onclick="if(this.classList.contains('done')){this.classList.remove('done');var b=document.getElementById('done_${itemId}');if(b)b.style.display='inline-flex';updateProgress()}">
           <div class="item-header">
             <span class="item-number">${totalItems}</span>
             <span class="item-name">${item}</span>
+            <span class="item-summary" id="sum_${itemId}" style="display:none"></span>
             <div class="toggle-group">
               <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass');event.stopPropagation()">✅ Đạt</button>
               <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail');event.stopPropagation()">❌ Ko đạt</button>
@@ -372,7 +373,7 @@ function buildChecklist() {
             <textarea id="note_${itemId}" placeholder="Mô tả tình trạng..." oninput="itemNotes['${itemId}']=this.value;updateProgress()"></textarea>
             <label style="margin-top:6px">📸 Ảnh <span style="color:#dc2626">*</span> (tối đa 3)</label>
             <div class="inline-photos" id="photos_${itemId}">
-              <div class="inline-photo-box" onclick="triggerPhoto('${itemId}')">
+              <div class="inline-photo-box" onclick="triggerPhoto('${itemId}');event.stopPropagation()">
                 <div class="placeholder">📷<br>Thêm</div>
               </div>
             </div>
@@ -488,7 +489,15 @@ function setEval(itemId, value) {
 // ── DONE ITEM ──
 function doneItem(itemId) {
   const row = document.getElementById('row_' + itemId);
-  if (row) row.classList.add('done');
+  const sum = document.getElementById('sum_' + itemId);
+  if (!row) return;
+  
+  const photos = itemPhotos[itemId] || [];
+  const result = evaluations[itemId] === 'pass' ? '✅ Đạt' : '❌ Ko đạt';
+  const photoInfo = photos.length > 0 ? ` · 📸${photos.length}` : '';
+  
+  if (sum) sum.textContent = result + photoInfo;
+  row.classList.add('done');
   updateProgress();
 }
 
