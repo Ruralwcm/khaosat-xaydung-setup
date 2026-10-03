@@ -46,6 +46,10 @@ textarea{min-height:50px;resize:vertical}
 .area-card.open .area-card-body{display:block}
 .area-card-body .item-row:last-child{margin-bottom:0}
 
+.btn-done-area{width:100%;padding:10px;margin-top:12px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .1s}
+.btn-done-area:hover{transform:scale(1.01)}
+.btn-done-area:active{transform:scale(.98)}
+
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
 .item-row:hover{border-color:#cbd5e1}
@@ -377,7 +381,10 @@ function buildChecklist() {
           <span class="area-badge" id="ab_${a}">0/${area.items.length}</span>
           <span class="area-arrow">▼</span>
         </div>
-        <div class="area-card-body">${itemsHtml}</div>
+        <div class="area-card-body">
+          ${itemsHtml}
+          <button class="btn-done-area" id="btndone_${a}" style="display:none" onclick="event.stopPropagation();doneArea(${a})">✅ Hoàn tất mục này</button>
+        </div>
       </div>`;
   }
 }
@@ -573,16 +580,20 @@ function updateProgress() {
   for (let a = 0; a < areaCounts.length; a++) {
     const badge = document.getElementById('ab_' + a);
     const card = document.getElementById('acard_' + a);
+    const btnDone = document.getElementById('btndone_' + a);
     if (!badge) continue;
     const ac = areaCounts[a];
     badge.textContent = ac.done + '/' + ac.total;
     if (ac.done === ac.total) { 
       badge.style.background = '#dcfce7'; badge.style.color = '#16a34a';
-      if (card) { card.classList.add('complete'); card.classList.remove('open'); }
+      if (card) card.classList.add('complete');
+      if (btnDone) btnDone.style.display = 'none'; // hide when fully done
     } else if (ac.done > 0) { 
       badge.style.background = '#fef9c3'; badge.style.color = '#ca8a04';
+      if (btnDone && card && card.classList.contains('open')) btnDone.style.display = 'block';
     } else { 
       badge.style.background = '#f1f5f9'; badge.style.color = '#64748b';
+      if (btnDone) btnDone.style.display = 'none';
     }
   }
 }
@@ -592,10 +603,16 @@ function toggleArea(a) {
   const card = document.getElementById('acard_' + a);
   if (!card) return;
   const wasOpen = card.classList.contains('open');
-  // Close all
   document.querySelectorAll('.area-card').forEach(c => c.classList.remove('open'));
-  // Toggle clicked (or close if was open)
-  if (!wasOpen) card.classList.add('open');
+  if (!wasOpen) { card.classList.add('open'); updateProgress(); }
+  else { updateProgress(); }
+}
+
+function doneArea(a) {
+  const card = document.getElementById('acard_' + a);
+  if (card) card.classList.remove('open');
+  updateProgress();
+  showToast('✅ Đã hoàn tất ' + areas[a].name);
 }
 
 // ── SUBMIT ──
