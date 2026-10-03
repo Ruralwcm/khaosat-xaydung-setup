@@ -29,6 +29,7 @@ textarea{min-height:50px;resize:vertical}
 .area-group{margin-bottom:16px}
 .area-title{font-size:13px;font-weight:700;color:#1e5799;margin-bottom:8px;padding:6px 10px;background:#e8f0fe;border-radius:6px;display:flex;align-items:center;gap:5px}
 .area-title .area-count{font-size:11px;font-weight:400;color:#64748b;margin-left:auto}
+.area-progress{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;transition:all .3s;background:#f1f5f9;color:#64748b;margin-left:4px}
 
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
@@ -104,7 +105,7 @@ textarea{min-height:50px;resize:vertical}
 
 <div class="header">
   <h1>🏪 Khảo sát CSVC Cửa hàng</h1>
-  <p>WinRural · 33 hạng mục · Đạt/Không đạt + Ảnh <span style="font-size:9px;opacity:.6">v5</span></p>
+  <p>WinRural · 34 hạng mục · Đạt/Không đạt + Ảnh <span style="font-size:9px;opacity:.6">v5.2</span></p>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -127,12 +128,12 @@ textarea{min-height:50px;resize:vertical}
     <div class="hint">Dữ liệu từ Storelist Google Sheets</div>
   </div>
 
-  <!-- ② Checklist 33 hạng mục -->
+  <!-- ② Checklist 34 hạng mục -->
   <div class="card">
-    <h3><span class="num">2</span> Checklist CSVC — 33 hạng mục</h3>
+    <h3><span class="num">2</span> Checklist CSVC — 34 hạng mục</h3>
     <div class="hint" style="margin-bottom:6px">⚠️ Bắt buộc đánh giá TẤT CẢ hạng mục</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-    <div class="progress-text" id="progressText">0/33 hạng mục đã đánh giá</div>
+    <div class="progress-text" id="progressText">0/34 hạng mục đã đánh giá</div>
     <div class="checklist" id="checklist"></div>
     <div class="validation-error" id="validationError"></div>
   </div>
@@ -155,19 +156,19 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8
 
 const SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
-// ── CHECKLIST — fallback mặc định nếu ko fetch được từ Sheet ──
+// ── CHECKLIST — fallback mặc định (v5.2: 34 hạng mục) ──
 const DEFAULT_AREAS = [
   {
-    name: 'Trước CH',
-    items: ['Biển hiệu WM','Mặt tiền/Sơn tường ngoài','Cửa kính/Cửa cuốn','Mái hiên/Mái che','Đèn chiếu sáng ngoài','Bãi đỗ xe/Vỉa hè','Biển quảng cáo/Poster','Cây xanh/Cảnh quan','Thùng rác ngoài','Camera an ninh ngoài','Lối vào/Cửa thoát hiểm']
+    name: 'TRƯỚC CH',
+    items: ['Biển hiệu WM+','Mặt tiền/ sơn tường ngoài','Cửa cuốn/ cửa kính','Mái hiên/ mái che','Đèn chiếu sáng ngoài','Vỉa hè','Biển quảng cáo/Poster','Cây xanh','Thùng rác ngoài','Camera an ninh ngoài']
   },
   {
-    name: 'Trong CH',
-    items: ['Sàn nhà/Gạch lát','Trần nhà/Thạch cao','Tường trong/Sơn nội thất','Đèn chiếu sáng trong','Điều hòa/Quạt/Thông gió','Kệ trưng bày/Sạp hàng','Tủ mát/Tủ đông/Tủ lạnh','Bảng giá/Tag giá điện tử','Giỏ hàng/Xe đẩy','Quầy thu ngân/POS','Cân điện tử','Wifi/Mạng/Thiết bị CNTT','Hệ thống âm thanh','Bình chữa cháy/PCCC','Biển báo lối thoát hiểm','Ổ điện/Hệ thống điện','Camera an ninh trong']
+    name: 'TRONG CH',
+    items: ['Trần nhà/ thạch cao','Tường','Đèn chiếu sáng','Điều hòa/ quạt/ thông gió','Kệ trưng bày','Tủ mát/ tủ đông/ tủ lạnh','Bảng giá','Giỏ hàng/ xe đẩy','Quầy thu ngân','Cân điện tử','Wifi/ Mạng/ Thiết bị IT','Hạng mục khác','Hệ thống âm thanh','Bình chữa cháy/ PCCC','Ổ điện, hệ thống điện','Camera an ninh trong']
   },
   {
-    name: 'Kho & Khu vực Nhân viên',
-    items: ['Cửa kho','Kệ kho/Pallet','Đèn kho','Nhà vệ sinh nhân viên','Khu vực nghỉ nhân viên']
+    name: 'KHO - NVS',
+    items: ['Cửa kho / cửa NVS','Kệ kho/ Palet','Sàn kho / NVS','Đường điện','Thiết bị vệ sinh','Đường nước','Thiết bị nhà vệ sinh','Sàn kho / NVS (tổng thể)']
   }
 ];
 
@@ -181,6 +182,8 @@ let cascadeData = {};
 let evaluations = {};
 let itemNotes = {};
 let itemPhotos = {};
+let itemAreaIdx = {};   // itemId → area index
+let areaCounts = [];    // [{ total, done }]
 let totalItems = 0;
 
 // ── SAMPLE DATA ──
@@ -273,9 +276,13 @@ function buildChecklist() {
   evaluations = {};
   itemNotes = {};
   itemPhotos = {};
+  itemAreaIdx = {};
+  areaCounts = [];
   
-  for (const area of areas) {
-    let areaHtml = `<div class="area-group"><div class="area-title">📍 ${area.name}<span class="area-count">${area.items.length} mục</span></div>`;
+  for (let a = 0; a < areas.length; a++) {
+    const area = areas[a];
+    areaCounts.push({ total: area.items.length, done: 0 });
+    let areaHtml = `<div class="area-group"><div class="area-title">📍 ${area.name}<span class="area-progress" id="aprog_${a}">0/${area.items.length}</span></div>`;
     
     for (const item of area.items) {
       totalItems++;
@@ -283,6 +290,7 @@ function buildChecklist() {
       evaluations[itemId] = null;
       itemNotes[itemId] = '';
       itemPhotos[itemId] = [];
+      itemAreaIdx[itemId] = a;
       
       areaHtml += `
         <div class="item-row" id="row_${itemId}">
@@ -487,12 +495,29 @@ function removeItemPhoto(itemId, idx) {
 // ── PROGRESS ──
 function updateProgress() {
   let done = 0;
+  for (let a = 0; a < areaCounts.length; a++) areaCounts[a].done = 0;
+  
   for (const key of Object.keys(evaluations)) {
-    if (evaluations[key]) done++;
+    if (evaluations[key]) {
+      done++;
+      const aIdx = itemAreaIdx[key];
+      if (aIdx !== undefined && areaCounts[aIdx]) areaCounts[aIdx].done++;
+    }
   }
   const pct = totalItems > 0 ? Math.round((done / totalItems) * 100) : 0;
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${done}/${totalItems} hạng mục đã đánh giá`;
+  
+  // Per-area progress badges
+  for (let a = 0; a < areaCounts.length; a++) {
+    const el = document.getElementById('aprog_' + a);
+    if (!el) continue;
+    const ac = areaCounts[a];
+    el.textContent = ac.done + '/' + ac.total;
+    if (ac.done === ac.total) { el.style.background = '#dcfce7'; el.style.color = '#16a34a'; }
+    else if (ac.done > 0) { el.style.background = '#fef9c3'; el.style.color = '#ca8a04'; }
+    else { el.style.background = '#f1f5f9'; el.style.color = '#64748b'; }
+  }
 }
 
 // ── SUBMIT ──
