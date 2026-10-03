@@ -258,17 +258,41 @@ async function fetchChecklist() {
   }
 }
 
+// ── CSV PARSER (handles quoted fields with commas) ──
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.trim().split('\n');
+  for (const line of lines) {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else { inQ = !inQ; }
+      } else if (ch === ',' && !inQ) {
+        cols.push(cur); cur = '';
+      } else { cur += ch; }
+    }
+    cols.push(cur);
+    rows.push(cols);
+  }
+  return rows;
+}
+
 // ── INIT ──
 async function init() {
-  await fetchChecklist();  // Load checklist từ Sheet (hoặc fallback mặc định)
+  await fetchChecklist();
   try {
     const resp = await fetch(SHEETS_CSV);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const text = await resp.text();
-    const rows = text.split('\n').slice(1).map(r => {
-      const cols = r.split(',');
-      return { ma: cols[0]?.replace(/"/g,''), ten: cols[1]?.replace(/"/g,''), tt: cols[2]?.replace(/"/g,''), mien: cols[4]?.replace(/"/g,''), tinh: cols[5]?.replace(/"/g,''), qlkv: cols[7]?.replace(/"/g,''), gdv: cols[8]?.replace(/"/g,'') };
-    }).filter(r => r.ma && r.tt === 'Đang hoạt động' && r.mien?.includes('Bắc'));
+    const allRows = parseCSV(text);
+    if (allRows.length < 2) throw new Error('No data');
+    
+    const rows = allRows.slice(1).map(cols => ({
+      ma: cols[0], ten: cols[1], tt: cols[2], mien: cols[4], tinh: cols[5], qlkv: cols[7], gdv: cols[8]
+    })).filter(r => r.ma && r.tt === 'Đang hoạt động' && r.mien?.includes('Bắc'));
     
     if (rows.length === 0) throw new Error('No data');
     
