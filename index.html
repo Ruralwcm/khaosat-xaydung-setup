@@ -29,34 +29,6 @@ textarea{min-height:50px;resize:vertical}
 .area-group{margin-bottom:16px}
 .area-title{font-size:13px;font-weight:700;color:#1e5799;margin-bottom:8px;padding:6px 10px;background:#e8f0fe;border-radius:6px;display:flex;align-items:center;gap:5px}
 .area-title .area-count{font-size:11px;font-weight:400;color:#64748b;margin-left:auto}
-.area-progress{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;transition:all .3s;background:#f1f5f9;color:#64748b;margin-left:4px}
-
-/* Collapsible area cards */
-.area-card{border:2px solid #e2e8f0;border-radius:12px;margin-bottom:10px;overflow:hidden;transition:all .2s}
-.area-card.open{border-color:#1e5799}
-.area-card.complete{border-color:#16a34a;background:#f0fdf4}
-.area-card-header{display:flex;align-items:center;gap:8px;padding:14px 14px;cursor:pointer;user-select:none;transition:background .2s}
-.area-card-header:hover{background:#f8fafc}
-.area-card-header .area-icon{font-size:24px;flex-shrink:0}
-.area-card-header .area-label{flex:1;font-size:14px;font-weight:700;color:#1e293b}
-.area-card-header .area-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;transition:all .3s;background:#f1f5f9;color:#64748b}
-.area-card-header .area-arrow{font-size:14px;color:#94a3b8;transition:transform .3s;flex-shrink:0}
-.area-card.open .area-card-header .area-arrow{transform:rotate(180deg);color:#1e5799}
-.area-card-body{display:none;padding:0 14px 14px;border-top:1px solid #e2e8f0}
-.area-card.open .area-card-body{display:block}
-.area-card-body .item-row:last-child{margin-bottom:0}
-
-.btn-done-area{width:100%;padding:10px;margin-top:12px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .1s}
-.btn-done-area:hover{transform:scale(1.01)}
-.btn-done-area:active{transform:scale(.98)}
-
-/* Done item button + collapsed state */
-.btn-done-item{display:inline-flex;align-items:center;gap:3px;padding:5px 12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:4px;white-space:nowrap}
-.item-row.done{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px;cursor:pointer}
-.item-row.done .item-header{opacity:.85}
-.item-row.done .toggle-group,.item-row.done .btn-done-item,.item-row.done .pass-text,.item-row.done .issue-detail{display:none !important}
-.item-row.done .item-name{font-size:11px}
-.item-row.done .item-summary{display:inline !important;font-size:10px;color:#64748b;margin-left:8px}
 
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
@@ -132,7 +104,7 @@ textarea{min-height:50px;resize:vertical}
 
 <div class="header">
   <h1>🏪 Khảo sát CSVC Cửa hàng</h1>
-  <p>WinRural · 34 hạng mục · Đạt/Không đạt + Ảnh <span style="font-size:9px;opacity:.6">v5.2.3</span></p>
+  <p>WinRural · 33 hạng mục · Đạt/Không đạt + Ảnh <span style="font-size:9px;opacity:.6">v5.2.3</span></p>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -155,12 +127,12 @@ textarea{min-height:50px;resize:vertical}
     <div class="hint">Dữ liệu từ Storelist Google Sheets</div>
   </div>
 
-  <!-- ② Checklist — 3 khu vực collapsible -->
+  <!-- ② Checklist 33 hạng mục -->
   <div class="card">
-    <h3><span class="num">2</span> Checklist CSVC — 34 hạng mục</h3>
-    <div class="hint" style="margin-bottom:6px">👆 Bấm vào từng khu vực để khảo sát chi tiết</div>
+    <h3><span class="num">2</span> Checklist CSVC — 33 hạng mục</h3>
+    <div class="hint" style="margin-bottom:6px">⚠️ Bắt buộc đánh giá TẤT CẢ hạng mục</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-    <div class="progress-text" id="progressText">0/34 hạng mục đã đánh giá</div>
+    <div class="progress-text" id="progressText">0/33 hạng mục đã đánh giá</div>
     <div class="checklist" id="checklist"></div>
     <div class="validation-error" id="validationError"></div>
   </div>
@@ -183,19 +155,19 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8
 
 const SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
-// ── CHECKLIST — fallback mặc định (v5.2: 34 hạng mục) ──
+// ── CHECKLIST — fallback mặc định nếu ko fetch được từ Sheet ──
 const DEFAULT_AREAS = [
   {
-    name: 'TRƯỚC CH',
-    items: ['Biển hiệu WM+','Mặt tiền/ sơn tường ngoài','Cửa cuốn/ cửa kính','Mái hiên/ mái che','Đèn chiếu sáng ngoài','Vỉa hè','Biển quảng cáo/Poster','Cây xanh','Thùng rác ngoài','Camera an ninh ngoài']
+    name: 'Trước CH',
+    items: ['Biển hiệu WM','Mặt tiền/Sơn tường ngoài','Cửa kính/Cửa cuốn','Mái hiên/Mái che','Đèn chiếu sáng ngoài','Bãi đỗ xe/Vỉa hè','Biển quảng cáo/Poster','Cây xanh/Cảnh quan','Thùng rác ngoài','Camera an ninh ngoài','Lối vào/Cửa thoát hiểm']
   },
   {
-    name: 'TRONG CH',
-    items: ['Trần nhà/ thạch cao','Tường','Đèn chiếu sáng','Điều hòa/ quạt/ thông gió','Kệ trưng bày','Tủ mát/ tủ đông/ tủ lạnh','Bảng giá','Giỏ hàng/ xe đẩy','Quầy thu ngân','Cân điện tử','Wifi/ Mạng/ Thiết bị IT','Hạng mục khác','Hệ thống âm thanh','Bình chữa cháy/ PCCC','Ổ điện, hệ thống điện','Camera an ninh trong']
+    name: 'Trong CH',
+    items: ['Sàn nhà/Gạch lát','Trần nhà/Thạch cao','Tường trong/Sơn nội thất','Đèn chiếu sáng trong','Điều hòa/Quạt/Thông gió','Kệ trưng bày/Sạp hàng','Tủ mát/Tủ đông/Tủ lạnh','Bảng giá/Tag giá điện tử','Giỏ hàng/Xe đẩy','Quầy thu ngân/POS','Cân điện tử','Wifi/Mạng/Thiết bị CNTT','Hệ thống âm thanh','Bình chữa cháy/PCCC','Biển báo lối thoát hiểm','Ổ điện/Hệ thống điện','Camera an ninh trong']
   },
   {
-    name: 'KHO - NVS',
-    items: ['Cửa kho / cửa NVS','Kệ kho/ Palet','Sàn kho / NVS','Đường điện','Thiết bị vệ sinh','Đường nước','Thiết bị nhà vệ sinh','Sàn kho / NVS (tổng thể)']
+    name: 'Kho & Khu vực Nhân viên',
+    items: ['Cửa kho','Kệ kho/Pallet','Đèn kho','Nhà vệ sinh nhân viên','Khu vực nghỉ nhân viên']
   }
 ];
 
@@ -209,8 +181,6 @@ let cascadeData = {};
 let evaluations = {};
 let itemNotes = {};
 let itemPhotos = {};
-let itemAreaIdx = {};   // itemId → area index
-let areaCounts = [];    // [{ total, done }]
 let totalItems = 0;
 
 // ── SAMPLE DATA ──
@@ -271,61 +241,74 @@ async function fetchChecklist() {
 }
 
 // ── CSV PARSER (handles quoted fields with commas) ──
-function parseCSV(text) {
-  const rows = [];
-  const lines = text.trim().split('\n');
-  for (const line of lines) {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
       if (ch === '"') {
-        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-        else { inQ = !inQ; }
-      } else if (ch === ',' && !inQ) {
-        cols.push(cur); cur = '';
-      } else { cur += ch; }
+        if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
+        else { inQuotes = false; }
+      } else { current += ch; }
+    } else {
+      if (ch === '"') { inQuotes = true; }
+      else if (ch === ',') { result.push(current); current = ''; }
+      else { current += ch; }
     }
-    cols.push(cur);
-    rows.push(cols);
   }
-  return rows;
+  result.push(current);
+  return result;
 }
 
 // ── INIT ──
 async function init() {
-  const hint = document.querySelector('.hint');
-  await fetchChecklist();
+  await fetchChecklist();  // Load checklist từ Sheet (hoặc fallback mặc định)
   try {
     const resp = await fetch(SHEETS_CSV);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const text = await resp.text();
-    const allRows = parseCSV(text);
-    if (allRows.length < 2) throw new Error('CSV rỗng: ' + allRows.length + ' dòng');
+    const lines = text.split('\n');
+    // Parse header to find column indexes (robust against column reordering)
+    const header = parseCSVLine(lines[0]);
+    const idx = {
+      ma: header.indexOf('Mã SAP'),
+      ten: header.indexOf('Tên cửa hàng'),
+      tt: header.indexOf('Tình Trạng'),
+      mien: header.indexOf('Miền'),
+      tinh: header.indexOf('Tỉnh/TP'),
+      qlkv: header.indexOf('QLKV'),
+      gdv: header.indexOf('GĐV')
+    };
+    const rows = lines.slice(1).map(r => {
+      const cols = parseCSVLine(r);
+      return {
+        ma: cols[idx.ma] || '',
+        ten: cols[idx.ten] || '',
+        tt: cols[idx.tt] || '',
+        mien: cols[idx.mien] || '',
+        tinh: cols[idx.tinh] || '',
+        qlkv: cols[idx.qlkv] || '',
+        gdv: cols[idx.gdv] || ''
+      };
+    }).filter(r => r.ma && r.tt === 'Đang hoạt động' && r.mien?.includes('Bắc'));
     
-    const rows = allRows.slice(1).map(cols => ({
-      ma: cols[0], ten: cols[1], tt: cols[2], mien: cols[4], tinh: cols[5], qlkv: cols[7], gdv: cols[8]
-    })).filter(r => r.ma && r.tt === 'Đang hoạt động' && r.mien?.includes('Bắc'));
-    
-    if (rows.length === 0) throw new Error('0 CH Miền Bắc active');
+    if (rows.length === 0) throw new Error('No data');
     
     cascadeData = parseStoreData(rows);
     const gdvCount = Object.keys(cascadeData).length;
+    const totalCH = rows.length;
     const gdvSel = document.getElementById('gdvSelect');
     for (const gdv of Object.keys(cascadeData).sort()) {
       gdvSel.innerHTML += `<option value="${gdv}">${gdv} (${Object.keys(cascadeData[gdv]).length} QLKV)</option>`;
     }
-    if (hint) {
-      hint.textContent = `✅ ${rows.length} CH · ${gdvCount} GĐV · Storelist`;
-      hint.style.color = '#16a34a';
-    }
+    // Update hint with live stats
+    const hintEl = document.querySelector('#formContainer .card:first-child .hint');
+    if (hintEl) { hintEl.textContent = `✅ Storelist: ${totalCH} CH · ${gdvCount} GĐV (live)`; hintEl.style.color = '#16a34a'; }
     buildChecklist();
   } catch(e) {
-    console.warn('Fetch thất bại:', e.message);
-    if (hint) {
-      hint.textContent = '⚠️ ' + e.message + ' — dùng dữ liệu mẫu';
-      hint.style.color = '#e67e22';
-    }
+    console.warn('Fetch thất bại, dùng data mẫu:', e.message);
     loadSampleData();
   }
 }
@@ -337,35 +320,26 @@ function buildChecklist() {
   evaluations = {};
   itemNotes = {};
   itemPhotos = {};
-  itemAreaIdx = {};
-  areaCounts = [];
   
-  const areaIcons = ['🏪','🛒','📦'];
-  
-  for (let a = 0; a < areas.length; a++) {
-    const area = areas[a];
-    areaCounts.push({ total: area.items.length, done: 0 });
+  for (const area of areas) {
+    let areaHtml = `<div class="area-group"><div class="area-title">📍 ${area.name}<span class="area-count">${area.items.length} mục</span></div>`;
     
-    let itemsHtml = '';
     for (const item of area.items) {
       totalItems++;
       const itemId = item.replace(/[^a-z0-9]/gi,'_');
       evaluations[itemId] = null;
       itemNotes[itemId] = '';
       itemPhotos[itemId] = [];
-      itemAreaIdx[itemId] = a;
       
-      itemsHtml += `
-        <div class="item-row" id="row_${itemId}" onclick="if(this.classList.contains('done')){this.classList.remove('done');var b=document.getElementById('done_${itemId}');if(b)b.style.display='inline-flex';updateProgress()}">
+      areaHtml += `
+        <div class="item-row" id="row_${itemId}">
           <div class="item-header">
             <span class="item-number">${totalItems}</span>
             <span class="item-name">${item}</span>
-            <span class="item-summary" id="sum_${itemId}" style="display:none"></span>
             <div class="toggle-group">
-              <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass');event.stopPropagation()">✅ Đạt</button>
-              <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail');event.stopPropagation()">❌ Ko đạt</button>
+              <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass')">✅ Đạt</button>
+              <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail')">❌ Ko đạt</button>
             </div>
-            <button class="btn-done-item" id="done_${itemId}" onclick="doneItem('${itemId}');event.stopPropagation()" style="display:none">✔ Hoàn tất</button>
           </div>
           <div class="pass-text" id="passText_${itemId}">✅ Đạt</div>
           <div class="issue-detail" id="issue_${itemId}">
@@ -373,7 +347,7 @@ function buildChecklist() {
             <textarea id="note_${itemId}" placeholder="Mô tả tình trạng..." oninput="itemNotes['${itemId}']=this.value;updateProgress()"></textarea>
             <label style="margin-top:6px">📸 Ảnh <span style="color:#dc2626">*</span> (tối đa 3)</label>
             <div class="inline-photos" id="photos_${itemId}">
-              <div class="inline-photo-box" onclick="triggerPhoto('${itemId}');event.stopPropagation()">
+              <div class="inline-photo-box" onclick="triggerPhoto('${itemId}')">
                 <div class="placeholder">📷<br>Thêm</div>
               </div>
             </div>
@@ -382,20 +356,7 @@ function buildChecklist() {
           </div>
         </div>`;
     }
-    
-    cl.innerHTML += `
-      <div class="area-card" id="acard_${a}">
-        <div class="area-card-header" onclick="toggleArea(${a})">
-          <span class="area-icon">${areaIcons[a] || '📍'}</span>
-          <span class="area-label">${area.name}</span>
-          <span class="area-badge" id="ab_${a}">0/${area.items.length}</span>
-          <span class="area-arrow">▼</span>
-        </div>
-        <div class="area-card-body">
-          ${itemsHtml}
-          <button class="btn-done-area" id="btndone_${a}" style="display:none" onclick="event.stopPropagation();doneArea(${a})">✅ Hoàn tất mục này</button>
-        </div>
-      </div>`;
+    cl.innerHTML += areaHtml + `</div>`;
   }
 }
 
@@ -461,7 +422,6 @@ function setEval(itemId, value) {
   const failBtn = document.getElementById('fail_' + itemId);
   const passText = document.getElementById('passText_' + itemId);
   const issue = document.getElementById('issue_' + itemId);
-  const doneBtn = document.getElementById('done_' + itemId);
   
   row.classList.remove('evaluated', 'issue');
   passBtn.classList.remove('active-pass');
@@ -479,26 +439,8 @@ function setEval(itemId, value) {
     row.classList.add('issue');
   }
   
-  // Show "Hoàn tất" button
-  if (doneBtn) doneBtn.style.display = 'inline-flex';
-  
   updateProgress();
   document.getElementById('validationError').style.display = 'none';
-}
-
-// ── DONE ITEM ──
-function doneItem(itemId) {
-  const row = document.getElementById('row_' + itemId);
-  const sum = document.getElementById('sum_' + itemId);
-  if (!row) return;
-  
-  const photos = itemPhotos[itemId] || [];
-  const result = evaluations[itemId] === 'pass' ? '✅ Đạt' : '❌ Ko đạt';
-  const photoInfo = photos.length > 0 ? ` · 📸${photos.length}` : '';
-  
-  if (sum) sum.textContent = result + photoInfo;
-  row.classList.add('done');
-  updateProgress();
 }
 
 // ── ITEM PHOTOS ──
@@ -592,56 +534,12 @@ function removeItemPhoto(itemId, idx) {
 // ── PROGRESS ──
 function updateProgress() {
   let done = 0;
-  for (let a = 0; a < areaCounts.length; a++) areaCounts[a].done = 0;
-  
   for (const key of Object.keys(evaluations)) {
-    if (evaluations[key]) {
-      done++;
-      const aIdx = itemAreaIdx[key];
-      if (aIdx !== undefined && areaCounts[aIdx]) areaCounts[aIdx].done++;
-    }
+    if (evaluations[key]) done++;
   }
   const pct = totalItems > 0 ? Math.round((done / totalItems) * 100) : 0;
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${done}/${totalItems} hạng mục đã đánh giá`;
-  
-  // Per-area badges + card styling
-  for (let a = 0; a < areaCounts.length; a++) {
-    const badge = document.getElementById('ab_' + a);
-    const card = document.getElementById('acard_' + a);
-    const btnDone = document.getElementById('btndone_' + a);
-    if (!badge) continue;
-    const ac = areaCounts[a];
-    badge.textContent = ac.done + '/' + ac.total;
-    if (ac.done === ac.total) { 
-      badge.style.background = '#dcfce7'; badge.style.color = '#16a34a';
-      if (card) card.classList.add('complete');
-      if (btnDone) btnDone.style.display = 'none'; // hide when fully done
-    } else if (ac.done > 0) { 
-      badge.style.background = '#fef9c3'; badge.style.color = '#ca8a04';
-      if (btnDone && card && card.classList.contains('open')) btnDone.style.display = 'block';
-    } else { 
-      badge.style.background = '#f1f5f9'; badge.style.color = '#64748b';
-      if (btnDone) btnDone.style.display = 'none';
-    }
-  }
-}
-
-// ── TOGGLE AREA ──
-function toggleArea(a) {
-  const card = document.getElementById('acard_' + a);
-  if (!card) return;
-  const wasOpen = card.classList.contains('open');
-  document.querySelectorAll('.area-card').forEach(c => c.classList.remove('open'));
-  if (!wasOpen) { card.classList.add('open'); updateProgress(); }
-  else { updateProgress(); }
-}
-
-function doneArea(a) {
-  const card = document.getElementById('acard_' + a);
-  if (card) card.classList.remove('open');
-  updateProgress();
-  showToast('✅ Đã hoàn tất ' + areas[a].name);
 }
 
 // ── SUBMIT ──
