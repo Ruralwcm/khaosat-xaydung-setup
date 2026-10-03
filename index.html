@@ -50,6 +50,14 @@ textarea{min-height:50px;resize:vertical}
 .btn-done-area:hover{transform:scale(1.01)}
 .btn-done-area:active{transform:scale(.98)}
 
+/* Done item button + collapsed state */
+.btn-done-item{min-width:32px;height:32px;border-radius:50%;background:#16a34a;color:#fff;border:none;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:4px}
+.item-row.done{background:#f0fdf4;border-left:3px solid #16a34a;padding:6px 10px}
+.item-row.done .item-header{opacity:.85}
+.item-row.done .toggle-group,.item-row.done .btn-done-item,.item-row.done .pass-text,.item-row.done .issue-detail{display:none !important}
+.item-row.done .item-name{font-size:11px}
+.item-row.done .item-name::after{content:' ✅';color:#16a34a;margin-left:4px}
+
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
 .item-row:hover{border-color:#cbd5e1}
@@ -356,6 +364,7 @@ function buildChecklist() {
               <button class="toggle-btn" id="pass_${itemId}" onclick="setEval('${itemId}','pass');event.stopPropagation()">✅ Đạt</button>
               <button class="toggle-btn" id="fail_${itemId}" onclick="setEval('${itemId}','fail');event.stopPropagation()">❌ Ko đạt</button>
             </div>
+            <button class="btn-done-item" id="done_${itemId}" onclick="doneItem('${itemId}');event.stopPropagation()" style="display:none">✔</button>
           </div>
           <div class="pass-text" id="passText_${itemId}">✅ Đạt</div>
           <div class="issue-detail" id="issue_${itemId}">
@@ -451,6 +460,7 @@ function setEval(itemId, value) {
   const failBtn = document.getElementById('fail_' + itemId);
   const passText = document.getElementById('passText_' + itemId);
   const issue = document.getElementById('issue_' + itemId);
+  const doneBtn = document.getElementById('done_' + itemId);
   
   row.classList.remove('evaluated', 'issue');
   passBtn.classList.remove('active-pass');
@@ -468,8 +478,18 @@ function setEval(itemId, value) {
     row.classList.add('issue');
   }
   
+  // Show "Hoàn tất" button
+  if (doneBtn) doneBtn.style.display = 'inline-flex';
+  
   updateProgress();
   document.getElementById('validationError').style.display = 'none';
+}
+
+// ── DONE ITEM ──
+function doneItem(itemId) {
+  const row = document.getElementById('row_' + itemId);
+  if (row) row.classList.add('done');
+  updateProgress();
 }
 
 // ── ITEM PHOTOS ──
