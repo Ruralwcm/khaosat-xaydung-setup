@@ -568,15 +568,46 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${done}/${totalItems} hạng mục đã đánh giá`;
   
-  // Per-area progress badges
+  // Per-area progress: badge + summary card + ✅❌⬜ stats
   for (let a = 0; a < areaCounts.length; a++) {
-    const el = document.getElementById('aprog_' + a);
-    if (!el) continue;
     const ac = areaCounts[a];
-    el.textContent = ac.done + '/' + ac.total;
-    if (ac.done === ac.total) { el.style.background = '#dcfce7'; el.style.color = '#16a34a'; }
-    else if (ac.done > 0) { el.style.background = '#fef9c3'; el.style.color = '#ca8a04'; }
-    else { el.style.background = '#f1f5f9'; el.style.color = '#64748b'; }
+    const apct = ac.total > 0 ? Math.round((ac.done / ac.total) * 100) : 0;
+    
+    // Section badge (aprog)
+    const el = document.getElementById('aprog_' + a);
+    if (el) {
+      el.textContent = ac.done + '/' + ac.total;
+      if (ac.done === ac.total) { el.style.background = '#dcfce7'; el.style.color = '#16a34a'; }
+      else if (ac.done > 0) { el.style.background = '#fef9c3'; el.style.color = '#ca8a04'; }
+      else { el.style.background = '#f1f5f9'; el.style.color = '#64748b'; }
+    }
+    
+    // Count pass/fail/unchecked per area
+    let passA = 0, failA = 0;
+    for (const k of Object.keys(evaluations)) {
+      if (itemAreaIdx[k] !== a) continue;
+      if (evaluations[k] === 'pass') passA++;
+      else if (evaluations[k] === 'fail') failA++;
+    }
+    const uncheckA = ac.total - passA - failA;
+    
+    // Top summary card (ascard)
+    const sc = document.getElementById('ascard_' + a);
+    if (sc) {
+      if (ac.done === ac.total) sc.classList.add('done'); else sc.classList.remove('done');
+      const cntEl = sc.querySelector('.as-count');
+      const pctEl = sc.querySelector('.as-pct');
+      const fillEl = document.getElementById('asfill_' + a);
+      if (cntEl) cntEl.textContent = ac.done + '/' + ac.total;
+      if (pctEl) pctEl.textContent = apct + '%';
+      if (fillEl) fillEl.style.width = apct + '%';
+    }
+    
+    // Section stats (astats)
+    const stats = document.getElementById('astats_' + a);
+    if (stats) {
+      stats.innerHTML = '<span style="color:#16a34a">✅' + passA + '</span><span style="color:#dc2626">❌' + failA + '</span><span style="color:#94a3b8">⬜' + uncheckA + '</span>';
+    }
   }
 }
 
