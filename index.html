@@ -359,6 +359,7 @@ function buildChecklist() {
             </div>
             <input type="file" id="fileInput_${itemId}" accept="image/*" multiple style="display:none" onchange="handleItemPhotos(event,'${itemId}')">
             <div class="photo-required">⚠️ Bắt buộc ≥1 ảnh khi Không đạt</div>
+            <button onclick="confirmFail('${itemId}')" style="margin-top:8px;padding:6px 14px;background:#dc2626;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;width:100%">🔒 Xác nhận & Đóng</button>
           </div>
         </div>`;
     }
