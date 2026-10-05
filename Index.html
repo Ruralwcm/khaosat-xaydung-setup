@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Khảo sát vấn đề Setup - Xây dựng</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;padding-bottom:20px}
+.header{background:linear-gradient(135deg,#1a3a5c,#1e5799);color:#fff;padding:14px 20px;text-align:center;position:sticky;top:0;z-index:100}
+.header h1{font-size:17px;font-weight:800}
+.header p{font-size:11px;opacity:.85;margin-top:2px}
+.container{max-width:650px;margin:0 auto;padding:10px 12px}
+
+/* Store info card */
+.card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card h3{font-size:13px;color:#1a3a5c;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+label{display:block;font-size:11px;font-weight:600;color:#475569;margin-bottom:3px;margin-top:6px}
+select,input[type=text],textarea{width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;transition:border-color .2s;font-family:inherit}
+select:focus,input:focus,textarea:focus{outline:none;border-color:#1e5799;box-shadow:0 0 0 3px rgba(30,87,153,.08)}
+select:disabled{background:#f1f5f9;color:#94a3b8}
+textarea{min-height:50px;resize:vertical}
+.store-info{background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px 10px;margin-top:6px;font-size:12px;display:none}
+.store-info span{font-weight:600}
+.hint{font-size:10px;color:#94a3b8;margin-top:3px}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{margin-bottom:10px}
+.progress-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.progress-label{font-size:11px;font-weight:700;color:#64748b}
+.progress-count{font-size:13px;font-weight:800;color:#1a3a5c}
+.progress-bar{background:#e2e8f0;border-radius:6px;height:8px;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,#1e5799,#38a169);height:100%;border-radius:6px;transition:width .3s}
+
+/* ── AREA NAV DOTS ── */
+.area-dots{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.area-dot{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;background:#e2e8f0;color:#64748b;transition:all .2s}
+.area-dot.active{background:#1e5799;color:#fff}
+.area-dot.done{background:#dcfce7;color:#16a34a}
+
+/* ── WIZARD CARD ── */
+.wizard-card{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.06);overflow:hidden;margin-bottom:10px;transition:all .25s}
+.wizard-header{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.wizard-area-badge{font-size:10px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:6px;letter-spacing:.3px}
+.wizard-area-badge.before{background:#dbeafe;color:#1d4ed8}
+.wizard-area-badge.inside{background:#fef3c7;color:#92400e}
+.wizard-area-badge.warehouse{background:#fce7f3;color:#9d174d}
+.wizard-step{font-size:11px;font-weight:600;color:#64748b;margin-left:auto;white-space:nowrap}
+.wizard-body{padding:20px 16px;text-align:center}
+.wizard-item-name{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:20px;line-height:1.4}
+.wizard-item-number{display:inline-block;background:#e2e8f0;color:#475569;width:32px;height:32px;border-radius:50%;line-height:32px;font-size:13px;font-weight:800;margin-bottom:12px}
+
+/* ── BUTTONS ── */
+.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-pass,.btn-fail{padding:12px 32px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;min-width:120px}
+.btn-pass{background:#16a34a;color:#fff}
+.btn-pass:hover{background:#15803d;transform:translateY(-1px);box-shadow:0 4px 12px rgba(22,163,74,.3)}
+.btn-pass:active{transform:scale(.97)}
+.btn-fail{background:#dc2626;color:#fff}
+.btn-fail:hover{background:#b91c1c;transform:translateY(-1px);box-shadow:0 4px 12px rgba(220,38,38,.3)}
+.btn-fail:active{transform:scale(.97)}
+.btn-pass.selected,.btn-fail.selected{opacity:.95;box-shadow:0 0 0 3px rgba(0,0,0,.15);transform:scale(1.03)}
+.btn-pass:not(.selected){opacity:.45}
+.btn-fail:not(.selected){opacity:.45}
+.btn-pass.selected{opacity:1}
+.btn-fail.selected{opacity:1}
+
+/* Evaluation feedback */
+.eval-feedback{text-align:center;margin-top:8px}
+.eval-pass{font-size:13px;font-weight:700;color:#16a34a;background:#f0fdf4;display:inline-block;padding:4px 16px;border-radius:6px}
+.eval-fail{font-size:13px;font-weight:700;color:#dc2626;background:#fef2f2;display:inline-block;padding:4px 16px;border-radius:6px}
+
+/* Issue detail for fail */
+.issue-detail{margin-top:14px;padding:12px;background:#fff5f5;border-radius:8px;border:1px dashed #fca5a5;text-align:left}
+.issue-detail label{font-size:11px;font-weight:600;color:#b91c1c;margin-top:4px;display:block}
+.issue-detail textarea{font-size:12px;min-height:44px;margin-top:4px;background:#fff;border:1px solid #fca5a5}
+.inline-photos{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.inline-photo-box{width:58px;height:58px;border:2px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0;transition:border-color .15s}
+.inline-photo-box:hover{border-color:#dc2626}
+.inline-photo-box img{width:100%;height:100%;object-fit:cover}
+.inline-photo-box .remove{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px}
+.inline-photo-box .placeholder{font-size:9px;color:#94a3b8;text-align:center}
+.photo-hint{font-size:10px;color:#dc2626;margin-top:4px}
+
+/* Confirm fail button */
+.btn-confirm-fail{width:100%;padding:10px;margin-top:10px;background:#dc2626;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-confirm-fail:hover{background:#b91c1c}
+.btn-confirm-fail:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── NAVIGATION ── */
+.nav-row{display:flex;gap:8px;margin-top:12px}
+.btn-back,.btn-next{flex:1;padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-back{background:#f1f5f9;color:#64748b}
+.btn-back:hover{background:#e2e8f0}
+.btn-next{background:#1e5799;color:#fff}
+.btn-next:hover{background:#1b4f8a;transform:translateY(-1px);box-shadow:0 4px 12px rgba(30,87,153,.3)}
+.btn-next:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-submit-full{width:100%;padding:14px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;margin-top:10px}
+.btn-submit-full:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(22,163,74,.4)}
+.btn-submit-full:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ── COMPLETED ITEMS LIST ── */
+.completed-list{margin-top:8px;display:none}
+.completed-list.show{display:block}
+.completed-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:11px}
+.completed-item .ci-num{color:#94a3b8;font-weight:600;min-width:28px}
+.completed-item .ci-name{flex:1;color:#475569}
+.completed-item .ci-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px}
+.completed-item .ci-badge.pass{background:#dcfce7;color:#16a34a}
+.completed-item .ci-badge.fail{background:#fef2f2;color:#dc2626}
+
+/* Validation */
+.validation-error{color:#dc2626;font-size:11px;margin-bottom:8px;display:none;padding:10px;background:#fef2f2;border-radius:8px;text-align:center}
+
+/* Loading / Success */
+.loading{display:none;text-align:center;padding:20px}
+.spinner{width:36px;height:36px;border:4px solid #e2e8f0;border-top:4px solid #1e5799;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success{display:none;text-align:center;padding:20px;color:#16a34a;font-weight:700;font-size:17px}
+.success .count{font-size:13px;font-weight:400;color:#64748b;margin-top:6px}
+.version-badge{font-size:10px;opacity:.5}
+
+/* Review toggle */
+.review-toggle{padding:8px 16px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;transition:all .15s;text-align:center}
+.review-toggle:hover{background:#f8fafc;color:#1e293b}
+
+/* Note card */
+.note-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.note-card h3{font-size:13px;color:#1a3a5c;margin-bottom:6px}
+.note-card textarea{min-height:40px}
+
+@media (max-width:480px){
+  .btn-pass,.btn-fail{padding:12px 24px;font-size:13px;min-width:100px}
+  .wizard-item-name{font-size:14px}
+  .header h1{font-size:15px}
+  .wizard-body{padding:16px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏪 Khảo sát vấn đề Setup - Xây dựng</h1>
+  <p>WinRural · 34 hạng mục · 3 khu vực · Làm tuần tự từng mục <span class="version-badge">v5.4</span></p>
+</div>
+
+<div class="container" id="formContainer">
+  <!-- ① Chọn GĐV/QLKV/CH -->
+  <div class="card">
+    <h3>📋 Thông tin Cửa hàng</h3>
+    <label>GĐV (Giám đốc Vùng)</label>
+    <select id="gdvSelect"><option value="">-- Đang tải dữ liệu... --</option></select>
+
+    <label>QLKV (Quản lý Khu vực)</label>
+    <select id="qlkvSelect" disabled><option value="">-- Chọn QLKV --</option></select>
+
+    <label>Cửa hàng</label>
+    <select id="storeSelect" disabled><option value="">-- Chọn Cửa hàng --</option></select>
+    <div class="store-info" id="storeInfo">
+      Mã CH: <span id="siCode">-</span> · Tỉnh: <span id="siProvince">-</span> · Tên: <span id="siName">-</span>
+    </div>
+    <div class="hint" id="dataHint">Đang tải dữ liệu từ Storelist...</div>
+  </div>
+
+  <!-- ② Khu vực khảo sát (hiện sau khi chọn CH) -->
+  <div id="surveySection" style="display:none">
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-label">📊 Tiến độ khảo sát</span>
+        <span class="progress-count" id="progressCount">0/34</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+
+    <!-- Area dots -->
+    <div class="area-dots" id="areaDots"></div>
+
+    <!-- Wizard -->
+    <div class="wizard-card" id="wizardCard">
+      <div class="wizard-header">
+        <span class="wizard-area-badge before" id="wizAreaBadge">TRƯỚC CH</span>
+        <span class="wizard-step" id="wizStep">Mục 1/34</span>
+      </div>
+      <div class="wizard-body">
+        <div class="wizard-item-number" id="wizItemNum">1</div>
+        <div class="wizard-item-name" id="wizItemName">Bảng hiệu WM+</div>
+        <div class="btn-row">
+          <button class="btn-pass" id="btnPass" onclick="evalCurrent('pass')">✅ Đạt</button>
+          <button class="btn-fail" id="btnFail" onclick="evalCurrent('fail')">❌ Ko đạt</button>
+        </div>
+        <div class="eval-feedback" id="evalFeedback"></div>
+        <div class="issue-detail" id="issueDetail" style="display:none">
+          <label>📝 Diễn giải tình trạng <span style="color:#dc2626">*</span></label>
+          <textarea id="issueNote" placeholder="Mô tả tình trạng hư hỏng/xuống cấp..." oninput="checkFailReady()"></textarea>
+          <label>📸 Ảnh minh họa (tối đa 3, ít nhất 1)</label>
+          <div class="inline-photos" id="issuePhotos">
+            <div class="inline-photo-box" onclick="document.getElementById('issueFileInput').click()">
+              <span class="placeholder">+ Ảnh</span>
+            </div>
+          </div>
+          <input type="file" id="issueFileInput" accept="image/*" capture="environment" style="display:none" onchange="addIssuePhoto(this)">
+          <div class="photo-hint">⚡ Yêu cầu ít nhất 1 ảnh khi Không đạt</div>
+          <button class="btn-confirm-fail" id="btnConfirmFail" disabled onclick="confirmFailEval()">🔒 Xác nhận &amp; Tiếp tục</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-row" id="navRow">
+      <button class="btn-back" id="btnBack" onclick="goPrev()" disabled>← Quay lại</button>
+      <button class="btn-next" id="btnNext" onclick="goNext()" disabled>Tiếp tục →</button>
+    </div>
+
+    <!-- Review completed items -->
+    <button class="review-toggle" id="reviewToggle" onclick="toggleReview()">📋 Xem danh sách đã khảo sát ▼</button>
+    <div class="completed-list card" id="completedList"></div>
+
+    <!-- Note & Submit -->
+    <div class="card" id="noteCard" style="display:none">
+      <h3>📝 Ghi chú chung</h3>
+      <textarea id="generalNote" placeholder="Ghi chú chung cho đợt khảo sát (nếu có)..."></textarea>
+    </div>
+
+    <button class="btn-submit-full" id="btnSubmit" onclick="submitForm()" style="display:none">📤 Gửi kết quả khảo sát</button>
+    <div class="validation-error" id="validationError"></div>
+    <div class="loading" id="loading"><div class="spinner"></div><p style="margin-top:6px;color:#64748b;font-size:13px">Đang gửi về Sheets...</p></div>
+    <div class="success" id="success">
+      ✅ Đã gửi khảo sát thành công!
+      <div class="count" id="successDetail"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+var cascadeData = {};
+var checklistData = [];
+var evaluations = {};     // itemId → 'pass'|'fail'
+var itemNotes = {};       // itemId → string
+var itemPhotos = {};      // itemId → [{dataUrl}]
+var areaInfo = [];        // [{ name, count, items:[] }]
+var allItemIds = [];      // flat ordered list
+var currentIdx = 0;       // current wizard position (0-based)
+var storeSelected = false;
+var currentFailPhotos = []; // photos for current fail item (not yet confirmed)
+
+// ── INIT ──
+function init() {
+  document.getElementById('dataHint').textContent = 'Đang tải dữ liệu từ Storelist...';
+
+  google.script.run
+    .withSuccessHandler(function(rows) {
+      if (!rows || rows.length === 0) {
+        document.getElementById('dataHint').textContent = '⚠️ Không có dữ liệu CH Miền Bắc.';
+        document.getElementById('gdvSelect').innerHTML = '<option value="">-- Không có dữ liệu --</option>';
+        loadChecklist();
+        return;
+      }
+      cascadeData = {};
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var gdv = r.gdv || 'Chưa phân công';
+        var qlkv = r.qlkv || 'Chưa phân công';
+        if (!cascadeData[gdv]) cascadeData[gdv] = {};
+        if (!cascadeData[gdv][qlkv]) cascadeData[gdv][qlkv] = [];
+        cascadeData[gdv][qlkv].push({ sid: r.ma, name: r.ten, tinh: r.tinh });
+      }
+
+      var gdvSel = document.getElementById('gdvSelect');
+      gdvSel.innerHTML = '<option value="">-- Chọn GĐV --</option>';
+      var gdvKeys = Object.keys(cascadeData).sort();
+      for (var j = 0; j < gdvKeys.length; j++) {
+        var g = gdvKeys[j];
+        gdvSel.innerHTML += '<option value="' + g + '">' + g + ' (' + Object.keys(cascadeData[g]).length + ' QLKV)</option>';
+      }
+      document.getElementById('dataHint').textContent = '✅ Dữ liệu từ Storelist (' + rows.length + ' CH Miền Bắc)';
+      document.getElementById('dataHint').style.color = '#16a34a';
+      loadChecklist();
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById('dataHint').textContent = '⚠️ Lỗi tải dữ liệu: ' + err.message;
+      loadChecklist();
+    })
+    .getStoreData();
+}
+
+function loadChecklist() {
+  google.script.run
+    .withSuccessHandler(function(areas) {
+      if (!areas || areas.length === 0) {
+        alert('⚠️ Không có checklist. Chạy reloadChecklist() trong Apps Script trước.');
+        return;
+      }
+      checklistData = areas;
+      buildWizard();
+    })
+    .withFailureHandler(function(err) {
+      alert('⚠️ Lỗi tải checklist: ' + err.message);
+    })
+    .getChecklist();
+}
+
+function buildWizard() {
+  evaluations = {};
+  itemNotes = {};
+  itemPhotos = {};
+  areaInfo = [];
+  allItemIds = [];
+  currentIdx = 0;
+
+  var areaIcons = ['🏪', '🛒', '📦'];
+  var areaBadgeClasses = ['before', 'inside', 'warehouse'];
+
+  for (var a = 0; a < checklistData.length; a++) {
+    var area = checklistData[a];
+    var areaItems = [];
+    for (var i = 0; i < area.items.length; i++) {
+      var itemId = 'item_' + a + '_' + i;
+      allItemIds.push(itemId);
+      evaluations[itemId] = null;
+      itemNotes[itemId] = '';
+      itemPhotos[itemId] = [];
+      areaItems.push(itemId);
+    }
+    areaInfo.push({ name: area.name, count: area.items.length, items: areaItems, icon: areaIcons[a] || '📍', badgeClass: areaBadgeClasses[a] || 'before' });
+  }
+
+  // Build area dots
+  var dotsHtml = '';
+  for (var a = 0; a < areaInfo.length; a++) {
+    dotsHtml += '<span class="area-dot" id="adot_' + a + '">' + areaInfo[a].icon + ' ' + areaInfo[a].name + '</span>';
+  }
+  document.getElementById('areaDots').innerHTML = dotsHtml;
+
+  currentIdx = 0;
+  renderWizardItem();
+  document.getElementById('surveySection').style.display = 'block';
+}
+
+// ── RENDER CURRENT ITEM ──
+function renderWizardItem() {
+  if (currentIdx >= allItemIds.length) {
+    showCompleted();
+    return;
+  }
+
+  var itemId = allItemIds[currentIdx];
+  var itemName = getItemName(currentIdx);
+  var areaIdx = getAreaIndex(currentIdx);
+  var area = areaInfo[areaIdx];
+  var totalNum = currentIdx + 1;
+
+  // Wizard header
+  document.getElementById('wizAreaBadge').textContent = area.icon + ' ' + area.name;
+  document.getElementById('wizAreaBadge').className = 'wizard-area-badge ' + area.badgeClass;
+  document.getElementById('wizStep').textContent = 'Mục ' + totalNum + '/' + allItemIds.length;
+  document.getElementById('wizItemNum').textContent = totalNum;
+  document.getElementById('wizItemName').textContent = itemName;
+
+  // Reset buttons
+  var passBtn = document.getElementById('btnPass');
+  var failBtn = document.getElementById('btnFail');
+  passBtn.classList.remove('selected');
+  failBtn.classList.remove('selected');
+  passBtn.style.opacity = '1';
+  failBtn.style.opacity = '1';
+
+  // Reset feedback
+  document.getElementById('evalFeedback').innerHTML = '';
+  document.getElementById('issueDetail').style.display = 'none';
+  document.getElementById('issueNote').value = '';
+  document.getElementById('issuePhotos').innerHTML = '<div class="inline-photo-box" onclick="document.getElementById(\'issueFileInput\').click()"><span class="placeholder">+ Ảnh</span></div>';
+  document.getElementById('btnConfirmFail').disabled = true;
+  currentFailPhotos = [];
+
+  // If already evaluated (going back), restore
+  if (evaluations[itemId] === 'pass') {
+    passBtn.classList.add('selected');
+    failBtn.style.opacity = '0.45';
+    document.getElementById('evalFeedback').innerHTML = '<span class="eval-pass">✅ Đạt</span>';
+    document.getElementById('btnNext').disabled = false;
+  } else if (evaluations[itemId] === 'fail') {
+    failBtn.classList.add('selected');
+    passBtn.style.opacity = '0.45';
+    document.getElementById('evalFeedback').innerHTML = '<span class="eval-fail">❌ Không đạt</span>';
+    document.getElementById('issueDetail').style.display = 'block';
+    document.getElementById('issueNote').value = itemNotes[itemId] || '';
+    renderIssuePhotos(itemId);
+    document.getElementById('btnConfirmFail').style.display = 'none'; // already confirmed
+    document.getElementById('btnNext').disabled = false;
+  } else {
+    document.getElementById('btnNext').disabled = true;
+  }
+
+  // Nav buttons
+  document.getElementById('btnBack').disabled = (currentIdx === 0);
+
+  // Update area dots
+  updateAreaDots();
+  updateProgress();
+  document.getElementById('reviewToggle').style.display = (currentIdx > 0) ? 'block' : 'none';
+  document.getElementById('completedList').classList.remove('show');
+  document.getElementById('reviewToggle').textContent = '📋 Xem danh sách đã khảo sát ▼';
+}
+
+function evalCurrent(value) {
+  var itemId = allItemIds[currentIdx];
+  var passBtn = document.getElementById('btnPass');
+  var failBtn = document.getElementById('btnFail');
+
+  if (value === 'pass') {
+    passBtn.classList.add('selected');
+    failBtn.classList.remove('selected');
+    passBtn.style.opacity = '1';
+    failBtn.style.opacity = '0.45';
+    document.getElementById('evalFeedback').innerHTML = '<span class="eval-pass">✅ Đạt</span>';
+    document.getElementById('issueDetail').style.display = 'none';
+    document.getElementById('issueNote').value = '';
+    currentFailPhotos = [];
+    // Save evaluation immediately for pass
+    evaluations[itemId] = 'pass';
+    itemNotes[itemId] = '';
+    itemPhotos[itemId] = [];
+    document.getElementById('btnNext').disabled = false;
+  } else {
+    failBtn.classList.add('selected');
+    passBtn.classList.remove('selected');
+    failBtn.style.opacity = '1';
+    passBtn.style.opacity = '0.45';
+    document.getElementById('evalFeedback').innerHTML = '<span class="eval-fail">❌ Không đạt</span>';
+    document.getElementById('issueDetail').style.display = 'block';
+    document.getElementById('btnConfirmFail').style.display = 'block';
+    document.getElementById('btnConfirmFail').disabled = true;
+    document.getElementById('btnNext').disabled = true;
+    document.getElementById('issueNote').value = itemNotes[itemId] || '';
+    currentFailPhotos = itemPhotos[itemId] ? itemPhotos[itemId].slice() : [];
+    renderIssuePhotos(itemId);
+    checkFailReady();
+  }
+
+  updateProgress();
+}
+
+function checkFailReady() {
+  var note = document.getElementById('issueNote').value.trim();
+  var hasPhotos = currentFailPhotos.length > 0;
+  document.getElementById('btnConfirmFail').disabled = !(note && hasPhotos);
+}
+
+function addIssuePhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    if (currentFailPhotos.length >= 3) return;
+    currentFailPhotos.push({ dataUrl: e.target.result });
+    renderIssuePhotos(allItemIds[currentIdx]);
+    checkFailReady();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function removeIssuePhoto(idx) {
+  currentFailPhotos.splice(idx, 1);
+  renderIssuePhotos(allItemIds[currentIdx]);
+  checkFailReady();
+}
+
+function renderIssuePhotos(itemId) {
+  var container = document.getElementById('issuePhotos');
+  var photos = (currentIdx < allItemIds.length && allItemIds[currentIdx] === itemId) ? currentFailPhotos : (itemPhotos[itemId] || []);
+  var html = '';
+  for (var i = 0; i < photos.length; i++) {
+    html += '<div class="inline-photo-box"><img src="' + photos[i].dataUrl + '"><span class="remove" onclick="removeIssuePhoto(' + i + ')">✕</span></div>';
+  }
+  if (photos.length < 3) {
+    html += '<div class="inline-photo-box" onclick="document.getElementById(\'issueFileInput\').click()"><span class="placeholder">+ Ảnh</span></div>';
+  }
+  container.innerHTML = html;
+}
+
+function confirmFailEval() {
+  var itemId = allItemIds[currentIdx];
+  var note = document.getElementById('issueNote').value.trim();
+  if (!note || currentFailPhotos.length === 0) return;
+
+  evaluations[itemId] = 'fail';
+  itemNotes[itemId] = note;
+  itemPhotos[itemId] = currentFailPhotos.slice();
+
+  document.getElementById('btnConfirmFail').style.display = 'none';
+  document.getElementById('btnNext').disabled = false;
+  updateProgress();
+  updateAreaDots();
+}
+
+function goNext() {
+  if (currentIdx < allItemIds.length - 1) {
+    currentIdx++;
+    renderWizardItem();
+  } else if (currentIdx === allItemIds.length - 1) {
+    // All done
+    currentIdx++;
+    showCompleted();
+  }
+}
+
+function goPrev() {
+  if (currentIdx > 0) {
+    currentIdx--;
+    renderWizardItem();
+  }
+}
+
+function showCompleted() {
+  document.getElementById('wizardCard').style.display = 'none';
+  document.getElementById('navRow').style.display = 'none';
+  document.getElementById('reviewToggle').style.display = 'block';
+  document.getElementById('reviewToggle').textContent = '📋 Xem danh sách đã khảo sát ▼';
+  document.getElementById('noteCard').style.display = 'block';
+  document.getElementById('btnSubmit').style.display = 'block';
+  renderCompletedList();
+  document.getElementById('completedList').classList.add('show');
+  updateProgress();
+  updateAreaDots();
+}
+
+function toggleReview() {
+  var list = document.getElementById('completedList');
+  var btn = document.getElementById('reviewToggle');
+  if (list.classList.contains('show')) {
+    list.classList.remove('show');
+    btn.textContent = '📋 Xem danh sách đã khảo sát ▼';
+  } else {
+    renderCompletedList();
+    list.classList.add('show');
+    btn.textContent = '📋 Ẩn danh sách ▲';
+  }
+}
+
+function renderCompletedList() {
+  var html = '';
+  for (var i = 0; i < allItemIds.length; i++) {
+    var itemId = allItemIds[i];
+    var ev = evaluations[itemId];
+    var num = i + 1;
+    var name = getItemName(i);
+    var badge = '';
+    if (ev === 'pass') badge = '<span class="ci-badge pass">✅ Đạt</span>';
+    else if (ev === 'fail') badge = '<span class="ci-badge fail">❌ Ko đạt</span>';
+    else badge = '<span style="color:#94a3b8;font-size:10px">⬜ Chưa làm</span>';
+    html += '<div class="completed-item"><span class="ci-num">' + num + '.</span><span class="ci-name">' + name + '</span>' + badge + '</div>';
+  }
+  document.getElementById('completedList').innerHTML = html;
+}
+
+// ── HELPERS ──
+function getItemName(flatIdx) {
+  var cnt = 0;
+  for (var a = 0; a < checklistData.length; a++) {
+    if (flatIdx < cnt + checklistData[a].items.length) {
+      return checklistData[a].items[flatIdx - cnt];
+    }
+    cnt += checklistData[a].items.length;
+  }
+  return '';
+}
+
+function getAreaIndex(flatIdx) {
+  var cnt = 0;
+  for (var a = 0; a < areaInfo.length; a++) {
+    if (flatIdx < cnt + areaInfo[a].count) return a;
+    cnt += areaInfo[a].count;
+  }
+  return 0;
+}
+
+function updateAreaDots() {
+  for (var a = 0; a < areaInfo.length; a++) {
+    var dot = document.getElementById('adot_' + a);
+    if (!dot) continue;
+    dot.classList.remove('active', 'done');
+    // Check if all items in this area are done
+    var allDone = true;
+    var anyDone = false;
+    for (var j = 0; j < areaInfo[a].items.length; j++) {
+      if (!evaluations[areaInfo[a].items[j]]) allDone = false;
+      else anyDone = true;
+    }
+    if (allDone) dot.classList.add('done');
+    // Check if current item is in this area
+    if (currentIdx < allItemIds.length) {
+      var curArea = getAreaIndex(currentIdx);
+      if (curArea === a) dot.classList.add('active');
+    }
+  }
+}
+
+function updateProgress() {
+  var totalItems = allItemIds.length;
+  var totalDone = 0;
+  for (var i = 0; i < allItemIds.length; i++) {
+    if (evaluations[allItemIds[i]]) totalDone++;
+  }
+  var pct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = totalDone + '/' + totalItems;
+}
+
+// ── CASCADE ──
+document.getElementById('gdvSelect').addEventListener('change', function() {
+  var gdv = this.value;
+  var qSel = document.getElementById('qlkvSelect');
+  var sSel = document.getElementById('storeSelect');
+  qSel.innerHTML = '<option value="">-- Chọn QLKV --</option>';
+  sSel.innerHTML = '<option value="">-- Chọn Cửa hàng --</option>';
+  sSel.disabled = true;
+  document.getElementById('storeInfo').style.display = 'none';
+
+  if (!gdv || !cascadeData[gdv]) { qSel.disabled = true; return; }
+  qSel.disabled = false;
+  var qlkvKeys = Object.keys(cascadeData[gdv]).sort();
+  for (var i = 0; i < qlkvKeys.length; i++) {
+    var q = qlkvKeys[i];
+    qSel.innerHTML += '<option value="' + q + '">' + q + ' (' + cascadeData[gdv][q].length + ' CH)</option>';
+  }
+});
+
+document.getElementById('qlkvSelect').addEventListener('change', function() {
+  var gdv = document.getElementById('gdvSelect').value;
+  var qlkv = this.value;
+  var sSel = document.getElementById('storeSelect');
+  sSel.innerHTML = '<option value="">-- Chọn Cửa hàng --</option>';
+  document.getElementById('storeInfo').style.display = 'none';
+
+  if (!gdv || !qlkv || !cascadeData[gdv] || !cascadeData[gdv][qlkv]) { sSel.disabled = true; return; }
+  sSel.disabled = false;
+  var stores = cascadeData[gdv][qlkv].sort(function(a,b) { return a.sid.localeCompare(b.sid); });
+  for (var i = 0; i < stores.length; i++) {
+    var s = stores[i];
+    sSel.innerHTML += '<option value="' + s.sid + '" data-name="' + s.name + '" data-tinh="' + s.tinh + '">' + s.sid + ' - ' + s.name + '</option>';
+  }
+});
+
+document.getElementById('storeSelect').addEventListener('change', function() {
+  var opt = this.selectedOptions[0];
+  var info = document.getElementById('storeInfo');
+  if (opt && opt.dataset.name) {
+    document.getElementById('siCode').textContent = opt.value;
+    document.getElementById('siProvince').textContent = opt.dataset.tinh;
+    document.getElementById('siName').textContent = opt.dataset.name;
+    info.style.display = 'block';
+    storeSelected = true;
+  } else {
+    info.style.display = 'none';
+    storeSelected = false;
+  }
+});
+
+// ── SUBMIT ──
+function submitForm() {
+  var gdv = document.getElementById('gdvSelect').value;
+  var qlkv = document.getElementById('qlkvSelect').value;
+  var store = document.getElementById('storeSelect').value;
+
+  if (!gdv || !qlkv || !store) {
+    showError('⚠️ Vui lòng chọn đầy đủ GĐV, QLKV và Cửa hàng!');
+    return;
+  }
+
+  var unevaluated = allItemIds.filter(function(k) { return !evaluations[k]; });
+  if (unevaluated.length > 0) {
+    showError('⚠️ Còn ' + unevaluated.length + ' hạng mục chưa đánh giá! Vui lòng hoàn thành tất cả các mục.');
+    return;
+  }
+
+  var failNoNote = allItemIds.filter(function(k) {
+    return evaluations[k] === 'fail' && !itemNotes[k]?.trim();
+  });
+  if (failNoNote.length > 0) {
+    showError('⚠️ ' + failNoNote.length + ' hạng mục "Không đạt" chưa có diễn giải!');
+    return;
+  }
+
+  var generalNote = document.getElementById('generalNote').value;
+  var storeName = document.getElementById('storeSelect').selectedOptions[0]?.dataset?.name || '';
+  var tinh = document.getElementById('storeSelect').selectedOptions[0]?.dataset?.tinh || '';
+
+  // Build items
+  var items = [];
+  for (var a = 0; a < areaInfo.length; a++) {
+    for (var i = 0; i < areaInfo[a].items.length; i++) {
+      var itemId = areaInfo[a].items[i];
+      items.push({
+        area: areaInfo[a].name,
+        item: getItemName(allItemIds.indexOf(itemId)),
+        result: evaluations[itemId] === 'pass' ? 'Đạt' : 'Không đạt',
+        note: evaluations[itemId] === 'pass' ? 'Đạt' : (itemNotes[itemId] || ''),
+        photos: itemPhotos[itemId] || []
+      });
+    }
+  }
+
+  var payload = {
+    store: store, storeName: storeName, tinh: tinh,
+    gdv: gdv, qlkv: qlkv,
+    items: items,
+    generalNote: generalNote,
+    totalItems: allItemIds.length,
+    passCount: items.filter(function(it) { return it.result === 'Đạt'; }).length,
+    failCount: items.filter(function(it) { return it.result === 'Không đạt'; }).length
+  };
+
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('validationError').style.display = 'none';
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+      document.getElementById('successDetail').textContent =
+        'Đã lưu ' + result.rowsSaved + ' dòng vào Sheet CSVC_Tracking · ' + payload.store + ' - ' + payload.storeName;
+      document.getElementById('noteCard').style.display = 'none';
+      document.getElementById('btnSubmit').style.display = 'none';
+      document.getElementById('completedList').style.display = 'none';
+      document.getElementById('reviewToggle').style.display = 'none';
+    })
+    .withFailureHandler(function(err) {
+      alert('Lỗi gửi dữ liệu: ' + err.message);
+      document.getElementById('btnSubmit').disabled = false;
+      document.getElementById('loading').style.display = 'none';
+    })
+    .submitSurvey(payload);
+}
+
+function showError(msg) {
+  var el = document.getElementById('validationError');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
