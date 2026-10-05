@@ -450,7 +450,7 @@ function setEval(itemId, value) {
 }
 
 function confirmFail(itemId) {
-  var note = itemNotes[itemId]?.trim();
+  var note = (itemNotes[itemId] || '').trim();
   var photos = itemPhotos[itemId] || [];
   if (!note) { showToast('⚠️ Vui lòng nhập diễn giải!', true); return; }
   if (photos.length === 0) { showToast('⚠️ Vui lòng thêm ít nhất 1 ảnh!', true); return; }
