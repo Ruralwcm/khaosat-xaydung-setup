@@ -423,6 +423,8 @@ document.getElementById('storeSelect').addEventListener('change', function() {
 
 // ── EVALUATION TOGGLE ──
 function setEval(itemId, value) {
+  const prevVal = evaluations[itemId];
+  if (prevVal === value) return; // Same state, no change
   evaluations[itemId] = value;
   const row = document.getElementById('row_' + itemId);
   const passBtn = document.getElementById('pass_' + itemId);
@@ -436,19 +438,21 @@ function setEval(itemId, value) {
   passText.classList.remove('show');
   issue.classList.remove('show');
   
+  // Clear diễn giải + ảnh khi chuyển trạng thái
+  itemNotes[itemId] = '';
+  itemPhotos[itemId] = [];
+  var ta = document.getElementById('note_' + itemId);
+  if (ta) ta.value = '';
+  
   if (value === 'pass') {
     passBtn.classList.add('active-pass');
     row.classList.add('evaluated');
-    // Clear diễn giải + ảnh khi chuyển sang Đạt
-    itemNotes[itemId] = '';
-    itemPhotos[itemId] = [];
-    var ta = document.getElementById('note_' + itemId);
-    if (ta) ta.value = '';
     renderPhotos(itemId);
   } else if (value === 'fail') {
     failBtn.classList.add('active-fail');
     issue.classList.add('show');
     row.classList.add('issue');
+    renderPhotos(itemId);
   }
   
   updateProgress();
