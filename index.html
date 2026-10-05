@@ -25,10 +25,28 @@ textarea{min-height:50px;resize:vertical}
 .progress-fill{background:linear-gradient(90deg,#1e5799,#38a169);height:100%;border-radius:8px;transition:width .3s}
 .progress-text{font-size:11px;color:#64748b;text-align:right}
 
+/* Area summary cards */
+.area-summary{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.as-card{flex:1;min-width:90px;background:#fff;border-radius:8px;padding:8px 10px;box-shadow:0 1px 3px rgba(0,0,0,.04);border-left:3px solid #cbd5e1;transition:all .3s}
+.as-card.done{border-left-color:#16a34a;background:#f0fdf4}
+.as-card .as-label{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase}
+.as-card .as-count{font-size:17px;font-weight:800;color:#1e293b;margin-top:2px}
+.as-card .as-pct{font-size:10px;color:#64748b}
+.as-card.done .as-count{color:#16a34a}
+.as-card .as-mini-bar{background:#e2e8f0;border-radius:3px;height:3px;margin-top:4px;overflow:hidden}
+.as-card .as-mini-fill{background:#1e5799;height:100%;border-radius:3px;transition:width .3s}
+.as-card.done .as-mini-fill{background:#16a34a}
+
+/* Collapsible area */
+.area-header{cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+.area-header .area-arrow{transition:transform .2s;color:#94a3b8;font-size:11px}
+.area-header.collapsed .area-arrow{transform:rotate(-90deg)}
+
 /* Area group */
 .area-group{margin-bottom:16px}
-.area-title{font-size:13px;font-weight:700;color:#1e5799;margin-bottom:8px;padding:6px 10px;background:#e8f0fe;border-radius:6px;display:flex;align-items:center;gap:5px}
+.area-title{font-size:13px;font-weight:700;cursor:pointer;color:#1e5799;margin-bottom:8px;padding:6px 10px;background:#e8f0fe;border-radius:6px;display:flex;align-items:center;gap:5px}
 .area-title .area-count{font-size:11px;font-weight:400;color:#64748b;margin-left:auto}
+.area-progress{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;transition:all .3s;background:#f1f5f9;color:#64748b;margin-left:4px}
 
 /* Item row */
 .item-row{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;transition:all .2s}
@@ -104,7 +122,7 @@ textarea{min-height:50px;resize:vertical}
 
 <div class="header">
   <h1>🏪 Khảo sát CSVC Cửa hàng</h1>
-  <p>WinRural · 33 hạng mục · Đạt/Không đạt + Ảnh <span style="font-size:9px;opacity:.6">v5.2.3</span></p>
+  <p>WinRural · 34 hạng mục · Đạt/Không đạt + Ảnh <span style="font-size:9px;opacity:.6">v5.3</span></p>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -127,12 +145,13 @@ textarea{min-height:50px;resize:vertical}
     <div class="hint">Dữ liệu từ Storelist Google Sheets</div>
   </div>
 
-  <!-- ② Checklist 33 hạng mục -->
+  <!-- ② Checklist 34 hạng mục -->
   <div class="card">
-    <h3><span class="num">2</span> Checklist CSVC — 33 hạng mục</h3>
+    <h3><span class="num">2</span> Checklist CSVC — 34 hạng mục</h3>
+    <div class="area-summary" id="areaSummary" style="display:flex;gap:8px;margin:10px 0 0;flex-wrap:wrap"></div>
     <div class="hint" style="margin-bottom:6px">⚠️ Bắt buộc đánh giá TẤT CẢ hạng mục</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-    <div class="progress-text" id="progressText">0/33 hạng mục đã đánh giá</div>
+    <div class="progress-text" id="progressText">0/34</div>
     <div class="checklist" id="checklist"></div>
     <div class="validation-error" id="validationError"></div>
   </div>
@@ -155,19 +174,19 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8
 
 const SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
-// ── CHECKLIST — fallback mặc định nếu ko fetch được từ Sheet ──
+// ── CHECKLIST — fallback mặc định (v5.2: 34 hạng mục) ──
 const DEFAULT_AREAS = [
   {
-    name: 'Trước CH',
-    items: ['Biển hiệu WM','Mặt tiền/Sơn tường ngoài','Cửa kính/Cửa cuốn','Mái hiên/Mái che','Đèn chiếu sáng ngoài','Bãi đỗ xe/Vỉa hè','Biển quảng cáo/Poster','Cây xanh/Cảnh quan','Thùng rác ngoài','Camera an ninh ngoài','Lối vào/Cửa thoát hiểm']
+    name: 'TRƯỚC CH',
+    items: ['Biển hiệu WM+','Mặt tiền/ sơn tường ngoài','Cửa cuốn/ cửa kính','Mái hiên/ mái che','Đèn chiếu sáng ngoài','Vỉa hè','Biển quảng cáo/Poster','Cây xanh','Thùng rác ngoài','Camera an ninh ngoài']
   },
   {
-    name: 'Trong CH',
-    items: ['Sàn nhà/Gạch lát','Trần nhà/Thạch cao','Tường trong/Sơn nội thất','Đèn chiếu sáng trong','Điều hòa/Quạt/Thông gió','Kệ trưng bày/Sạp hàng','Tủ mát/Tủ đông/Tủ lạnh','Bảng giá/Tag giá điện tử','Giỏ hàng/Xe đẩy','Quầy thu ngân/POS','Cân điện tử','Wifi/Mạng/Thiết bị CNTT','Hệ thống âm thanh','Bình chữa cháy/PCCC','Biển báo lối thoát hiểm','Ổ điện/Hệ thống điện','Camera an ninh trong']
+    name: 'TRONG CH',
+    items: ['Trần nhà/ thạch cao','Tường','Đèn chiếu sáng','Điều hòa/ quạt/ thông gió','Kệ trưng bày','Tủ mát/ tủ đông/ tủ lạnh','Bảng giá','Giỏ hàng/ xe đẩy','Quầy thu ngân','Cân điện tử','Wifi/ Mạng/ Thiết bị IT','Hạng mục khác','Hệ thống âm thanh','Bình chữa cháy/ PCCC','Ổ điện, hệ thống điện','Camera an ninh trong']
   },
   {
-    name: 'Kho & Khu vực Nhân viên',
-    items: ['Cửa kho','Kệ kho/Pallet','Đèn kho','Nhà vệ sinh nhân viên','Khu vực nghỉ nhân viên']
+    name: 'KHO - NVS',
+    items: ['Cửa kho / cửa NVS','Kệ kho/ Palet','Sàn kho / NVS','Đường điện','Thiết bị vệ sinh','Đường nước','Thiết bị nhà vệ sinh','Sàn kho / NVS (tổng thể)']
   }
 ];
 
@@ -181,6 +200,8 @@ let cascadeData = {};
 let evaluations = {};
 let itemNotes = {};
 let itemPhotos = {};
+let itemAreaIdx = {};   // itemId → area index
+let areaCounts = [];    // [{ total, done }]
 let totalItems = 0;
 
 // ── SAMPLE DATA ──
@@ -240,26 +261,11 @@ async function fetchChecklist() {
   }
 }
 
-// ── CSV PARSER (handles quoted fields with commas) ──
-function parseCSVLine(line) {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
-        else { inQuotes = false; }
-      } else { current += ch; }
-    } else {
-      if (ch === '"') { inQuotes = true; }
-      else if (ch === ',') { result.push(current); current = ''; }
-      else { current += ch; }
-    }
-  }
-  result.push(current);
-  return result;
+function toggleAreaGH(a) {
+  const hdr = document.getElementById('ahdr_' + a);
+  const body = document.getElementById('abody_' + a);
+  hdr.classList.toggle('collapsed');
+  body.style.display = body.style.display === 'none' ? '' : 'none';
 }
 
 // ── INIT ──
@@ -269,43 +275,18 @@ async function init() {
     const resp = await fetch(SHEETS_CSV);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const text = await resp.text();
-    const lines = text.split('\n');
-    // Parse header to find column indexes (robust against column reordering)
-    const header = parseCSVLine(lines[0]);
-    const idx = {
-      ma: header.indexOf('Mã SAP'),
-      ten: header.indexOf('Tên cửa hàng'),
-      tt: header.indexOf('Tình Trạng'),
-      mien: header.indexOf('Miền'),
-      tinh: header.indexOf('Tỉnh/TP'),
-      qlkv: header.indexOf('QLKV'),
-      gdv: header.indexOf('GĐV')
-    };
-    const rows = lines.slice(1).map(r => {
-      const cols = parseCSVLine(r);
-      return {
-        ma: cols[idx.ma] || '',
-        ten: cols[idx.ten] || '',
-        tt: cols[idx.tt] || '',
-        mien: cols[idx.mien] || '',
-        tinh: cols[idx.tinh] || '',
-        qlkv: cols[idx.qlkv] || '',
-        gdv: cols[idx.gdv] || ''
-      };
+    const rows = text.split('\n').slice(1).map(r => {
+      const cols = r.split(',');
+      return { ma: cols[0]?.replace(/"/g,''), ten: cols[1]?.replace(/"/g,''), tt: cols[2]?.replace(/"/g,''), mien: cols[4]?.replace(/"/g,''), tinh: cols[5]?.replace(/"/g,''), qlkv: cols[7]?.replace(/"/g,''), gdv: cols[8]?.replace(/"/g,'') };
     }).filter(r => r.ma && r.tt === 'Đang hoạt động' && r.mien?.includes('Bắc'));
     
     if (rows.length === 0) throw new Error('No data');
     
     cascadeData = parseStoreData(rows);
-    const gdvCount = Object.keys(cascadeData).length;
-    const totalCH = rows.length;
     const gdvSel = document.getElementById('gdvSelect');
     for (const gdv of Object.keys(cascadeData).sort()) {
       gdvSel.innerHTML += `<option value="${gdv}">${gdv} (${Object.keys(cascadeData[gdv]).length} QLKV)</option>`;
     }
-    // Update hint with live stats
-    const hintEl = document.querySelector('#formContainer .card:first-child .hint');
-    if (hintEl) { hintEl.textContent = `✅ Storelist: ${totalCH} CH · ${gdvCount} GĐV (live)`; hintEl.style.color = '#16a34a'; }
     buildChecklist();
   } catch(e) {
     console.warn('Fetch thất bại, dùng data mẫu:', e.message);
@@ -315,14 +296,37 @@ async function init() {
 
 function buildChecklist() {
   const cl = document.getElementById('checklist');
+  const as = document.getElementById('areaSummary');
   cl.innerHTML = '';
+  as.innerHTML = '';
   totalItems = 0;
   evaluations = {};
   itemNotes = {};
   itemPhotos = {};
-  
-  for (const area of areas) {
-    let areaHtml = `<div class="area-group"><div class="area-title">📍 ${area.name}<span class="area-count">${area.items.length} mục</span></div>`;
+  itemAreaIdx = {};
+  areaCounts = [];
+
+  const areaIcons = ['🏪','🛒','📦'];
+
+  for (let a = 0; a < areas.length; a++) {
+    const area = areas[a];
+    areaCounts.push({ total: area.items.length, done: 0 });
+
+    // Area summary card
+    as.innerHTML += `<div class="as-card" id="ascard_${a}">
+      <div class="as-label">${areaIcons[a]||'📍'} ${area.name}</div>
+      <div class="as-count">0/${area.items.length}</div>
+      <div class="as-pct">0%</div>
+      <div class="as-mini-bar"><div class="as-mini-fill" id="asfill_${a}" style="width:0%"></div></div>
+    </div>`;
+
+    let areaHtml = `<div class="area-group">
+      <div class="area-title area-header" onclick="toggleAreaGH(${a})" id="ahdr_${a}">
+        <span>📍 ${area.name}</span>
+        <span class="area-progress" id="aprog_${a}">0/${area.items.length}</span>
+        <span class="area-arrow">▼</span>
+      </div>
+      <div id="abody_${a}">`;
     
     for (const item of area.items) {
       totalItems++;
@@ -330,6 +334,7 @@ function buildChecklist() {
       evaluations[itemId] = null;
       itemNotes[itemId] = '';
       itemPhotos[itemId] = [];
+      itemAreaIdx[itemId] = a;
       
       areaHtml += `
         <div class="item-row" id="row_${itemId}">
@@ -356,7 +361,7 @@ function buildChecklist() {
           </div>
         </div>`;
     }
-    cl.innerHTML += areaHtml + `</div>`;
+    cl.innerHTML += areaHtml + `</div></div>`;
   }
 }
 
@@ -534,12 +539,29 @@ function removeItemPhoto(itemId, idx) {
 // ── PROGRESS ──
 function updateProgress() {
   let done = 0;
+  for (let a = 0; a < areaCounts.length; a++) areaCounts[a].done = 0;
+  
   for (const key of Object.keys(evaluations)) {
-    if (evaluations[key]) done++;
+    if (evaluations[key]) {
+      done++;
+      const aIdx = itemAreaIdx[key];
+      if (aIdx !== undefined && areaCounts[aIdx]) areaCounts[aIdx].done++;
+    }
   }
   const pct = totalItems > 0 ? Math.round((done / totalItems) * 100) : 0;
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${done}/${totalItems} hạng mục đã đánh giá`;
+  
+  // Per-area progress badges
+  for (let a = 0; a < areaCounts.length; a++) {
+    const el = document.getElementById('aprog_' + a);
+    if (!el) continue;
+    const ac = areaCounts[a];
+    el.textContent = ac.done + '/' + ac.total;
+    if (ac.done === ac.total) { el.style.background = '#dcfce7'; el.style.color = '#16a34a'; }
+    else if (ac.done > 0) { el.style.background = '#fef9c3'; el.style.color = '#ca8a04'; }
+    else { el.style.background = '#f1f5f9'; el.style.color = '#64748b'; }
+  }
 }
 
 // ── SUBMIT ──
