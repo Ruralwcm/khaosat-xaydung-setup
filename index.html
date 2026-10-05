@@ -439,10 +439,16 @@ function setEval(itemId, value) {
   if (value === 'pass') {
     passBtn.classList.add('active-pass');
     row.classList.add('evaluated');
+    // Giữ lại diễn giải + ảnh khi chuyển sang Đạt
   } else if (value === 'fail') {
     failBtn.classList.add('active-fail');
     issue.classList.add('show');
     row.classList.add('issue');
+    // Khôi phục diễn giải cũ nếu có
+    var savedNote = itemNotes[itemId] || '';
+    var ta = document.getElementById('note_' + itemId);
+    if (ta && savedNote) ta.value = savedNote;
+    renderPhotos(itemId);
   }
   
   updateProgress();
