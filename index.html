@@ -438,7 +438,6 @@ function setEval(itemId, value) {
   
   if (value === 'pass') {
     passBtn.classList.add('active-pass');
-    passText.classList.add('show');
     row.classList.add('evaluated');
   } else if (value === 'fail') {
     failBtn.classList.add('active-fail');
@@ -448,6 +447,15 @@ function setEval(itemId, value) {
   
   updateProgress();
   document.getElementById('validationError').style.display = 'none';
+}
+
+function confirmFail(itemId) {
+  var note = itemNotes[itemId]?.trim();
+  var photos = itemPhotos[itemId] || [];
+  if (!note) { showToast('⚠️ Vui lòng nhập diễn giải!', true); return; }
+  if (photos.length === 0) { showToast('⚠️ Vui lòng thêm ít nhất 1 ảnh!', true); return; }
+  document.getElementById('issue_' + itemId).classList.remove('show');
+  showToast('✅ Đã xác nhận');
 }
 
 // ── ITEM PHOTOS ──
