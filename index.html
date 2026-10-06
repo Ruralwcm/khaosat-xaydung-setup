@@ -203,7 +203,6 @@ textarea{min-height:50px;resize:vertical}
 <script>
 // ── CONFIG ──
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
-var SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
 // ── DATA ──
 var cascadeData = {};
@@ -240,49 +239,39 @@ async function init() {
     ];
   }
 
-  // Load store data from Sheets CSV
+  // Load store data from GAS
   try {
-    var csvResp = await fetch(SHEETS_CSV);
-    if (csvResp.ok) {
-      var text = await csvResp.text();
-      var lines = text.split('\n').slice(1);
-      var rows = [];
-      for (var i = 0; i < lines.length; i++) {
-        var cols = lines[i].split(',');
-        var r = {
-          ma: (cols[0]||'').replace(/"/g,''), ten: (cols[1]||'').replace(/"/g,''),
-          tt: (cols[2]||'').replace(/"/g,''), mien: (cols[4]||'').replace(/"/g,''),
-          tinh: (cols[5]||'').replace(/"/g,''), qlkv: (cols[7]||'').replace(/"/g,''),
-          gdv: (cols[8]||'').replace(/"/g,'')
-        };
-        if (r.ma && r.tt === 'Đang hoạt động' && r.mien && r.mien.indexOf('Bắc') >= 0) {
-          rows.push(r);
+    var storeResp = await fetch(GAS_URL + '?action=storeData');
+    if (storeResp.ok) {
+      var storeRows = await storeResp.json();
+      if (Array.isArray(storeRows) && storeRows.length > 0) {
+        cascadeData = {};
+        for (var j = 0; j < storeRows.length; j++) {
+          var rr = storeRows[j];
+          var gdv = rr.gdv || 'Chưa phân công';
+          var qlkv = rr.qlkv || 'Chưa phân công';
+          if (!cascadeData[gdv]) cascadeData[gdv] = {};
+          if (!cascadeData[gdv][qlkv]) cascadeData[gdv][qlkv] = [];
+          cascadeData[gdv][qlkv].push({ sid: rr.ma, name: rr.ten, tinh: rr.tinh });
         }
-      }
 
-      cascadeData = {};
-      for (var j = 0; j < rows.length; j++) {
-        var rr = rows[j];
-        var gdv = rr.gdv || 'Chưa phân công';
-        var qlkv = rr.qlkv || 'Chưa phân công';
-        if (!cascadeData[gdv]) cascadeData[gdv] = {};
-        if (!cascadeData[gdv][qlkv]) cascadeData[gdv][qlkv] = [];
-        cascadeData[gdv][qlkv].push({ sid: rr.ma, name: rr.ten, tinh: rr.tinh });
+        var gdvSel = document.getElementById('gdvSelect');
+        gdvSel.innerHTML = '<option value="">-- Chọn GĐV --</option>';
+        var gdvKeys = Object.keys(cascadeData).sort();
+        for (var k = 0; k < gdvKeys.length; k++) {
+          var g = gdvKeys[k];
+          gdvSel.innerHTML += '<option value="' + g + '">' + g + ' (' + Object.keys(cascadeData[g]).length + ' QLKV)</option>';
+        }
+        hint.textContent = '✅ Đã tải ' + storeRows.length + ' CH Miền Bắc (GAS)';
+        hint.style.color = '#16a34a';
       }
-
-      var gdvSel = document.getElementById('gdvSelect');
-      gdvSel.innerHTML = '<option value="">-- Chọn GĐV --</option>';
-      var gdvKeys = Object.keys(cascadeData).sort();
-      for (var k = 0; k < gdvKeys.length; k++) {
-        var g = gdvKeys[k];
-        gdvSel.innerHTML += '<option value="' + g + '">' + g + ' (' + Object.keys(cascadeData[g]).length + ' QLKV)</option>';
-      }
-      hint.textContent = '✅ Đã tải ' + rows.length + ' CH Miền Bắc';
-      hint.style.color = '#16a34a';
+    } else {
+      throw new Error('HTTP ' + storeResp.status);
     }
   } catch(e) {
-    hint.textContent = '⚠️ Không tải được Storelist: ' + e.message;
+    hint.textContent = '⚠️ Chưa load được Storelist qua GAS. Cần deploy Code.gs v5.4 trên GAS console.';
     hint.style.color = '#e67e22';
+    console.warn('Store fetch failed:', e.message);
   }
 
   buildWizard();
