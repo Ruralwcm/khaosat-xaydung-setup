@@ -118,8 +118,11 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
     <div class="card-body">
       <div class="row">
         <div style="flex:0 0 38%"><label>Khu vực</label>
-          <select id="ea"><option value="">-- Chọn --</option><option>TRƯỚC CH</option><option>TRONG CH</option><option>KHO - NVS</option></select></div>
-        <div style="flex:1"><label>Tên hạng mục</label><input type="text" id="en" placeholder="VD: Biển hiệu WM+"></div>
+          <select id="ea" onchange="onAreaChange()"><option value="">-- Chọn --</option><option>TRƯỚC CH</option><option>TRONG CH</option><option>KHO - NVS</option></select></div>
+        <div style="flex:1"><label>Tên hạng mục</label>
+          <select id="en" onchange="onItemChange()"><option value="">-- Chọn hạng mục --</option></select>
+          <input type="text" id="enCustom" placeholder="Nhập tên hạng mục mới..." style="display:none;margin-top:4px">
+        </div>
       </div>
       <label>Tình trạng hiện tại</label>
       <div class="edit-eval">
@@ -149,6 +152,12 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
 var GAS='https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
 var CSV='https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 var cascade={},stores=[],issues=[],sel=null,edI=null,ev=null,eps=[],submitting=false,tt;
+// 34 default items by area
+var DEFAULT_ITEMS={
+  'TRƯỚC CH':['Biển hiệu WM+','Mặt tiền/ sơn tường ngoài','Cửa cuốn/ cửa kính','Mái hiên/ mái che','Đèn chiếu sáng ngoài','Vỉa hè','Biển quảng cáo/Poster','Cây xanh','Thùng rác ngoài','Camera an ninh ngoài'],
+  'TRONG CH':['Trần nhà/ thạch cao','Tường','Đèn chiếu sáng','Điều hòa/ quạt/ thông gió','Kệ trưng bày','Tủ mát/ tủ đông/ tủ lạnh','Bảng giá','Giỏ hàng/ xe đẩy','Quầy thu ngân','Cân điện tử','Wifi/ Mạng/ Thiết bị IT','Hạng mục khác','Hệ thống âm thanh','Bình chữa cháy/ PCCC','Ổ điện, hệ thống điện','Camera an ninh trong'],
+  'KHO - NVS':['Cửa kho / cửa NVS','Kệ kho/ Palet','Sàn kho / NVS','Đường điện','Thiết bị vệ sinh','Đường nước','Thiết bị nhà vệ sinh','Sàn kho / NVS (tổng thể)']
+};
 
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2600)}
 
@@ -299,13 +308,47 @@ function hideList(){
 }
 
 // ─── EDIT ───
-function openAdd(){edI=null;showEditForm('Khai báo vấn đề mới','','',null,[])}
+function openAdd(){edI=null;showEditForm('Khai báo vấn đề mới','',null,null,[])}
 function editIssue(i){edI=i;var iss=issues[i];showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'')}
+
+// Area change → update item dropdown
+function onAreaChange(){
+  var a=document.getElementById('ea').value,sel=document.getElementById('en');
+  sel.innerHTML='<option value="">-- Chọn hạng mục --</option>';
+  if(a&&DEFAULT_ITEMS[a]){
+    var its=DEFAULT_ITEMS[a];
+    for(var i=0;i<its.length;i++){sel.innerHTML+='<option value="'+its[i]+'">'+its[i]+'</option>'}
+  }
+  sel.innerHTML+='<option value="__custom__">(+) Thêm mới...</option>';
+  sel.value='';document.getElementById('enCustom').style.display='none';document.getElementById('enCustom').value='';
+}
+
+function onItemChange(){
+  var v=document.getElementById('en').value,ci=document.getElementById('enCustom');
+  if(v==='__custom__'){ci.style.display='block';ci.focus()}else{ci.style.display='none';ci.value=''}
+}
+
+function getItemName(){
+  var sel=document.getElementById('en');
+  if(sel.value==='__custom__')return document.getElementById('enCustom').value.trim();
+  return sel.value;
+}
 
 function showEditForm(title,area,name,ieval,photos,note){
   document.getElementById('efTitle').textContent=title;
   document.getElementById('ea').value=area;
-  document.getElementById('en').value=name;
+  onAreaChange(); // populate dropdown
+  
+  // Set item name
+  var sel=document.getElementById('en'),ci=document.getElementById('enCustom');
+  if(name&&area&&DEFAULT_ITEMS[area]&&DEFAULT_ITEMS[area].indexOf(name)>=0){
+    sel.value=name;ci.style.display='none';
+  }else if(name){
+    sel.value='__custom__';ci.style.display='block';ci.value=name;
+  }else{
+    sel.value='';ci.style.display='none';
+  }
+  
   ev=ieval;eps=photos||[];
   document.getElementById('evPass').classList.toggle('sel',ev==='pass');
   document.getElementById('evFail').classList.toggle('sel',ev==='fail');
@@ -327,8 +370,8 @@ function rp(i){eps.splice(i,1);rPhotos()}
 function rPhotos(){var c=document.getElementById('ephotos'),h='';for(var i=0;i<eps.length;i++){var s=typeof eps[i]==='string'?eps[i]:eps[i].dataUrl;h+='<div class="pbox"><img src="'+s+'"><span class="x" onclick="rp('+i+')">✕</span></div>'}if(eps.length<3)h+='<div class="pbox" onclick="tPhoto()"><span class="ph">+ Ảnh</span></div>';c.innerHTML=h}
 
 function saveEdit(){
-  var a=document.getElementById('ea').value.trim(),n=document.getElementById('en').value.trim();
-  if(!a){toast('⚠️ Chọn khu vực');return}if(!n){toast('⚠️ Nhập tên hạng mục');return}if(!ev){toast('⚠️ Chọn tình trạng');return}
+  var a=document.getElementById('ea').value.trim(),n=getItemName();
+  if(!a){toast('⚠️ Chọn khu vực');return}if(!n){toast('⚠️ Chọn hoặc nhập tên hạng mục');return}if(!ev){toast('⚠️ Chọn tình trạng');return}
   if(ev==='fail'){var nt=document.getElementById('enote').value.trim();if(!nt){toast('⚠️ Nhập diễn giải');return}if(eps.length===0){toast('⚠️ Cần ít nhất 1 ảnh');return}}
   
   var d={area:a,name:n,eval:ev,note:ev==='fail'?document.getElementById('enote').value.trim():'',photos:ev==='fail'?eps.slice():[],_changed:true};
@@ -367,7 +410,7 @@ function autoSave(){
 }
 
 function cancelEdit(){
-  edI=null;ev=null;eps=[];document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enote').value='';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.remove('sel');document.getElementById('failBox').classList.remove('show');document.getElementById('editCard').classList.remove('show');rPhotos()
+  edI=null;ev=null;eps=[];document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.remove('sel');document.getElementById('failBox').classList.remove('show');document.getElementById('editCard').classList.remove('show');rPhotos()
 }
 </script>
 </body>
