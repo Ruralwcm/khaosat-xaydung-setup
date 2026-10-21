@@ -6,128 +6,86 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Khảo sát vấn đề Setup - Xây dựng v6.1</title>
+<title>Khảo sát CSVC · WinMart+ Rural</title>
 <style>
-:root{
-  --red:#d71920;--blue:#1a3c6e;--green:#16a34a;--gold:#f59e0b;
-  --bg:#f4f5f7;--card:#ffffff;--txt:#1f2937;--muted:#6b7280;--border:#e5e7eb;
-}
+:root{--red:#d71920;--blue:#1a3c6e;--green:#16a34a;--gold:#f59e0b;--bg:#f4f5f7;--card:#ffffff;--txt:#1f2937;--muted:#6b7280;--border:#e5e7eb;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{
-  font-family:'Be Vietnam Pro','Segoe UI',Roboto,Arial,sans-serif;
-  background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:100px;
-}
-.topbar{background:linear-gradient(135deg,var(--red),#0f2b50);color:#fff;padding:12px 14px;}
+body{font-family:'Be Vietnam Pro','Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:90px;}
+.topbar{background:linear-gradient(135deg,var(--red),#0f2b50);color:#fff;padding:10px 14px;}
 .topbar .t-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .topbar .t-title{font-size:16px;font-weight:800;line-height:1.2;}
-.topbar .t-title .vbadge{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);color:#fff;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;}
+.topbar .t-title .vbadge{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:20px;margin-left:6px;}
 .topbar .t-sub{font-size:11px;opacity:.85;margin-top:1px;}
 
 .wrap{max-width:640px;margin:0 auto;padding:0 12px;}
 .card{background:var(--card);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-top:12px;overflow:hidden;}
 .card-head{display:flex;align-items:center;gap:8px;padding:14px 16px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border);}
 .card-head .dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;}
-.card-head .tag{margin-left:auto;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:#eef2f7;color:var(--muted);white-space:nowrap;}
+.card-head .tag{margin-left:auto;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:#eef2f7;color:var(--muted);}
 .card-body{padding:14px 16px;}
-
 label{display:block;font-size:12px;font-weight:600;color:#374151;margin:8px 0 3px;}
 label:first-child{margin-top:0;}
 label .req-star{color:var(--red);}
-input,select,textarea{
-  width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;
-  font-size:14px;font-family:inherit;background:#fff;color:var(--txt);
-  transition:border-color .15s, box-shadow .15s;
-}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:#fff;color:var(--txt);transition:border-color .15s;}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,60,110,.12);}
 textarea{min-height:50px;resize:vertical;font-size:13px;}
 .row{display:flex;gap:8px;}
-.row > div{flex:1;min-width:0;}
+.row>div{flex:1;min-width:0;}
 
-.progress-wrap{display:none;margin:12px 0 8px;}
-.progress-wrap.show{display:block;}
-.progress-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.progress-label{font-size:12px;font-weight:700;color:var(--muted);}
-.progress-count{font-size:14px;font-weight:800;color:var(--blue);}
-.progress-bar{background:#e2e8f0;border-radius:6px;height:8px;overflow:hidden;}
-.progress-fill{background:linear-gradient(90deg,var(--red),var(--green));height:100%;border-radius:6px;transition:width .3s;}
+.store-info{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;display:none;}
+.store-info b{font-weight:700;}
 
-.area-tabs{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap;}
-.area-tab{padding:4px 12px;border-radius:14px;font-size:11px;font-weight:600;background:#e2e8f0;color:var(--muted);border:none;cursor:pointer;transition:all .2s;font-family:inherit;}
-.area-tab.active{background:var(--red);color:#fff;}
-.area-tab .cnt{opacity:.6;font-size:10px;}
+/* area group */
+.area-group{margin-bottom:12px;}
+.area-title{font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px;border-bottom:2px solid var(--border);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.area-title .icon{font-size:16px;}
 
-.item-card{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:6px;display:flex;align-items:flex-start;gap:10px;background:#fafbfc;cursor:pointer;transition:all .15s;}
-.item-card:hover{background:#f0fdf4;border-color:#86efac;}
-.item-card.eval-pass{background:#f0fdf4;border-color:#bbf7d0;}
-.item-card.eval-fail{background:#fef2f2;border-color:#fecaca;}
-.item-card.eval-pass .idx{background:var(--green);}
-.item-card.eval-fail .idx{background:var(--red);}
+/* item card */
+.item-card{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:6px;display:flex;align-items:flex-start;gap:10px;background:#fafbfc;transition:all .15s;}
+.item-card.pass{background:#f0fdf4;border-color:#bbf7d0;}
+.item-card.fail{background:#fef2f2;border-color:#fecaca;}
+.item-card.pass .idx{background:var(--green);}
+.item-card.fail .idx{background:var(--red);}
 .item-card .idx{background:var(--blue);color:#fff;border-radius:50%;width:26px;height:26px;min-width:26px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px;}
 .item-card .body{flex:1;min-width:0;}
 .item-card .t{font-size:14px;font-weight:700;}
-.item-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.item-card .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;display:inline-block;margin-left:6px;}
-.item-card .badge.pass{background:#dcfce7;color:#16a34a;}
-.item-card .badge.fail{background:#fef2f2;color:#dc2626;}
-.item-card .badge.pend{background:#eef2f7;color:var(--muted);}
-.item-card .badge.new{background:#fef3c7;color:#92400e;}
+.item-card .t .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:6px;display:inline-block;}
+.item-card .t .badge.pass{background:#dcfce7;color:#16a34a;}
+.item-card .t .badge.fail{background:#fef2f2;color:#dc2626;}
+.item-card .t .badge.new{background:#fef3c7;color:#92400e;}
+.item-card .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.item-card .acts{display:flex;flex-direction:column;gap:4px;}
+.item-card .act{background:none;border:none;cursor:pointer;padding:2px 6px;font-size:16px;}
+.item-card .act.edit{color:var(--blue);}
 
-.edit-row{display:none;margin-top:8px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px dashed var(--border);}
-.edit-row.open{display:block;}
-.edit-row label{font-size:11px;color:#475569;margin-top:6px;}
-.btn-sm{padding:7px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
-.btn-sm.primary{background:var(--red);color:#fff;}
-.btn-sm.green{background:var(--green);color:#fff;}
-.btn-sm.ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
-.btn-sm:active{transform:scale(.97);}
+/* edit form card */
+.edit-card{display:none;margin-top:10px;}
+.edit-card.show{display:block;}
 
 .inline-photos{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
 .photo-box{width:50px;height:50px;border:2px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0;}
 .photo-box img{width:100%;height:100%;object-fit:cover;}
-.photo-box .remove{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;}
+.photo-box .x{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;}
 .photo-box .ph{font-size:8px;color:#94a3b8;text-align:center;}
 
-.add-card{display:none;margin-top:10px;}
-.add-card.show{display:block;}
-
-.submit-bar{
-  position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);
-  padding:10px 14px;z-index:100;max-width:640px;margin:0 auto;
-  box-shadow:0 -2px 10px rgba(0,0,0,.05);display:none;
-}
-.submit-bar.show{display:flex;gap:8px;}
-.submit-bar .btn{flex:1;padding:13px;font-size:15px;}
-
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  padding:11px 14px;border-radius:9px;border:none;font-size:14px;font-weight:700;
-  cursor:pointer;transition:opacity .15s, transform .05s;font-family:inherit;
-}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;border-radius:9px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
 .btn:active{transform:scale(.98);}
-.btn-primary{background:var(--green);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
 .btn-blue{background:var(--blue);color:#fff;}
 .btn-ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
 .btn:disabled{opacity:.45;cursor:not-allowed;}
 
-.toast{
-  position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;
-  padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;
-  pointer-events:none;max-width:90vw;text-align:center;
-}
+.empty-msg{text-align:center;color:var(--muted);font-size:14px;padding:16px;}
+
+.submit-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:10px 14px;z-index:100;max-width:640px;margin:0 auto;box-shadow:0 -2px 10px rgba(0,0,0,.05);display:none;}
+.submit-bar.show{display:flex;gap:8px;}
+.submit-bar .btn{flex:1;padding:13px;font-size:15px;}
+
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
 .toast.show{opacity:1;}
 
 .completed-box{background:#d1fae5;border:2px solid #16a34a;border-radius:12px;padding:16px 18px;margin:12px 0;text-align:center;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-.history-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid #f1f5f9;font-size:11px;}
-.history-item .hs-badge{font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;}
-.history-item .hs-badge.pass{background:#dcfce7;color:#16a34a;}
-.history-item .hs-badge.fail{background:#fef2f2;color:#dc2626;}
-
-@media(max-width:480px){
-  .topbar .t-title{font-size:14px}
-  .item-card .t{font-size:13px}
-}
 </style>
 </head>
 <body>
@@ -135,92 +93,76 @@ textarea{min-height:50px;resize:vertical;font-size:13px;}
 <div class="topbar">
   <div class="t-row">
     <div>
-      <div class="t-title">🏪 Khảo sát vấn đề CSVC <span class="vbadge">v6.1</span></div>
-      <div class="t-sub">Danh sách vấn đề · Cập nhật tình trạng · Thêm mới · Follow-up</div>
+      <div class="t-title">🏪 Khảo sát CSVC <span class="vbadge">v7</span></div>
+      <div class="t-sub">Tình trạng đầu mục · Sửa · (+) Bổ sung — Group theo khu vực</div>
     </div>
   </div>
 </div>
 
-<div class="wrap" id="mainWrap">
-  <!-- ① CH Info -->
-  <div class="card" id="chCard">
+<div class="wrap">
+  <!-- ① CH -->
+  <div class="card">
     <div class="card-head"><span class="dot"></span>① Cửa hàng khảo sát</div>
     <div class="card-body">
-      <label>GĐV (Giám đốc Vùng) <span class="req-star">*</span></label>
-      <select id="selGdv"><option value="">-- Đang tải dữ liệu... --</option></select>
-      <label>QLKV (Quản lý Khu vực) <span class="req-star">*</span></label>
+      <label>GĐV</label>
+      <select id="selGdv"><option value="">-- Đang tải... --</option></select>
+      <label>QLKV</label>
       <select id="selQlkv" disabled><option value="">-- Chọn QLKV --</option></select>
       <label>Cửa hàng <span class="req-star">*</span></label>
-      <select id="selCh" disabled><option value="">-- Chọn Cửa hàng --</option></select>
-      <div id="chInfo" style="display:none;margin-top:8px;font-size:12px;color:var(--muted);background:#f0fdf4;border-radius:8px;padding:8px 10px;">
-        Mã CH: <b id="pTinh">-</b> · Tên: <b id="pName">-</b>
-      </div>
+      <select id="selCh" disabled><option value="">-- Chọn CH --</option></select>
+      <div class="store-info" id="chInfo">Mã CH: <b id="pTinh">-</b> · Tên: <b id="pName">-</b></div>
     </div>
   </div>
 
-  <!-- ② Danh sách vấn đề (hiện ngay cả khi chưa chọn CH, ban đầu ẩn) -->
-  <div id="listCard" class="card" style="display:none">
+  <!-- ② Danh sách vấn đề (hiện sau khi chọn CH) -->
+  <div class="card" id="listCard" style="display:none">
     <div class="card-head">
       <span class="dot"></span>② Danh sách vấn đề
-      <span class="tag" id="tagCount">34 mục</span>
-      <button class="btn-sm primary" id="btnAddNewList" style="margin-left:auto;font-size:11px;" onclick="toggleAddForm()">➕ Thêm</button>
+      <span class="tag" id="tagCount">0 mục</span>
+      <button class="btn btn-red" id="btnAddNew" style="margin-left:auto;font-size:11px;padding:6px 12px;" onclick="toggleEditForm(null)">➕ Thêm</button>
     </div>
-    <div class="card-body">
-      <!-- Progress bar embedded inside list card -->
-      <div class="progress-wrap show" id="progWrap2">
-        <div class="progress-top"><span class="progress-label">📊 Tiến độ</span><span class="progress-count" id="progCount">0/34</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    <div class="card-body" id="itemListArea">
+      <div id="itemList"><div class="empty-msg">Đang tải...</div></div>
+      <div id="noChangeBar" style="text-align:center;display:none">
+        <button class="btn btn-ghost" onclick="confirmNoChange()" style="border-color:var(--green);color:var(--green);font-size:13px;">✅ Không thay đổi</button>
       </div>
-      <div class="area-tabs" id="areaTabs"></div>
-      <div id="itemList"></div>
     </div>
   </div>
 
-  <!-- ③ Thêm vấn đề mới -->
-  <div class="card add-card" id="addCard">
-    <div class="card-head"><span class="dot" style="background:var(--gold)"></span>③ <span id="formTitle">Thêm vấn đề mới</span></div>
+  <!-- ③ Form thêm/sửa -->
+  <div class="card edit-card" id="editCard">
+    <div class="card-head"><span class="dot" style="background:var(--gold)"></span>③ <span id="formTitle">Thêm vấn đề</span></div>
     <div class="card-body">
       <label>Khu vực <span class="req-star">*</span></label>
-      <select id="addArea">
+      <select id="editArea">
         <option value="">-- Chọn khu vực --</option>
-        <option>TRƯỚC CH</option>
-        <option>TRONG CH</option>
-        <option>KHO - NVS</option>
+        <option>TRƯỚC CH</option><option>TRONG CH</option><option>KHO - NVS</option>
       </select>
       <label>Tên hạng mục <span class="req-star">*</span></label>
-      <input type="text" id="addItemName" placeholder="VD: Mái tôn phía sau CH bị dột">
+      <input type="text" id="editItemName" placeholder="VD: Biển hiệu WM+">
       <label>Đánh giá <span class="req-star">*</span></label>
       <div style="display:flex;gap:10px;margin-top:4px;">
-        <button class="btn" id="addBtnPass" onclick="setAddEval('pass')" style="flex:1;background:#f0fdf4;color:var(--green);border:2px solid transparent;">✅ Đạt</button>
-        <button class="btn" id="addBtnFail" onclick="setAddEval('fail')" style="flex:1;background:#fef2f2;color:var(--red);border:2px solid transparent;">❌ Ko đạt</button>
+        <button class="btn" id="btnEvalPass" onclick="setEditEval('pass')" style="flex:1;background:#f0fdf4;color:var(--green);border:2px solid transparent;">✅ Đạt</button>
+        <button class="btn" id="btnEvalFail" onclick="setEditEval('fail')" style="flex:1;background:#fef2f2;color:var(--red);border:2px solid transparent;">❌ Ko đạt</button>
       </div>
-      <div id="addFailDetail" style="display:none;">
-        <label>📝 Diễn giải tình trạng <span class="req-star">*</span></label>
-        <textarea id="addNote" placeholder="Mô tả tình trạng hư hỏng/xuống cấp..."></textarea>
-        <label>📸 Ảnh minh họa (tối đa 3)</label>
-        <div class="inline-photos" id="addPhotos">
-          <div class="photo-box" onclick="document.getElementById('addFileInput').click()"><span class="ph">+ Ảnh</span></div>
-        </div>
-        <input type="file" id="addFileInput" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this)">
+      <div id="editFailSection" style="display:none;">
+        <label>📝 Diễn giải <span class="req-star">*</span></label>
+        <textarea id="editNote" placeholder="Mô tả tình trạng..."></textarea>
+        <label>📸 Ảnh (tối đa 3)</label>
+        <div class="inline-photos" id="editPhotos"></div>
+        <div style="font-size:10px;color:var(--red);">Yêu cầu ít nhất 1 ảnh khi Ko đạt</div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="btn btn-blue" id="btnSaveAdd" onclick="saveAddForm()" style="flex:1;">➕ Thêm vào danh sách</button>
-        <button class="btn btn-ghost" onclick="cancelAdd()">Huỷ</button>
+        <button class="btn btn-blue" id="btnSaveEdit" onclick="saveEditForm()" style="flex:1;">💾 Lưu</button>
+        <button class="btn btn-ghost" onclick="cancelEdit()">Huỷ</button>
       </div>
     </div>
-  </div>
-
-  <!-- History -->
-  <div class="card" id="historyCard" style="display:none">
-    <div class="card-head"><span class="dot" style="background:var(--blue)"></span>📋 Lịch sử khảo sát gần đây</div>
-    <div class="card-body" id="historyList"><div style="color:var(--muted);font-size:13px;text-align:center;padding:8px;">Chọn CH để xem lịch sử</div></div>
   </div>
 </div>
 
-<!-- Submit bar -->
 <div class="submit-bar" id="submitBar">
   <button class="btn btn-ghost" id="btnNoChange" onclick="confirmNoChange()" style="border-color:var(--green);color:var(--green);">✅ Không đổi</button>
-  <button class="btn btn-primary" id="btnSubmitAll" onclick="submitAll()">💾 Lưu khảo sát</button>
+  <button class="btn btn-red" id="btnSubmitAll" onclick="submitAll()">💾 Lưu khảo sát</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -230,709 +172,437 @@ textarea{min-height:50px;resize:vertical;font-size:13px;}
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
 var STORELIST_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
+// ── DEFAULT 34 ITEMS ──
+var DEFAULT_ITEMS = [
+  {area:'TRƯỚC CH',name:'Biển hiệu WM+'},{area:'TRƯỚC CH',name:'Mặt tiền/ sơn tường ngoài'},{area:'TRƯỚC CH',name:'Cửa cuốn/ cửa kính'},{area:'TRƯỚC CH',name:'Mái hiên/ mái che'},{area:'TRƯỚC CH',name:'Đèn chiếu sáng ngoài'},{area:'TRƯỚC CH',name:'Vỉa hè'},{area:'TRƯỚC CH',name:'Biển quảng cáo/Poster'},{area:'TRƯỚC CH',name:'Cây xanh'},{area:'TRƯỚC CH',name:'Thùng rác ngoài'},{area:'TRƯỚC CH',name:'Camera an ninh ngoài'},
+  {area:'TRONG CH',name:'Trần nhà/ thạch cao'},{area:'TRONG CH',name:'Tường'},{area:'TRONG CH',name:'Đèn chiếu sáng'},{area:'TRONG CH',name:'Điều hòa/ quạt/ thông gió'},{area:'TRONG CH',name:'Kệ trưng bày'},{area:'TRONG CH',name:'Tủ mát/ tủ đông/ tủ lạnh'},{area:'TRONG CH',name:'Bảng giá'},{area:'TRONG CH',name:'Giỏ hàng/ xe đẩy'},{area:'TRONG CH',name:'Quầy thu ngân'},{area:'TRONG CH',name:'Cân điện tử'},{area:'TRONG CH',name:'Wifi/ Mạng/ Thiết bị IT'},{area:'TRONG CH',name:'Hạng mục khác'},{area:'TRONG CH',name:'Hệ thống âm thanh'},{area:'TRONG CH',name:'Bình chữa cháy/ PCCC'},{area:'TRONG CH',name:'Ổ điện, hệ thống điện'},{area:'TRONG CH',name:'Camera an ninh trong'},
+  {area:'KHO - NVS',name:'Cửa kho / cửa NVS'},{area:'KHO - NVS',name:'Kệ kho/ Palet'},{area:'KHO - NVS',name:'Sàn kho / NVS'},{area:'KHO - NVS',name:'Đường điện'},{area:'KHO - NVS',name:'Thiết bị vệ sinh'},{area:'KHO - NVS',name:'Đường nước'},{area:'KHO - NVS',name:'Thiết bị nhà vệ sinh'},{area:'KHO - NVS',name:'Sàn kho / NVS (tổng thể)'}
+];
+
 // ── STATE ──
 var cascadeData = {};
-var checklistAreas = [];
-var itemEntries = [];
+var storeList = [];
+var itemList = [];        // danh sách vấn đề hiện tại của CH
+var editingIdx = null;    // index đang sửa trong itemList, null = thêm mới
+var editEval = null;
+var editPhotos = [];
 var selectedStore = null;
-var activeArea = 'all';
-var editingItemId = null;
-var addEval = null;
-var addPhotos = [];
 var isSubmitting = false;
 
 // ── TOAST ──
-var toastTimer;
-function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show');},2600); }
-
-// ── DEFAULT CHECKLIST (34 items) ──
-var DEFAULT_CHECKLIST = [
-  {name:'TRƯỚC CH',items:['Biển hiệu WM+','Mặt tiền/ sơn tường ngoài','Cửa cuốn/ cửa kính','Mái hiên/ mái che','Đèn chiếu sáng ngoài','Vỉa hè','Biển quảng cáo/Poster','Cây xanh','Thùng rác ngoài','Camera an ninh ngoài']},
-  {name:'TRONG CH',items:['Trần nhà/ thạch cao','Tường','Đèn chiếu sáng','Điều hòa/ quạt/ thông gió','Kệ trưng bày','Tủ mát/ tủ đông/ tủ lạnh','Bảng giá','Giỏ hàng/ xe đẩy','Quầy thu ngân','Cân điện tử','Wifi/ Mạng/ Thiết bị IT','Hạng mục khác','Hệ thống âm thanh','Bình chữa cháy/ PCCC','Ổ điện, hệ thống điện','Camera an ninh trong']},
-  {name:'KHO - NVS',items:['Cửa kho / cửa NVS','Kệ kho/ Palet','Sàn kho / NVS','Đường điện','Thiết bị vệ sinh','Đường nước','Thiết bị nhà vệ sinh','Sàn kho / NVS (tổng thể)']}
-];
-
-// ── BUILD ITEM ENTRIES FROM CHECKLIST ──
-function buildItemEntries(){
-  itemEntries = [];
-  var num = 1;
-  for(var a=0; a<checklistAreas.length; a++){
-    var area = checklistAreas[a];
-    var items = area.items;
-    if(!items || !items.length) continue;
-    for(var i=0; i<items.length; i++){
-      itemEntries.push({
-        id: 'std_'+a+'_'+i,
-        area: area.name,
-        name: items[i],
-        num: num++,
-        eval: null, note: '', photos: [],
-        _custom: false, _changed: false
-      });
-    }
-  }
-}
-
-// ── BUILD AREA TABS ──
-function buildAreaTabs(){
-  var el = document.getElementById('areaTabs');
-  if(!el) return;
-  var html = '<button class="area-tab active" data-area="all">Tất cả</button>';
-  for(var a=0; a<checklistAreas.length; a++){
-    html += '<button class="area-tab" data-area="'+a+'">'+checklistAreas[a].name+' ('+checklistAreas[a].items.length+')</button>';
-  }
-  el.innerHTML = html;
-  // Add click handlers via JS (not inline onclick)
-  var tabs = el.querySelectorAll('.area-tab');
-  for(var i=0; i<tabs.length; i++){
-    tabs[i].addEventListener('click', function(){
-      filterArea(this.getAttribute('data-area'));
-    });
-  }
-}
+var _tt;
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},2600);}
 
 // ── INIT ──
 function init(){
-  // Load checklist from GAS
-  fetch(GAS_URL + '?action=checklist')
-    .then(function(r){ return r.ok ? r.json() : null; })
-    .then(function(data){
-      if(Array.isArray(data) && data.length > 0) checklistAreas = data;
-    })
-    .catch(function(){})
-    .finally(function(){
-      // Fallback if empty
-      if(!checklistAreas || !checklistAreas.length) checklistAreas = DEFAULT_CHECKLIST;
-      buildItemEntries();
-      buildAreaTabs();
-      renderList();
-      updateProgress();
-    });
-  
-  // Load store data from GAS
-  fetch(GAS_URL + '?action=storeData')
-    .then(function(r){ return r.ok ? r.json() : null; })
+  // Load storelist
+  fetch(GAS_URL+'?action=storeData')
+    .then(function(r){return r.ok?r.json():null;})
     .then(function(rows){
-      if(Array.isArray(rows) && rows.length > 0){
-        cascadeData = {};
-        for(var j=0; j<rows.length; j++){
-          var r = rows[j];
-          var g = r.gdv||'Chưa phân công';
-          var q = r.qlkv||'Chưa phân công';
-          if(!cascadeData[g]) cascadeData[g]={};
-          if(!cascadeData[g][q]) cascadeData[g][q]=[];
-          cascadeData[g][q].push({sid:r.ma, name:r.ten, tinh:r.tinh});
-        }
-        populateGdv();
-      }
+      if(Array.isArray(rows)&&rows.length>0){storeList=rows;populateCascade();}
     })
-    .catch(function(e){
-      console.warn('GAS storeData failed, trying CSV...');
-      loadCSVFallback();
-    });
-  
-  // If GAS storeData hasn't responded within 3s, try CSV
+    .catch(function(){loadCSVFallback();});
   setTimeout(function(){
-    var sel = document.getElementById('selGdv');
-    if(sel && sel.options.length <= 1){ loadCSVFallback(); }
-  }, 3000);
+    var sel=document.getElementById('selGdv');
+    if(sel&&sel.options.length<=1) loadCSVFallback();
+  },3000);
 }
 
 function loadCSVFallback(){
   fetch(STORELIST_CSV)
-    .then(function(r){ return r.text(); })
-    .then(function(text){
-      var rows = parseCSV(text);
-      var newCascade = {};
-      for(var i=0; i<rows.length; i++){
-        var r = rows[i];
-        var tt = (r['Tình Trạng']||'').trim();
-        if(tt !== 'Đang hoạt động') continue;
-        var g = r['GĐV']||'Chưa phân công';
-        var q = r['QLKV']||'Chưa phân công';
-        var ma = r['Mã SAP']||'';
-        if(!g||!q||!ma) continue;
-        if(!newCascade[g]) newCascade[g]={};
-        if(!newCascade[g][q]) newCascade[g][q]=[];
-        newCascade[g][q].push({sid:ma, name:r['Tên cửa hàng']||'', tinh:r['Tỉnh/TP']||''});
+    .then(function(r){return r.text();})
+    .then(function(t){
+      var rows=parseCSV(t),arr=[];
+      for(var i=0;i<rows.length;i++){
+        var r=rows[i];
+        if((r['Tình Trạng']||'').trim()!=='Đang hoạt động')continue;
+        arr.push({gdv:r['GĐV']||'',qlkv:r['QLKV']||'',ma:r['Mã SAP']||'',ten:r['Tên cửa hàng']||'',tinh:r['Tỉnh/TP']||''});
       }
-      if(Object.keys(newCascade).length > 0){
-        cascadeData = newCascade;
-        populateGdv();
-      }
-    })
-    .catch(function(e){ console.warn('CSV fallback failed:', e.message); });
+      if(arr.length>0){storeList=arr;populateCascade();}
+    }).catch(function(){});
 }
 
-function populateGdv(){
-  var sel = document.getElementById('selGdv');
-  var keys = Object.keys(cascadeData).sort();
-  if(keys.length === 0){
-    sel.innerHTML = '<option value="">-- Không có dữ liệu --</option>';
-    return;
-  }
-  sel.innerHTML = '<option value="">-- Chọn GĐV --</option>';
-  for(var i=0; i<keys.length; i++){
-    var g = keys[i];
-    sel.innerHTML += '<option value="'+g+'">'+g+' ('+Object.keys(cascadeData[g]).length+' QLKV)</option>';
-  }
-}
-
-function parseCSV(text){
-  var rows=[], row=[], cur='', inQ=false;
-  for(var i=0; i<text.length; i++){
-    var c=text[i];
-    if(inQ){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;}else inQ=false;}else cur+=c; }
-    else if(c==='"') inQ=true;
-    else if(c===','){ row.push(cur);cur=''; }
-    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++;row.push(cur);cur='';if(row.length>1)rows.push(row);row=[]; }
+function parseCSV(t){
+  var rows=[],row=[],cur='',iq=false;
+  for(var i=0;i<t.length;i++){
+    var c=t[i];
+    if(iq){if(c==='"'){if(t[i+1]==='"'){cur+='"';i++;}else iq=false;}else cur+=c;}
+    else if(c==='"')iq=true;
+    else if(c===','){row.push(cur);cur='';}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);cur='';if(row.length>1)rows.push(row);row=[];}
     else cur+=c;
   }
   row.push(cur);if(row.length>1)rows.push(row);
-  if(rows.length<2) return [];
+  if(rows.length<2)return[];
   var header=rows[0].map(function(h){return h.trim();});
   return rows.slice(1).map(function(r){var o={};header.forEach(function(h,i){o[h]=r[i];});return o;});
 }
 
-// ── CASCADE DROPDOWNS ──
-(function(){
-  document.getElementById('selGdv').addEventListener('change',function(){
-    var g=this.value;
-    var qSel=document.getElementById('selQlkv');
-    qSel.innerHTML='<option value="">-- Chọn QLKV --</option>';
-    document.getElementById('selCh').innerHTML='<option value="">-- Chọn Cửa hàng --</option>';
-    document.getElementById('selCh').disabled=true;
+function populateCascade(){
+  cascadeData={};
+  for(var i=0;i<storeList.length;i++){
+    var s=storeList[i],g=s.gdv||'Chưa PC',q=s.qlkv||'Chưa PC';
+    if(!cascadeData[g])cascadeData[g]={};
+    if(!cascadeData[g][q])cascadeData[g][q]=[];
+    cascadeData[g][q].push(s);
+  }
+  var sel=document.getElementById('selGdv');
+  var keys=Object.keys(cascadeData).sort();
+  sel.innerHTML='<option value="">-- Chọn GĐV --</option>';
+  for(var i=0;i<keys.length;i++){
+    var g=keys[i];
+    sel.innerHTML+='<option value="'+g+'">'+g+' ('+Object.keys(cascadeData[g]).length+' QLKV)</option>';
+  }
+}
+
+// ── CASCADE ──
+document.getElementById('selGdv').addEventListener('change',function(){
+  var g=this.value,qSel=document.getElementById('selQlkv');
+  qSel.innerHTML='<option value="">-- Chọn QLKV --</option>';
+  document.getElementById('selCh').innerHTML='<option value="">-- Chọn CH --</option>';
+  document.getElementById('selCh').disabled=true;
+  document.getElementById('chInfo').style.display='none';
+  if(!g||!cascadeData[g]){qSel.disabled=true;return;}
+  qSel.disabled=false;
+  var ks=Object.keys(cascadeData[g]).sort();
+  for(var i=0;i<ks.length;i++){var q=ks[i];qSel.innerHTML+='<option value="'+q+'">'+q+' ('+cascadeData[g][q].length+' CH)</option>';}
+});
+document.getElementById('selQlkv').addEventListener('change',function(){
+  var g=document.getElementById('selGdv').value,q=this.value,sSel=document.getElementById('selCh');
+  sSel.innerHTML='<option value="">-- Chọn CH --</option>';
+  document.getElementById('chInfo').style.display='none';
+  if(!g||!q||!cascadeData[g]||!cascadeData[g][q]){sSel.disabled=true;return;}
+  sSel.disabled=false;
+  var ss=cascadeData[g][q].sort(function(a,b){return(a.ma||'').localeCompare(b.ma||'');});
+  for(var i=0;i<ss.length;i++){var s=ss[i];sSel.innerHTML+='<option value="'+s.ma+'" data-name="'+s.ten+'" data-tinh="'+s.tinh+'">'+s.ma+' - '+s.ten+'</option>';}
+});
+document.getElementById('selCh').addEventListener('change',function(){
+  var opt=this.selectedOptions[0];
+  if(opt&&opt.getAttribute('data-name')){
+    selectedStore={ma:opt.value,ten:opt.getAttribute('data-name'),tinh:opt.getAttribute('data-tinh')};
+    document.getElementById('pTinh').textContent=selectedStore.ma;
+    document.getElementById('pName').textContent=selectedStore.ten;
+    document.getElementById('chInfo').style.display='block';
+    loadItemsForCH();
+  }else{
+    selectedStore=null;
     document.getElementById('chInfo').style.display='none';
-    if(!g||!cascadeData[g]){ qSel.disabled=true; return; }
-    qSel.disabled=false;
-    var qKeys=Object.keys(cascadeData[g]).sort();
-    for(var i=0;i<qKeys.length;i++){
-      var q=qKeys[i];
-      qSel.innerHTML+='<option value="'+q+'">'+q+' ('+cascadeData[g][q].length+' CH)</option>';
-    }
-  });
-  
-  document.getElementById('selQlkv').addEventListener('change',function(){
-    var g=document.getElementById('selGdv').value;
-    var q=this.value;
-    var sSel=document.getElementById('selCh');
-    sSel.innerHTML='<option value="">-- Chọn Cửa hàng --</option>';
-    document.getElementById('chInfo').style.display='none';
-    if(!g||!q||!cascadeData[g]||!cascadeData[g][q]){ sSel.disabled=true; return; }
-    sSel.disabled=false;
-    var stores=cascadeData[g][q].sort(function(a,b){return (a.sid||'').localeCompare(b.sid||'');});
-    for(var i=0;i<stores.length;i++){
-      var s=stores[i];
-      sSel.innerHTML+='<option value="'+s.sid+'" data-name="'+s.name+'" data-tinh="'+s.tinh+'">'+s.sid+' - '+s.name+'</option>';
-    }
-  });
-  
-  document.getElementById('selCh').addEventListener('change',function(){
-    var opt=this.selectedOptions[0];
-    if(opt && opt.getAttribute('data-name')){
-      selectedStore = {ma:opt.value, ten:opt.getAttribute('data-name'), tinh:opt.getAttribute('data-tinh')};
-      document.getElementById('pTinh').textContent = selectedStore.ma;
-      document.getElementById('pName').textContent = selectedStore.ten;
-      document.getElementById('chInfo').style.display='block';
-      
-      // Reset & show survey
-      resetAllItems();
-      showListCard();
-      loadHistory();
-    } else {
-      document.getElementById('chInfo').style.display='none';
-      hideListCard();
-    }
-  });
-})();
-
-// ── SHOW/HIDE LIST ──
-function showListCard(){
-  var lc = document.getElementById('listCard');
-  if(lc) lc.style.display = 'block';
-  var sb = document.getElementById('submitBar');
-  if(sb) sb.classList.add('show');
-  var hc = document.getElementById('historyCard');
-  if(hc) hc.style.display = 'block';
-  // Scroll to list
-  if(lc) lc.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-function hideListCard(){
-  var lc = document.getElementById('listCard');
-  if(lc) lc.style.display = 'none';
-  var sb = document.getElementById('submitBar');
-  if(sb) sb.classList.remove('show');
-  var hc = document.getElementById('historyCard');
-  if(hc) hc.style.display = 'none';
-}
-
-// ── RESET ALL ITEMS ──
-function resetAllItems(){
-  buildItemEntries();
-  activeArea = 'all';
-  editingItemId = null;
-  cancelAdd();
-  document.getElementById('addCard').classList.remove('show');
-  // Reset area tabs
-  var tabs = document.querySelectorAll('#areaTabs .area-tab');
-  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
-  if(tabs[0]) tabs[0].classList.add('active');
-  renderList();
-  updateProgress();
-}
-
-// ── FILTER ──
-function filterArea(idx){
-  activeArea = idx === 'all' ? 'all' : parseInt(idx);
-  editingItemId = null;
-  // Update tab active states
-  var tabs = document.querySelectorAll('#areaTabs .area-tab');
-  for(var i=0;i<tabs.length;i++){
-    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-area') === String(idx));
+    document.getElementById('listCard').style.display='none';
+    document.getElementById('submitBar').classList.remove('show');
   }
-  renderList();
-}
+});
 
-// ── RENDER LIST ──
-function renderList(){
-  try {
-    var container = document.getElementById('itemList');
-    if(!container){ console.warn('itemList not found'); return; }
-    
-    var allEntries = itemEntries || [];
-    
-    // Filter by area
-    var filtered = allEntries;
-    if(activeArea !== 'all'){
-      var areaName = (checklistAreas[activeArea]||{}).name||'';
-      filtered = allEntries.filter(function(e){ return e.area === areaName; });
-    }
-    
-    // Count stats
-    var passCount=0, failCount=0, total=allEntries.length;
-    for(var i=0;i<total;i++){
-      if(allEntries[i].eval==='pass') passCount++;
-      else if(allEntries[i].eval==='fail') failCount++;
-    }
-    var tagEl = document.getElementById('tagCount');
-    if(tagEl) tagEl.textContent = total+' mục · ✅'+passCount+' ❌'+failCount;
-    
-    if(filtered.length===0){
-      container.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:14px;padding:16px;">Chưa có hạng mục nào trong khu vực này</div>';
-      return;
-    }
-    
-    var html = '';
-    for(var i=0; i<filtered.length; i++){
-      var e = filtered[i];
-      var isOpen = editingItemId === e.id;
-      var cls = '';
-      var badge = '<span class="badge pend">⬜ Chưa</span>';
-      if(e.eval==='pass'){ cls='eval-pass'; badge='<span class="badge pass">✅ Đạt</span>'; }
-      else if(e.eval==='fail'){ cls='eval-fail'; badge='<span class="badge fail">❌ Ko đạt</span>'; }
-      if(e._custom) badge += ' <span class="badge new">MỚI</span>';
-      if(e._changed && !e._custom) badge += ' <span class="badge new">đã sửa</span>';
-      
-      var sub = '';
-      if(e.eval==='fail' && e.note) sub = e.note.substring(0,80)+(e.note.length>80?'...':'');
-      else if(e.eval==='pass') sub = 'Tình trạng tốt';
-      else sub = 'Click để đánh giá';
-      if(e.photos && e.photos.length) sub += ' · 📸 '+e.photos.length+' ảnh';
-      
-      html += '<div class="item-card '+cls+'" onclick="toggleEdit(\''+e.id+'\')" id="icard_'+e.id+'">';
-      html += '<div class="idx">'+(e._custom?'+':e.num)+'</div>';
-      html += '<div class="body">';
-      html += '<div class="t">'+e.name+badge+'</div>';
-      html += '<div class="sub">'+sub+'</div>';
-      
-      // Edit row
-      html += '<div class="edit-row'+(isOpen?' open':'')+'" id="edit_'+e.id+'">';
-      html += '<div style="display:flex;gap:10px;margin-top:4px;">';
-      html += '<button class="btn-sm green" style="flex:1;" onclick="quickEval(\''+e.id+'\',\'pass\')">✅ Đạt</button>';
-      html += '<button class="btn-sm" style="flex:1;background:#fef2f2;color:var(--red);border:1px solid #fecaca;" onclick="quickEval(\''+e.id+'\',\'fail\')">❌ Ko đạt</button>';
-      html += '</div>';
-      html += '<div id="failSection_'+e.id+'" style="display:'+(e.eval==='fail'?'block':'none')+'">';
-      html += '<label>📝 Diễn giải</label><textarea id="note_'+e.id+'" placeholder="Mô tả tình trạng..." oninput="markChanged(\''+e.id+'\')">'+(e.note||'')+'</textarea>';
-      html += '<label>📸 Ảnh (tối đa 3)</label><div class="inline-photos" id="photos_'+e.id+'"></div>';
-      html += '</div>';
-      html += '</div>';
-      
-      html += '</div></div>';
-    }
-    container.innerHTML = html;
-    
-    // Setup file inputs for each item
-    for(var j=0; j<filtered.length; j++){
-      setupItemPhotos(filtered[j].id);
-    }
-    
-    updateProgress();
-  } catch(err){
-    console.error('renderList error:', err);
-  }
-}
-
-function setupItemPhotos(id){
-  var container = document.getElementById('photos_'+id);
-  if(!container) return;
-  renderItemPhotosUI(id);
-}
-
-function renderItemPhotosUI(id){
-  var container = document.getElementById('photos_'+id);
-  if(!container) return;
-  
-  var entry = null;
-  for(var i=0; i<itemEntries.length; i++){
-    if(itemEntries[i].id === id){ entry = itemEntries[i]; break; }
-  }
-  var photos = (entry && entry.photos) ? entry.photos : [];
-  
-  var html = '';
-  for(var i=0; i<photos.length; i++){
-    var src = typeof photos[i]==='string' ? photos[i] : photos[i].dataUrl;
-    html += '<div class="photo-box"><img src="'+src+'"><span class="remove" onclick="removePhoto(\''+id+'\','+i+')">✕</span></div>';
-  }
-  if(photos.length < 3){
-    html += '<div class="photo-box" onclick="triggerFileInput(\''+id+'\')"><span class="ph">+ Ảnh</span></div>';
-  }
-  container.innerHTML = html;
-}
-
-function triggerFileInput(id){
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.capture = 'environment';
-  input.onchange = function(){
-    if(!input.files||!input.files[0]) return;
-    var file=input.files[0];
-    var reader=new FileReader();
-    reader.onload=function(e){
-      var entry=null;
-      for(var i=0;i<itemEntries.length;i++){
-        if(itemEntries[i].id===id){ entry=itemEntries[i]; break; }
-      }
-      if(!entry) return;
-      if(!entry.photos) entry.photos=[];
-      if(entry.photos.length>=3) return;
-      entry.photos.push({dataUrl:e.target.result,name:file.name});
-      entry._changed=true;
-      renderItemPhotosUI(id);
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-
-function removePhoto(id, idx){
-  var entry=null;
-  for(var i=0;i<itemEntries.length;i++){
-    if(itemEntries[i].id===id){ entry=itemEntries[i]; break; }
-  }
-  if(!entry||!entry.photos) return;
-  entry.photos.splice(idx,1);
-  entry._changed=true;
-  renderItemPhotosUI(id);
-}
-
-// ── ITEM INTERACTION ──
-function toggleEdit(id){
-  editingItemId = (editingItemId === id) ? null : id;
-  renderList();
-}
-
-function quickEval(id, value){
-  var entry = null;
-  for(var i=0;i<itemEntries.length;i++){
-    if(itemEntries[i].id===id){ entry=itemEntries[i]; break; }
-  }
-  if(!entry) return;
-  entry.eval = value;
-  entry._changed = true;
-  if(value==='pass'){ entry.note=''; entry.photos=[]; }
-  editingItemId = (value==='fail') ? id : null;
-  renderList();
-  if(value==='fail'){
-    var ta = document.getElementById('note_'+id);
-    if(ta) setTimeout(function(){ ta.focus(); }, 100);
-  }
-}
-
-function markChanged(id){
-  var entry = null;
-  for(var i=0;i<itemEntries.length;i++){
-    if(itemEntries[i].id===id){ entry=itemEntries[i]; break; }
-  }
-  if(entry) entry._changed = true;
-}
-
-// ── ADD NEW ITEM ──
-function toggleAddForm(){
-  var card = document.getElementById('addCard');
-  if(card.classList.contains('show')){ cancelAdd(); card.classList.remove('show'); return; }
-  card.classList.add('show');
-  document.getElementById('formTitle').textContent='Thêm vấn đề mới';
-  card.scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-function setAddEval(value){
-  addEval = value;
-  document.getElementById('addBtnPass').style.border = value==='pass'?'2px solid var(--green)':'2px solid transparent';
-  document.getElementById('addBtnFail').style.border = value==='fail'?'2px solid var(--red)':'2px solid transparent';
-  document.getElementById('addFailDetail').style.display = value==='fail'?'block':'none';
-}
-
-function addPhoto(input){
-  if(!input.files||!input.files[0]) return;
-  var file=input.files[0];
-  var reader=new FileReader();
-  reader.onload=function(e){
-    if(addPhotos.length>=3) return;
-    addPhotos.push({dataUrl:e.target.result,name:file.name});
-    renderAddPhotos();
-  };
-  reader.readAsDataURL(file);
-  input.value='';
-}
-
-function removeAddPhoto(idx){
-  addPhotos.splice(idx,1);
-  renderAddPhotos();
-}
-
-function renderAddPhotos(){
-  var container=document.getElementById('addPhotos');
-  if(!container) return;
-  var html='';
-  for(var i=0;i<addPhotos.length;i++){
-    html+='<div class="photo-box"><img src="'+addPhotos[i].dataUrl+'"><span class="remove" onclick="removeAddPhoto('+i+')">✕</span></div>';
-  }
-  if(addPhotos.length<3){
-    html+='<div class="photo-box" onclick="document.getElementById(\'addFileInput\').click()"><span class="ph">+ Ảnh</span></div>';
-  }
-  container.innerHTML=html;
-}
-
-function saveAddForm(){
-  var area = document.getElementById('addArea').value;
-  var name = document.getElementById('addItemName').value.trim();
-  if(!area){ toast('⚠️ Chọn khu vực'); return; }
-  if(!name){ toast('⚠️ Nhập tên hạng mục'); return; }
-  if(!addEval){ toast('⚠️ Chọn Đạt hoặc Ko đạt'); return; }
-  if(addEval==='fail'){
-    var note=document.getElementById('addNote').value.trim();
-    if(!note){ toast('⚠️ Nhập diễn giải cho mục Ko đạt'); return; }
-    if(addPhotos.length===0){ toast('⚠️ Cần ít nhất 1 ảnh cho mục Ko đạt'); return; }
-  }
-  
-  var maxCustom=0;
-  for(var i=0;i<itemEntries.length;i++){
-    if(itemEntries[i]._custom){
-      var m=itemEntries[i].id.match(/^cust_(\d+)$/);
-      if(m&&parseInt(m[1])>maxCustom) maxCustom=parseInt(m[1]);
-    }
-  }
-  
-  itemEntries.push({
-    id: 'cust_'+(maxCustom+1),
-    area: area,
-    name: name,
-    num: null,
-    eval: addEval,
-    note: addEval==='fail'? document.getElementById('addNote').value.trim() : '',
-    photos: addEval==='fail'? addPhotos.slice() : [],
-    _custom: true,
-    _changed: true
-  });
-  
-  cancelAdd();
-  document.getElementById('addCard').classList.remove('show');
-  activeArea='all';
-  var tabs = document.querySelectorAll('#areaTabs .area-tab');
-  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
-  if(tabs[0]) tabs[0].classList.add('active');
-  renderList();
-  updateProgress();
-  toast('✅ Đã thêm: '+name);
-}
-
-function cancelAdd(){
-  addEval=null;
-  addPhotos=[];
-  document.getElementById('addArea').value='';
-  document.getElementById('addItemName').value='';
-  document.getElementById('addNote').value='';
-  document.getElementById('addBtnPass').style.border='2px solid transparent';
-  document.getElementById('addBtnFail').style.border='2px solid transparent';
-  document.getElementById('addFailDetail').style.display='none';
-  renderAddPhotos();
-}
-
-// ── PROGRESS ──
-function updateProgress(){
-  var total=itemEntries.length, done=0;
-  for(var i=0;i<itemEntries.length;i++){ if(itemEntries[i].eval) done++; }
-  var pct=total>0?Math.round(done/total*100):0;
-  var fill = document.getElementById('progFill');
-  var count = document.getElementById('progCount');
-  if(fill) fill.style.width=pct+'%';
-  if(count) count.textContent=done+'/'+total;
-}
-
-// ── NO CHANGE ──
-function confirmNoChange(){
-  if(!selectedStore){ toast('⚠️ Chọn CH trước'); return; }
-  var changed=[];
-  for(var i=0;i<itemEntries.length;i++){ if(itemEntries[i]._changed) changed.push(itemEntries[i]); }
-  if(changed.length>0){ submitAll(); return; }
-  if(isSubmitting){ toast('⚠️ Đang lưu...'); return; }
-  
-  isSubmitting=true;
-  var btn=document.getElementById('btnNoChange');
-  var origText=btn.textContent;
-  btn.textContent='⏳ Đang lưu...';
-  btn.disabled=true;
-  
-  var payload = {
-    action: 'nochange',
-    store: selectedStore.ma, storeName: selectedStore.ten, tinh: selectedStore.tinh,
-    gdv: document.getElementById('selGdv').value,
-    qlkv: document.getElementById('selQlkv').value,
-    timestamp: new Date().toISOString()
-  };
-  
-  var onDone = function(){ showCompleted('không đổi'); isSubmitting=false; };
-  if(GAS_URL){
-    fetch(GAS_URL, {method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-      .then(function(){ onDone(); }).catch(function(){ toast('⚠️ Lỗi kết nối'); onDone(); });
-  } else { onDone(); }
-}
-
-// ── SUBMIT ALL ──
-function submitAll(){
-  if(!selectedStore){ toast('⚠️ Chọn CH trước'); return; }
-  if(isSubmitting){ toast('⚠️ Đang lưu...'); return; }
-  
-  var uneval = itemEntries.filter(function(e){return !e.eval;});
-  if(uneval.length>0){ toast('⚠️ Còn '+uneval.length+' mục chưa đánh giá!'); return; }
-  
-  var failNoNote = itemEntries.filter(function(e){return e.eval==='fail' && (!e.note||!e.note.trim());});
-  if(failNoNote.length>0){ toast('⚠️ '+failNoNote.length+' mục Ko đạt chưa có diễn giải!'); return; }
-  var failNoPhoto = itemEntries.filter(function(e){return e.eval==='fail' && (!e.photos||e.photos.length===0);});
-  if(failNoPhoto.length>0){ toast('⚠️ '+failNoPhoto.length+' mục Ko đạt chưa có ảnh!'); return; }
-  
-  isSubmitting=true;
-  var btnSave = document.getElementById('btnSubmitAll');
-  var btnNC = document.getElementById('btnNoChange');
-  btnSave.textContent='⏳ Đang lưu...'; btnSave.disabled=true;
-  if(btnNC) btnNC.disabled=true;
-  
-  var passCount=0,failCount=0,items=[];
-  for(var i=0;i<itemEntries.length;i++){
-    var e=itemEntries[i];
-    if(e.eval==='pass') passCount++; else if(e.eval==='fail') failCount++;
-    items.push({
-      area: e.area, item: e.name,
-      result: e.eval==='pass'?'Đạt':'Không đạt',
-      note: e.eval==='pass'?'Đạt':(e.note||''),
-      photos: e.photos||[], _custom: e._custom
+// ── LOAD ITEMS cho CH đã chọn: merge default + data cũ ──
+function loadItemsForCH(){
+  itemList=[];
+  // Start with default 34 items
+  for(var i=0;i<DEFAULT_ITEMS.length;i++){
+    itemList.push({
+      area:DEFAULT_ITEMS[i].area,
+      name:DEFAULT_ITEMS[i].name,
+      eval:null, note:'', photos:[],
+      _custom:false, _changed:false, _fromHistory:false
     });
   }
   
-  var payload = {
-    store: selectedStore.ma, storeName: selectedStore.ten, tinh: selectedStore.tinh,
-    gdv: document.getElementById('selGdv').value,
-    qlkv: document.getElementById('selQlkv').value,
-    items: items, generalNote: '',
-    totalItems: itemEntries.length, passCount: passCount, failCount: failCount
-  };
-  
-  var onDone = function(rowsSaved){
-    isSubmitting=false;
-    showCompleted('đã cập nhật', rowsSaved);
-  };
-  
-  if(GAS_URL){
-    fetch(GAS_URL, {method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-      .then(function(r){return r.json();})
-      .then(function(res){ onDone(res.rowsSaved); })
-      .catch(function(){ toast('⚠️ Lỗi kết nối, đã lưu tạm'); onDone(0); });
-  } else { onDone(0); }
+  // Try to load last survey from GAS
+  fetch(GAS_URL+'?action=history&store='+encodeURIComponent(selectedStore.ma))
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(data){
+      if(Array.isArray(data)&&data.length>0&&data[0].items){
+        var lastItems=data[0].items;
+        // Merge: match by area+name
+        for(var i=0;i<lastItems.length;i++){
+          var li=lastItems[i];
+          var found=false;
+          for(var j=0;j<itemList.length;j++){
+            if(itemList[j].area===li.area&&itemList[j].name===li.item){
+              itemList[j].eval=li.result==='Đạt'?'pass':'fail';
+              itemList[j].note=li.note||'';
+              itemList[j].photos=li.photos||[];
+              itemList[j]._fromHistory=true;
+              found=true;break;
+            }
+          }
+          if(!found&&li._custom){
+            // Custom item from last survey
+            itemList.push({
+              area:li.area,name:li.item,
+              eval:li.result==='Đạt'?'pass':'fail',
+              note:li.note||'',photos:li.photos||[],
+              _custom:true,_changed:false,_fromHistory:true
+            });
+          }
+        }
+      }
+    })
+    .catch(function(){})
+    .finally(function(){
+      renderList();
+      document.getElementById('listCard').style.display='block';
+      document.getElementById('submitBar').classList.add('show');
+      document.getElementById('noChangeBar').style.display='block';
+      document.getElementById('listCard').scrollIntoView({behavior:'smooth',block:'start'});
+    });
 }
 
-// ── COMPLETED ──
-function showCompleted(trangThai, rowsSaved){
-  var old = document.getElementById('completedBox');
-  if(old) old.remove();
+// ── GROUP items by area ──
+function groupByArea(items){
+  var groups={},order=['TRƯỚC CH','TRONG CH','KHO - NVS'];
+  order.forEach(function(a){groups[a]=[];});
+  items.forEach(function(it){
+    var a=it.area;
+    if(!groups[a]) groups[a]=[];
+    groups[a].push(it);
+  });
+  return order.map(function(a){return{area:a,items:groups[a]};});
+}
+
+// ── RENDER ──
+function renderList(){
+  var groups=groupByArea(itemList);
+  var icons={'TRƯỚC CH':'🏪','TRONG CH':'🛒','KHO - NVS':'📦'};
+  var html='';
+  var total=itemList.length,passCount=0,failCount=0;
   
-  var passCount=0,failCount=0;
-  for(var i=0;i<itemEntries.length;i++){
-    if(itemEntries[i].eval==='pass') passCount++;
-    else if(itemEntries[i].eval==='fail') failCount++;
+  for(var g=0;g<groups.length;g++){
+    var grp=groups[g];
+    if(grp.items.length===0)continue;
+    html+='<div class="area-group">';
+    html+='<div class="area-title">'+(icons[grp.area]||'📍')+' '+grp.area+' <span style="font-size:11px;color:var(--muted);font-weight:400">('+grp.items.length+' mục)</span></div>';
+    
+    for(var i=0;i<grp.items.length;i++){
+      var e=grp.items[i];
+      var cls='';
+      var badge='';
+      if(e.eval==='pass'){cls='pass';badge='<span class="badge pass">✅ Đạt</span>';passCount++;}
+      else if(e.eval==='fail'){cls='fail';badge='<span class="badge fail">❌ Ko đạt</span>';failCount++;}
+      else{badge='<span class="badge" style="background:#eef2f7;color:var(--muted)">⬜ Chưa</span>';}
+      if(e._custom)badge+=' <span class="badge new">MỚI</span>';
+      if(e._changed&&!e._custom)badge+=' <span class="badge new">đã sửa</span>';
+      
+      var sub='';
+      if(e.eval==='fail'&&e.note)sub=e.note.substring(0,70)+(e.note.length>70?'...':'');
+      else if(e.eval==='pass')sub='Tình trạng tốt';
+      else sub='Click để đánh giá';
+      if(e.photos&&e.photos.length)sub+=' · 📸'+e.photos.length;
+      
+      // Find global index
+      var gi=-1;
+      for(var k=0;k<itemList.length;k++){if(itemList[k]===e){gi=k;break;}}
+      
+      html+='<div class="item-card '+cls+'">';
+      html+='<div class="idx">'+(e._custom?'+':(gi+1))+'</div>';
+      html+='<div class="body">';
+      html+='<div class="t">'+e.name+badge+'</div>';
+      html+='<div class="sub">'+sub+'</div>';
+      html+='</div>';
+      html+='<div class="acts"><button class="act edit" onclick="toggleEditForm('+gi+')" title="Sửa">✏️</button></div>';
+      html+='</div>';
+    }
+    html+='</div>';
   }
   
-  var box=document.createElement('div');
-  box.id='completedBox';
-  box.className='completed-box';
-  box.innerHTML = 
-    '<div style="font-size:28px;margin-bottom:4px">✅</div>'+
-    '<div style="font-size:16px;font-weight:800;color:#166534;margin-bottom:2px">Đã hoàn thành khảo sát!</div>'+
-    '<div style="font-size:13px;color:#065f46;margin-bottom:8px">'+selectedStore.ma+' — '+selectedStore.ten+'</div>'+
-    '<div style="font-size:12px;color:#047857;background:#a7f3d0;display:inline-block;padding:3px 12px;border-radius:20px;font-weight:600;margin-bottom:10px">✅ '+passCount+' Đạt · ❌ '+failCount+' Ko đạt · '+itemEntries.length+' mục'+(rowsSaved?' · '+rowsSaved+' dòng đã lưu':'')+'</div>'+
-    '<div style="margin-top:8px"><button class="btn btn-blue" onclick="doNewSurvey()" style="font-size:13px;">🔍 Khảo sát CH khác</button></div>';
+  document.getElementById('itemList').innerHTML=html||'<div class="empty-msg">Chưa có hạng mục nào</div>';
+  document.getElementById('tagCount').textContent=total+' mục · ✅'+passCount+' ❌'+failCount;
+}
+
+// ── EDIT FORM ──
+function toggleEditForm(idx){
+  editingIdx=idx;
+  var card=document.getElementById('editCard');
   
-  var listCard = document.getElementById('listCard');
-  if(listCard) listCard.querySelector('.card-body').appendChild(box);
-  box.scrollIntoView({behavior:'smooth',block:'center'});
+  if(idx===null){
+    // Thêm mới
+    document.getElementById('formTitle').textContent='Thêm vấn đề mới';
+    document.getElementById('editArea').value='';
+    document.getElementById('editItemName').value='';
+    document.getElementById('btnEvalPass').style.border='2px solid transparent';
+    document.getElementById('btnEvalFail').style.border='2px solid transparent';
+    document.getElementById('editFailSection').style.display='none';
+    document.getElementById('editNote').value='';
+    editEval=null;editPhotos=[];
+    renderEditPhotos();
+    card.classList.add('show');
+    card.scrollIntoView({behavior:'smooth',block:'center'});
+  }else{
+    // Sửa
+    var e=itemList[idx];
+    document.getElementById('formTitle').textContent='Sửa: '+e.name;
+    document.getElementById('editArea').value=e.area;
+    document.getElementById('editItemName').value=e.name;
+    editEval=e.eval;
+    editPhotos=(e.photos||[]).slice();
+    setEditEvalUI();
+    if(e.eval==='fail'){
+      document.getElementById('editNote').value=e.note||'';
+      document.getElementById('editFailSection').style.display='block';
+    }else{
+      document.getElementById('editNote').value='';
+      document.getElementById('editFailSection').style.display='none';
+    }
+    renderEditPhotos();
+    card.classList.add('show');
+    card.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+function setEditEval(value){
+  editEval=value;
+  setEditEvalUI();
+  document.getElementById('editFailSection').style.display=value==='fail'?'block':'none';
+}
+
+function setEditEvalUI(){
+  var p=document.getElementById('btnEvalPass'),f=document.getElementById('btnEvalFail');
+  p.style.border=editEval==='pass'?'2px solid var(--green)':'2px solid transparent';
+  f.style.border=editEval==='fail'?'2px solid var(--red)':'2px solid transparent';
+}
+
+function triggerPhotoInput(){
+  var inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';inp.capture='environment';
+  inp.onchange=function(){
+    if(!inp.files||!inp.files[0])return;
+    var file=inp.files[0],reader=new FileReader();
+    reader.onload=function(ev){if(editPhotos.length>=3)return;editPhotos.push({dataUrl:ev.target.result,name:file.name});renderEditPhotos();};
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+function removeEditPhoto(idx){
+  editPhotos.splice(idx,1);renderEditPhotos();
+}
+
+function renderEditPhotos(){
+  var c=document.getElementById('editPhotos');
+  var h='';
+  for(var i=0;i<editPhotos.length;i++){
+    h+='<div class="photo-box"><img src="'+(typeof editPhotos[i]==='string'?editPhotos[i]:editPhotos[i].dataUrl)+'"><span class="x" onclick="removeEditPhoto('+i+')">✕</span></div>';
+  }
+  if(editPhotos.length<3)h+='<div class="photo-box" onclick="triggerPhotoInput()"><span class="ph">+ Ảnh</span></div>';
+  c.innerHTML=h;
+}
+
+function saveEditForm(){
+  var area=document.getElementById('editArea').value;
+  var name=document.getElementById('editItemName').value.trim();
+  if(!area){toast('⚠️ Chọn khu vực');return;}
+  if(!name){toast('⚠️ Nhập tên hạng mục');return;}
+  if(!editEval){toast('⚠️ Chọn Đạt hoặc Ko đạt');return;}
+  if(editEval==='fail'){
+    var note=document.getElementById('editNote').value.trim();
+    if(!note){toast('⚠️ Nhập diễn giải');return;}
+    if(editPhotos.length===0){toast('⚠️ Cần ít nhất 1 ảnh');return;}
+  }
   
+  if(editingIdx===null){
+    // Thêm mới
+    itemList.push({
+      area:area,name:name,
+      eval:editEval,
+      note:editEval==='fail'?document.getElementById('editNote').value.trim():'',
+      photos:editEval==='fail'?editPhotos.slice():[],
+      _custom:true,_changed:true,_fromHistory:false
+    });
+    toast('✅ Đã thêm: '+name);
+  }else{
+    // Sửa
+    var e=itemList[editingIdx];
+    e.area=area;e.name=name;e.eval=editEval;
+    e.note=editEval==='fail'?document.getElementById('editNote').value.trim():'';
+    e.photos=editEval==='fail'?editPhotos.slice():[];
+    e._changed=true;
+    toast('✅ Đã sửa: '+name);
+  }
+  
+  cancelEdit();
+  renderList();
+  document.getElementById('editCard').classList.remove('show');
+}
+
+function cancelEdit(){
+  editingIdx=null;editEval=null;editPhotos=[];
+  document.getElementById('editArea').value='';
+  document.getElementById('editItemName').value='';
+  document.getElementById('editNote').value='';
+  document.getElementById('btnEvalPass').style.border='2px solid transparent';
+  document.getElementById('btnEvalFail').style.border='2px solid transparent';
+  document.getElementById('editFailSection').style.display='none';
+  document.getElementById('editCard').classList.remove('show');
+  renderEditPhotos();
+}
+
+// ── SUBMIT ──
+function confirmNoChange(){
+  if(!selectedStore){toast('⚠️ Chọn CH trước');return;}
+  var changed=itemList.filter(function(e){return e._changed;});
+  if(changed.length>0){submitAll();return;}
+  if(isSubmitting)return;
+  isSubmitting=true;
+  var btn=document.getElementById('btnNoChange'),orig=btn.textContent;
+  btn.textContent='⏳ Đang lưu...';btn.disabled=true;
+  
+  var payload={action:'nochange',store:selectedStore.ma,storeName:selectedStore.ten,tinh:selectedStore.tinh,gdv:document.getElementById('selGdv').value,qlkv:document.getElementById('selQlkv').value,timestamp:new Date().toISOString()};
+  var done=function(){showCompleted('không đổi');isSubmitting=false;};
+  fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(function(){done()}).catch(function(){done()});
+}
+
+function submitAll(){
+  if(!selectedStore){toast('⚠️ Chọn CH trước');return;}
+  if(isSubmitting)return;
+  
+  var uneval=itemList.filter(function(e){return!e.eval;});
+  if(uneval.length>0){toast('⚠️ Còn '+uneval.length+' mục chưa đánh giá!');return;}
+  var fn=itemList.filter(function(e){return e.eval==='fail'&&(!e.note||!e.note.trim());});
+  if(fn.length>0){toast('⚠️ '+fn.length+' mục Ko đạt chưa có diễn giải!');return;}
+  var fp=itemList.filter(function(e){return e.eval==='fail'&&(!e.photos||e.photos.length===0);});
+  if(fp.length>0){toast('⚠️ '+fp.length+' mục Ko đạt chưa có ảnh!');return;}
+  
+  isSubmitting=true;
+  var bs=document.getElementById('btnSubmitAll'),bn=document.getElementById('btnNoChange');
+  bs.textContent='⏳ Đang lưu...';bs.disabled=true;if(bn)bn.disabled=true;
+  
+  var pc=0,fc=0,items=[];
+  for(var i=0;i<itemList.length;i++){
+    var e=itemList[i];
+    if(e.eval==='pass')pc++;else if(e.eval==='fail')fc++;
+    items.push({area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.eval==='pass'?'Đạt':(e.note||''),photos:e.photos||[],_custom:e._custom});
+  }
+  var payload={store:selectedStore.ma,storeName:selectedStore.ten,tinh:selectedStore.tinh,gdv:document.getElementById('selGdv').value,qlkv:document.getElementById('selQlkv').value,items:items,totalItems:itemList.length,passCount:pc,failCount:fc};
+  var done=function(rs){isSubmitting=false;showCompleted('đã cập nhật',rs);};
+  fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(function(r){return r.json();})
+    .then(function(res){done(res.rowsSaved);})
+    .catch(function(){toast('⚠️ Lỗi kết nối, đã lưu tạm');done(0);});
+}
+
+function showCompleted(tt,rs){
+  var old=document.getElementById('completedBox');if(old)old.remove();
+  var pc=0,fc=0;
+  for(var i=0;i<itemList.length;i++){if(itemList[i].eval==='pass')pc++;else if(itemList[i].eval==='fail')fc++;}
+  var b=document.createElement('div');b.id='completedBox';b.className='completed-box';
+  b.innerHTML='<div style="font-size:28px;margin-bottom:4px">✅</div><div style="font-size:16px;font-weight:800;color:#166534;margin-bottom:2px">Đã hoàn thành khảo sát!</div><div style="font-size:13px;color:#065f46;margin-bottom:8px">'+selectedStore.ma+' — '+selectedStore.ten+'</div><div style="font-size:12px;color:#047857;background:#a7f3d0;display:inline-block;padding:3px 12px;border-radius:20px;font-weight:600;margin-bottom:10px">✅ '+pc+' Đạt · ❌ '+fc+' Ko đạt · '+itemList.length+' mục'+(rs?' · '+rs+' dòng đã lưu':'')+'</div><div style="margin-top:8px"><button class="btn btn-blue" onclick="doNewSurvey()" style="font-size:13px;">🔍 Khảo sát CH khác</button></div>';
+  document.getElementById('itemListArea').appendChild(b);
+  b.scrollIntoView({behavior:'smooth',block:'center'});
   document.getElementById('submitBar').classList.remove('show');
 }
 
 function doNewSurvey(){
-  var box=document.getElementById('completedBox');
-  if(box) box.remove();
+  var b=document.getElementById('completedBox');if(b)b.remove();
   document.getElementById('selGdv').value='';
   document.getElementById('selQlkv').innerHTML='<option value="">-- Chọn QLKV --</option>';
   document.getElementById('selQlkv').disabled=true;
-  document.getElementById('selCh').innerHTML='<option value="">-- Chọn Cửa hàng --</option>';
+  document.getElementById('selCh').innerHTML='<option value="">-- Chọn CH --</option>';
   document.getElementById('selCh').disabled=true;
   document.getElementById('chInfo').style.display='none';
-  selectedStore=null;
-  hideListCard();
-  buildItemEntries();
-  renderList();
-  isSubmitting=false;
+  document.getElementById('listCard').style.display='none';
+  document.getElementById('submitBar').classList.remove('show');
+  selectedStore=null;itemList=[];isSubmitting=false;
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── LOAD HISTORY ──
-function loadHistory(){
-  var el = document.getElementById('historyList');
-  if(!GAS_URL || !selectedStore){ if(el) el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:8px;">Chọn CH để xem lịch sử</div>'; return; }
-  if(el) el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:8px;">Đang tải...</div>';
-  
-  fetch(GAS_URL+'?action=history&store='+encodeURIComponent(selectedStore.ma))
-    .then(function(r){ return r.ok?r.json():null; })
-    .then(function(data){
-      if(!Array.isArray(data)||data.length===0){
-        if(el) el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:8px;">Chưa có lịch sử khảo sát cho CH này</div>';
-        return;
-      }
-      var html='';
-      for(var i=0;i<Math.min(data.length,5);i++){
-        var h=data[i];
-        html+='<div class="history-item"><span>'+h.date+'</span> <span class="hs-badge pass">✅ '+h.pass+'</span> <span class="hs-badge fail">❌ '+h.fail+'</span></div>';
-      }
-      if(el) el.innerHTML=html;
-    })
-    .catch(function(){
-      if(el) el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:8px;">⚠️ Chưa load được lịch sử</div>';
-    });
-}
-
-// ── START ──
 init();
 </script>
 </body>
