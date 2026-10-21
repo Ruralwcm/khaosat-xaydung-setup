@@ -219,9 +219,15 @@ document.getElementById('sc').addEventListener('change',function(){
 });
 
 // ─── LOAD ───
+function gaFetch(url,opt){
+  return new Promise(function(resolve,reject){
+    var ctrl=new AbortController(),t=setTimeout(function(){ctrl.abort();reject(new Error('timeout'));},8000);
+    fetch(url,Object.assign({signal:ctrl.signal},opt||{})).then(function(r){clearTimeout(t);resolve(r);}).catch(function(e){clearTimeout(t);reject(e);});
+  });
+}
 function loadIssues(){
   showList();document.getElementById('issueArea').innerHTML='<div style="text-align:center;color:var(--muted);padding:20px">Đang tải...</div>';
-  fetch(GAS+'?action=history&store='+encodeURIComponent(sel.ma)).then(function(r){return r.ok?r.json():null}).then(function(data){
+  gaFetch(GAS+'?action=history&store='+encodeURIComponent(sel.ma)).then(function(r){return r.ok?r.json():null}).then(function(data){
     if(data&&data.length&&data[0].items){
       var li=data[0].items;
       issues=li.filter(function(it){return it.result==='Không đạt'}).map(function(it,i){
