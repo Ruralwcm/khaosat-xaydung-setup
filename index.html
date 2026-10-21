@@ -8,84 +8,147 @@
 <meta http-equiv="Expires" content="0">
 <title>Khảo sát CSVC · WinMart+ Rural</title>
 <style>
-:root{--red:#d71920;--blue:#1a3c6e;--green:#16a34a;--gold:#f59e0b;--bg:#f4f5f7;--card:#ffffff;--txt:#1f2937;--muted:#6b7280;--border:#e5e7eb;}
+:root{
+  --red:#d71920;
+  --blue:#1a3c6e;
+  --gold:#ffc107;
+  --green:#16a34a;
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --txt:#1f2937;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Be Vietnam Pro','Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:90px;}
+body{
+  font-family:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:90px;
+}
 .topbar{background:linear-gradient(135deg,var(--red),#0f2b50);color:#fff;padding:10px 14px;}
 .topbar .t-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .topbar .t-title{font-size:16px;font-weight:800;line-height:1.2;}
-.topbar .t-title .vbadge{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:20px;margin-left:6px;}
+.topbar .t-title .vbadge{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);color:#fff;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;}
 .topbar .t-sub{font-size:11px;opacity:.85;margin-top:1px;}
 
 .wrap{max-width:640px;margin:0 auto;padding:0 12px;}
-.card{background:var(--card);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-top:12px;overflow:hidden;}
+.card{background:var(--card);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-top:14px;overflow:hidden;}
 .card-head{display:flex;align-items:center;gap:8px;padding:14px 16px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border);}
 .card-head .dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;}
-.card-head .tag{margin-left:auto;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:#eef2f7;color:var(--muted);}
+.card-head .tag{margin-left:auto;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:#eef2f7;color:#374151;white-space:nowrap;}
 .card-body{padding:14px 16px;}
-label{display:block;font-size:12px;font-weight:600;color:#374151;margin:8px 0 3px;}
+
+label{display:block;font-size:12px;font-weight:600;color:#374151;margin:10px 0 4px;}
 label:first-child{margin-top:0;}
 label .req-star{color:var(--red);}
-input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:#fff;color:var(--txt);transition:border-color .15s;}
+input,select,textarea{
+  width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:9px;
+  font-size:15px;font-family:inherit;background:#fff;color:var(--txt);
+  transition:border-color .15s, box-shadow .15s;
+}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,60,110,.12);}
 textarea{min-height:50px;resize:vertical;font-size:13px;}
+select:disabled{background:#f1f5f9;color:#94a3b8}
 .row{display:flex;gap:8px;}
-.row>div{flex:1;min-width:0;}
+.row > div{flex:1;min-width:0;}
 
 .store-info{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;display:none;}
 .store-info b{font-weight:700;}
 
-/* area group */
-.area-group{margin-bottom:12px;}
-.area-title{font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px;border-bottom:2px solid var(--border);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
-.area-title .icon{font-size:16px;}
+/* area group header */
+.area-group{margin-top:12px;}
+.area-group:first-child{margin-top:0;}
+.area-title{font-size:14px;font-weight:800;color:var(--blue);padding:8px 12px;background:#eff6ff;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.area-title .cnt{font-size:11px;font-weight:400;color:var(--muted);margin-left:auto;}
 
 /* item card */
-.item-card{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:6px;display:flex;align-items:flex-start;gap:10px;background:#fafbfc;transition:all .15s;}
+.item-card{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:6px;display:flex;align-items:flex-start;gap:10px;background:#fafbfc;}
 .item-card.pass{background:#f0fdf4;border-color:#bbf7d0;}
 .item-card.fail{background:#fef2f2;border-color:#fecaca;}
+.item-card .idx{background:var(--blue);color:#fff;border-radius:50%;width:26px;height:26px;min-width:26px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;}
 .item-card.pass .idx{background:var(--green);}
 .item-card.fail .idx{background:var(--red);}
-.item-card .idx{background:var(--blue);color:#fff;border-radius:50%;width:26px;height:26px;min-width:26px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px;}
+.item-card.custom .idx{background:var(--gold);color:#1f2937;font-size:14px;}
 .item-card .body{flex:1;min-width:0;}
-.item-card .t{font-size:14px;font-weight:700;}
-.item-card .t .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:6px;display:inline-block;}
+.item-card .t{font-weight:700;font-size:14px;}
+.item-card .t .badge{font-size:10px;font-weight:600;border-radius:20px;padding:1px 7px;margin-left:6px;vertical-align:middle;display:inline-block;}
 .item-card .t .badge.pass{background:#dcfce7;color:#16a34a;}
 .item-card .t .badge.fail{background:#fef2f2;color:#dc2626;}
+.item-card .t .badge.pending{background:#eef2f7;color:var(--muted);}
 .item-card .t .badge.new{background:#fef3c7;color:#92400e;}
-.item-card .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.item-card .t .badge.edited{background:#fde68a;color:#92400e;}
+.item-card .s{font-size:12px;color:var(--muted);margin-top:2px;word-break:break-word;}
 .item-card .acts{display:flex;flex-direction:column;gap:4px;}
 .item-card .act{background:none;border:none;cursor:pointer;padding:2px 6px;font-size:16px;}
 .item-card .act.edit{color:var(--blue);}
 
-/* edit form card */
-.edit-card{display:none;margin-top:10px;}
+/* compact act bar */
+.compact-act-bar{display:none;text-align:center;padding:8px;}
+.compact-act-bar.show{display:block;}
+
+/* photos in list item */
+.item-photos{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;}
+.item-photos img{width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--border);}
+
+/* edit form (Card ③) */
+.edit-card{display:none;}
 .edit-card.show{display:block;}
 
-.inline-photos{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
-.photo-box{width:50px;height:50px;border:2px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0;}
-.photo-box img{width:100%;height:100%;object-fit:cover;}
-.photo-box .x{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;}
-.photo-box .ph{font-size:8px;color:#94a3b8;text-align:center;}
+.edit-eval-row{display:flex;gap:10px;}
+.edit-eval-row .btn{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;border:2px solid transparent;}
+.edit-eval-row .btn-pass{background:#f0fdf4;color:var(--green);}
+.edit-eval-row .btn-pass.sel{border-color:var(--green);background:#dcfce7;}
+.edit-eval-row .btn-fail{background:#fef2f2;color:var(--red);}
+.edit-eval-row .btn-fail.sel{border-color:var(--red);background:#fee2e2;}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;border-radius:9px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
+.fail-detail{display:none;margin-top:10px;padding:10px;background:#fff5f5;border-radius:8px;border:1px dashed #fca5a5;}
+.fail-detail.show{display:block;}
+.fail-detail label{font-size:11px;font-weight:600;color:#b91c1c;}
+
+.inline-photos{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.photo-box{width:54px;height:54px;border:2px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0;}
+.photo-box:hover{border-color:var(--red);}
+.photo-box img{width:100%;height:100%;object-fit:cover;}
+.photo-box .remove{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;}
+.photo-box .placeholder{font-size:8px;color:#94a3b8;text-align:center;}
+.photo-hint{font-size:10px;color:var(--red);margin-top:3px;}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 14px;border-radius:9px;border:none;font-size:14px;font-weight:700;
+  cursor:pointer;transition:opacity .15s, transform .05s;font-family:inherit;
+}
 .btn:active{transform:scale(.98);}
-.btn-red{background:var(--red);color:#fff;}
+.btn-primary{background:var(--red);color:#fff;}
 .btn-blue{background:var(--blue);color:#fff;}
 .btn-ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
-.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-block{width:100%;margin-top:12px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-sm{padding:6px 12px;font-size:11px;border-radius:7px;}
 
-.empty-msg{text-align:center;color:var(--muted);font-size:14px;padding:16px;}
-
-.submit-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:10px 14px;z-index:100;max-width:640px;margin:0 auto;box-shadow:0 -2px 10px rgba(0,0,0,.05);display:none;}
-.submit-bar.show{display:flex;gap:8px;}
+.submit-bar{
+  position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);
+  padding:10px 14px;display:none;gap:8px;z-index:100;max-width:640px;margin:0 auto;
+  box-shadow:0 -2px 10px rgba(0,0,0,.05);
+}
+.submit-bar.show{display:flex;}
 .submit-bar .btn{flex:1;padding:13px;font-size:15px;}
 
-.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center;}
+.toast{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;
+  padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;
+  pointer-events:none;max-width:90vw;text-align:center;
+}
 .toast.show{opacity:1;}
 
-.completed-box{background:#d1fae5;border:2px solid #16a34a;border-radius:12px;padding:16px 18px;margin:12px 0;text-align:center;animation:fadeIn .3s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.completed-box{background:#d1fae5;border:2px solid #16a34a;border-radius:12px;padding:16px 18px;margin:12px 0;text-align:center;}
+.completed-box .icon{font-size:28px;margin-bottom:4px;}
+.completed-box .title{font-size:16px;font-weight:800;color:#166534;margin-bottom:2px;}
+.completed-box .store-name{font-size:13px;color:#065f46;margin-bottom:8px;}
+.completed-box .summary{font-size:12px;color:#047857;background:#a7f3d0;display:inline-block;padding:3px 12px;border-radius:20px;font-weight:600;}
+
+@media(max-width:480px){
+  .edit-eval-row .btn{font-size:13px;padding:10px;}
+}
 </style>
 </head>
 <body>
@@ -93,152 +156,167 @@ textarea{min-height:50px;resize:vertical;font-size:13px;}
 <div class="topbar">
   <div class="t-row">
     <div>
-      <div class="t-title">🏪 Khảo sát CSVC <span class="vbadge">v7</span></div>
-      <div class="t-sub">Tình trạng đầu mục · Sửa · (+) Bổ sung — Group theo khu vực</div>
+      <div class="t-title">🏪 Khảo sát CSVC <span class="vbadge">v8</span></div>
+      <div class="t-sub">List đầu mục vấn đề · Sửa tình trạng · (+) Bổ sung — Group theo khu vực</div>
     </div>
   </div>
 </div>
 
 <div class="wrap">
-  <!-- ① CH -->
+  <!-- ===== ① CH khảo sát ===== -->
   <div class="card">
     <div class="card-head"><span class="dot"></span>① Cửa hàng khảo sát</div>
     <div class="card-body">
-      <label>GĐV</label>
-      <select id="selGdv"><option value="">-- Đang tải... --</option></select>
-      <label>QLKV</label>
-      <select id="selQlkv" disabled><option value="">-- Chọn QLKV --</option></select>
+      <div class="row">
+        <div>
+          <label>GĐV <span class="req-star">*</span></label>
+          <select id="selGdv"><option value="">-- Đang tải --</option></select>
+        </div>
+        <div>
+          <label>QLKV <span class="req-star">*</span></label>
+          <select id="selQlkv" disabled><option value="">-- Chọn QLKV --</option></select>
+        </div>
+      </div>
       <label>Cửa hàng <span class="req-star">*</span></label>
-      <select id="selCh" disabled><option value="">-- Chọn CH --</option></select>
-      <div class="store-info" id="chInfo">Mã CH: <b id="pTinh">-</b> · Tên: <b id="pName">-</b></div>
-    </div>
-  </div>
-
-  <!-- ② Danh sách vấn đề (hiện sau khi chọn CH) -->
-  <div class="card" id="listCard" style="display:none">
-    <div class="card-head">
-      <span class="dot"></span>② Danh sách vấn đề
-      <span class="tag" id="tagCount">0 mục</span>
-      <button class="btn btn-red" id="btnAddNew" style="margin-left:auto;font-size:11px;padding:6px 12px;" onclick="toggleEditForm(null)">➕ Thêm</button>
-    </div>
-    <div class="card-body" id="itemListArea">
-      <div id="itemList"><div class="empty-msg">Đang tải...</div></div>
-      <div id="noChangeBar" style="text-align:center;display:none">
-        <button class="btn btn-ghost" onclick="confirmNoChange()" style="border-color:var(--green);color:var(--green);font-size:13px;">✅ Không thay đổi</button>
+      <select id="selCh" disabled><option value="">-- Chọn Cửa hàng --</option></select>
+      <div class="store-info" id="chInfo">
+        Mã CH: <b id="siMa">-</b> · Tỉnh: <b id="siTinh">-</b> · Tên: <b id="siTen">-</b>
       </div>
     </div>
   </div>
 
-  <!-- ③ Form thêm/sửa -->
+  <!-- ===== ② Danh sách vấn đề ===== -->
+  <div class="card" id="listCard" style="display:none">
+    <div class="card-head"><span class="dot"></span>② Danh sách vấn đề <span class="tag" id="tagCount">0 mục</span></div>
+    <div class="card-body">
+      <div id="itemList"><div class="item-card" style="justify-content:center;color:var(--muted);">Chọn CH để xem danh sách vấn đề</div></div>
+      <div style="display:flex;gap:8px;margin-top:8px;" id="confirmBar">
+        <button class="btn btn-ghost" id="btnNoChange" onclick="onNoChange()" disabled style="flex:1;border-color:var(--green);color:var(--green);">✅ Không thay đổi</button>
+        <button class="btn btn-blue" id="btnAddNew" onclick="toggleEditForm(null)" disabled style="flex:1;">➕ Thêm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ③ Form thêm/sửa vấn đề ===== -->
   <div class="card edit-card" id="editCard">
     <div class="card-head"><span class="dot" style="background:var(--gold)"></span>③ <span id="formTitle">Thêm vấn đề</span></div>
     <div class="card-body">
       <label>Khu vực <span class="req-star">*</span></label>
       <select id="editArea">
         <option value="">-- Chọn khu vực --</option>
-        <option>TRƯỚC CH</option><option>TRONG CH</option><option>KHO - NVS</option>
+        <option>TRƯỚC CH</option>
+        <option>TRONG CH</option>
+        <option>KHO - NVS</option>
       </select>
+
       <label>Tên hạng mục <span class="req-star">*</span></label>
       <input type="text" id="editItemName" placeholder="VD: Biển hiệu WM+">
+
       <label>Đánh giá <span class="req-star">*</span></label>
-      <div style="display:flex;gap:10px;margin-top:4px;">
-        <button class="btn" id="btnEvalPass" onclick="setEditEval('pass')" style="flex:1;background:#f0fdf4;color:var(--green);border:2px solid transparent;">✅ Đạt</button>
-        <button class="btn" id="btnEvalFail" onclick="setEditEval('fail')" style="flex:1;background:#fef2f2;color:var(--red);border:2px solid transparent;">❌ Ko đạt</button>
+      <div class="edit-eval-row">
+        <button class="btn btn-pass" id="btnPass" onclick="setEditEval('pass')">✅ Đạt</button>
+        <button class="btn btn-fail" id="btnFail" onclick="setEditEval('fail')">❌ Ko đạt</button>
       </div>
-      <div id="editFailSection" style="display:none;">
-        <label>📝 Diễn giải <span class="req-star">*</span></label>
-        <textarea id="editNote" placeholder="Mô tả tình trạng..."></textarea>
-        <label>📸 Ảnh (tối đa 3)</label>
-        <div class="inline-photos" id="editPhotos"></div>
-        <div style="font-size:10px;color:var(--red);">Yêu cầu ít nhất 1 ảnh khi Ko đạt</div>
+
+      <div class="fail-detail" id="failDetail">
+        <label>📝 Diễn giải tình trạng <span class="req-star">*</span></label>
+        <textarea id="editNote" placeholder="Mô tả tình trạng hư hỏng/xuống cấp..."></textarea>
+        <label>📸 Ảnh minh họa (tối đa 3, ít nhất 1)</label>
+        <div class="inline-photos" id="editPhotosContainer">
+          <div class="photo-box" onclick="triggerPhotoInput()">
+            <span class="placeholder">+ Ảnh</span>
+          </div>
+        </div>
+        <div class="photo-hint">⚡ Yêu cầu ít nhất 1 ảnh khi Không đạt</div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
+
+      <div style="display:flex;gap:8px;margin-top:14px;">
         <button class="btn btn-blue" id="btnSaveEdit" onclick="saveEditForm()" style="flex:1;">💾 Lưu</button>
-        <button class="btn btn-ghost" onclick="cancelEdit()">Huỷ</button>
+        <button class="btn btn-ghost" id="btnCancelEdit" onclick="cancelEdit()">Huỷ</button>
       </div>
     </div>
   </div>
+
 </div>
 
 <div class="submit-bar" id="submitBar">
-  <button class="btn btn-ghost" id="btnNoChange" onclick="confirmNoChange()" style="border-color:var(--green);color:var(--green);">✅ Không đổi</button>
-  <button class="btn btn-red" id="btnSubmitAll" onclick="submitAll()">💾 Lưu khảo sát</button>
+  <button class="btn btn-ghost" id="btnSubmitNoChange" onclick="onNoChange()" style="flex:1;border-color:var(--green);color:var(--green);">✅ Không đổi</button>
+  <button class="btn btn-primary" id="btnSubmitAll" onclick="submitAll()" style="flex:1;">💾 Lưu khảo sát</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ──
+// ===== CONFIG =====
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
 var STORELIST_CSV = 'https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
 
-// ── DEFAULT 34 ITEMS ──
+// ===== DEFAULT 34 ITEMS =====
 var DEFAULT_ITEMS = [
   {area:'TRƯỚC CH',name:'Biển hiệu WM+'},{area:'TRƯỚC CH',name:'Mặt tiền/ sơn tường ngoài'},{area:'TRƯỚC CH',name:'Cửa cuốn/ cửa kính'},{area:'TRƯỚC CH',name:'Mái hiên/ mái che'},{area:'TRƯỚC CH',name:'Đèn chiếu sáng ngoài'},{area:'TRƯỚC CH',name:'Vỉa hè'},{area:'TRƯỚC CH',name:'Biển quảng cáo/Poster'},{area:'TRƯỚC CH',name:'Cây xanh'},{area:'TRƯỚC CH',name:'Thùng rác ngoài'},{area:'TRƯỚC CH',name:'Camera an ninh ngoài'},
   {area:'TRONG CH',name:'Trần nhà/ thạch cao'},{area:'TRONG CH',name:'Tường'},{area:'TRONG CH',name:'Đèn chiếu sáng'},{area:'TRONG CH',name:'Điều hòa/ quạt/ thông gió'},{area:'TRONG CH',name:'Kệ trưng bày'},{area:'TRONG CH',name:'Tủ mát/ tủ đông/ tủ lạnh'},{area:'TRONG CH',name:'Bảng giá'},{area:'TRONG CH',name:'Giỏ hàng/ xe đẩy'},{area:'TRONG CH',name:'Quầy thu ngân'},{area:'TRONG CH',name:'Cân điện tử'},{area:'TRONG CH',name:'Wifi/ Mạng/ Thiết bị IT'},{area:'TRONG CH',name:'Hạng mục khác'},{area:'TRONG CH',name:'Hệ thống âm thanh'},{area:'TRONG CH',name:'Bình chữa cháy/ PCCC'},{area:'TRONG CH',name:'Ổ điện, hệ thống điện'},{area:'TRONG CH',name:'Camera an ninh trong'},
   {area:'KHO - NVS',name:'Cửa kho / cửa NVS'},{area:'KHO - NVS',name:'Kệ kho/ Palet'},{area:'KHO - NVS',name:'Sàn kho / NVS'},{area:'KHO - NVS',name:'Đường điện'},{area:'KHO - NVS',name:'Thiết bị vệ sinh'},{area:'KHO - NVS',name:'Đường nước'},{area:'KHO - NVS',name:'Thiết bị nhà vệ sinh'},{area:'KHO - NVS',name:'Sàn kho / NVS (tổng thể)'}
 ];
 
-// ── STATE ──
+// ===== STATE =====
 var cascadeData = {};
 var storeList = [];
-var itemList = [];        // danh sách vấn đề hiện tại của CH
-var editingIdx = null;    // index đang sửa trong itemList, null = thêm mới
-var editEval = null;
-var editPhotos = [];
+var itemList = [];         // current items for selected CH
 var selectedStore = null;
+var editingIdx = null;     // null=add, number=edit itemList[index]
+var editEval = null;       // 'pass' or 'fail'
+var editPhotos = [];       // photos in edit form
 var isSubmitting = false;
+var AREA_ORDER = ['TRƯỚC CH','TRONG CH','KHO - NVS'];
+var AREA_ICONS = {'TRƯỚC CH':'🏪','TRONG CH':'🛒','KHO - NVS':'📦'};
 
-// ── TOAST ──
+// ===== TOAST =====
 var _tt;
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},2600);}
 
-// ── INIT ──
+// ===== INIT =====
 function init(){
+  // Load checklist items (always use default 34)
   // Load storelist
   fetch(GAS_URL+'?action=storeData')
     .then(function(r){return r.ok?r.json():null;})
     .then(function(rows){
-      if(Array.isArray(rows)&&rows.length>0){storeList=rows;populateCascade();}
-    })
-    .catch(function(){loadCSVFallback();});
+      if(rows&&rows.length){storeList=rows;buildCascade();}
+    }).catch(function(){csvFallback();});
   setTimeout(function(){
-    var sel=document.getElementById('selGdv');
-    if(sel&&sel.options.length<=1) loadCSVFallback();
+    if(document.getElementById('selGdv').options.length<=1) csvFallback();
   },3000);
 }
 
-function loadCSVFallback(){
-  fetch(STORELIST_CSV)
-    .then(function(r){return r.text();})
-    .then(function(t){
-      var rows=parseCSV(t),arr=[];
-      for(var i=0;i<rows.length;i++){
-        var r=rows[i];
-        if((r['Tình Trạng']||'').trim()!=='Đang hoạt động')continue;
-        arr.push({gdv:r['GĐV']||'',qlkv:r['QLKV']||'',ma:r['Mã SAP']||'',ten:r['Tên cửa hàng']||'',tinh:r['Tỉnh/TP']||''});
-      }
-      if(arr.length>0){storeList=arr;populateCascade();}
-    }).catch(function(){});
+function csvFallback(){
+  fetch(STORELIST_CSV).then(function(r){return r.text();}).then(function(t){
+    var rows=parseCSV(t),arr=[];
+    for(var i=0;i<rows.length;i++){
+      var r=rows[i];
+      if((r['Tình Trạng']||'').trim()!=='Đang hoạt động')continue;
+      arr.push({gdv:r['GĐV']||'',qlkv:r['QLKV']||'',ma:r['Mã SAP']||'',ten:r['Tên cửa hàng']||'',tinh:r['Tỉnh/TP']||''});
+    }
+    if(arr.length){storeList=arr;buildCascade();}
+  }).catch(function(){});
 }
 
 function parseCSV(t){
   var rows=[],row=[],cur='',iq=false;
   for(var i=0;i<t.length;i++){
     var c=t[i];
-    if(iq){if(c==='"'){if(t[i+1]==='"'){cur+='"';i++;}else iq=false;}else cur+=c;}
-    else if(c==='"')iq=true;
+    if(iq){if(c=='"'){if(t[i+1]=='"'){cur+='"';i++;}else iq=false;}else cur+=c;}
+    else if(c=='"')iq=true;
     else if(c===','){row.push(cur);cur='';}
     else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);cur='';if(row.length>1)rows.push(row);row=[];}
     else cur+=c;
   }
   row.push(cur);if(row.length>1)rows.push(row);
   if(rows.length<2)return[];
-  var header=rows[0].map(function(h){return h.trim();});
-  return rows.slice(1).map(function(r){var o={};header.forEach(function(h,i){o[h]=r[i];});return o;});
+  var h=rows[0].map(function(x){return x.trim();});
+  return rows.slice(1).map(function(r){var o={};h.forEach(function(k,i){o[k]=r[i];});return o;});
 }
 
-function populateCascade(){
+function buildCascade(){
   cascadeData={};
   for(var i=0;i<storeList.length;i++){
     var s=storeList[i],g=s.gdv||'Chưa PC',q=s.qlkv||'Chưa PC';
@@ -247,216 +325,224 @@ function populateCascade(){
     cascadeData[g][q].push(s);
   }
   var sel=document.getElementById('selGdv');
-  var keys=Object.keys(cascadeData).sort();
+  var ks=Object.keys(cascadeData).sort();
   sel.innerHTML='<option value="">-- Chọn GĐV --</option>';
-  for(var i=0;i<keys.length;i++){
-    var g=keys[i];
+  for(var i=0;i<ks.length;i++){
+    var g=ks[i];
     sel.innerHTML+='<option value="'+g+'">'+g+' ('+Object.keys(cascadeData[g]).length+' QLKV)</option>';
   }
 }
 
-// ── CASCADE ──
+// ===== CASCADE =====
 document.getElementById('selGdv').addEventListener('change',function(){
-  var g=this.value,qSel=document.getElementById('selQlkv');
-  qSel.innerHTML='<option value="">-- Chọn QLKV --</option>';
-  document.getElementById('selCh').innerHTML='<option value="">-- Chọn CH --</option>';
-  document.getElementById('selCh').disabled=true;
-  document.getElementById('chInfo').style.display='none';
-  if(!g||!cascadeData[g]){qSel.disabled=true;return;}
-  qSel.disabled=false;
-  var ks=Object.keys(cascadeData[g]).sort();
-  for(var i=0;i<ks.length;i++){var q=ks[i];qSel.innerHTML+='<option value="'+q+'">'+q+' ('+cascadeData[g][q].length+' CH)</option>';}
+  var g=this.value,qs=document.getElementById('selQlkv'),ss=document.getElementById('selCh');
+  qs.innerHTML='<option value="">-- Chọn QLKV --</option>';
+  ss.innerHTML='<option value="">-- Chọn CH --</option>';ss.disabled=true;
+  hideStoreInfo();
+  if(!g||!cascadeData[g]){qs.disabled=true;return;}
+  qs.disabled=false;
+  var qks=Object.keys(cascadeData[g]).sort();
+  for(var i=0;i<qks.length;i++){var q=qks[i];qs.innerHTML+='<option value="'+q+'">'+q+' ('+cascadeData[g][q].length+' CH)</option>';}
 });
 document.getElementById('selQlkv').addEventListener('change',function(){
-  var g=document.getElementById('selGdv').value,q=this.value,sSel=document.getElementById('selCh');
-  sSel.innerHTML='<option value="">-- Chọn CH --</option>';
-  document.getElementById('chInfo').style.display='none';
-  if(!g||!q||!cascadeData[g]||!cascadeData[g][q]){sSel.disabled=true;return;}
-  sSel.disabled=false;
-  var ss=cascadeData[g][q].sort(function(a,b){return(a.ma||'').localeCompare(b.ma||'');});
-  for(var i=0;i<ss.length;i++){var s=ss[i];sSel.innerHTML+='<option value="'+s.ma+'" data-name="'+s.ten+'" data-tinh="'+s.tinh+'">'+s.ma+' - '+s.ten+'</option>';}
+  var g=document.getElementById('selGdv').value,q=this.value,ss=document.getElementById('selCh');
+  ss.innerHTML='<option value="">-- Chọn CH --</option>';hideStoreInfo();
+  if(!g||!q||!cascadeData[g]||!cascadeData[g][q]){ss.disabled=true;return;}
+  ss.disabled=false;
+  var chs=cascadeData[g][q].sort(function(a,b){return (a.ma||'').localeCompare(b.ma||'');});
+  for(var i=0;i<chs.length;i++){
+    var c=chs[i];
+    ss.innerHTML+='<option value="'+c.ma+'" data-name="'+c.ten+'" data-tinh="'+c.tinh+'">'+c.ma+' - '+c.ten+'</option>';
+  }
 });
 document.getElementById('selCh').addEventListener('change',function(){
   var opt=this.selectedOptions[0];
   if(opt&&opt.getAttribute('data-name')){
     selectedStore={ma:opt.value,ten:opt.getAttribute('data-name'),tinh:opt.getAttribute('data-tinh')};
-    document.getElementById('pTinh').textContent=selectedStore.ma;
-    document.getElementById('pName').textContent=selectedStore.ten;
+    document.getElementById('siMa').textContent=selectedStore.ma;
+    document.getElementById('siTinh').textContent=selectedStore.tinh;
+    document.getElementById('siTen').textContent=selectedStore.ten;
     document.getElementById('chInfo').style.display='block';
     loadItemsForCH();
   }else{
-    selectedStore=null;
-    document.getElementById('chInfo').style.display='none';
-    document.getElementById('listCard').style.display='none';
-    document.getElementById('submitBar').classList.remove('show');
+    selectedStore=null;hideStoreInfo();hideListCard();
   }
 });
 
-// ── LOAD ITEMS cho CH đã chọn: merge default + data cũ ──
+function hideStoreInfo(){
+  document.getElementById('chInfo').style.display='none';
+}
+
+// ===== LOAD ITEMS: default 34 + merge last survey =====
 function loadItemsForCH(){
-  itemList=[];
   // Start with default 34 items
-  for(var i=0;i<DEFAULT_ITEMS.length;i++){
-    itemList.push({
-      area:DEFAULT_ITEMS[i].area,
-      name:DEFAULT_ITEMS[i].name,
-      eval:null, note:'', photos:[],
-      _custom:false, _changed:false, _fromHistory:false
-    });
-  }
-  
-  // Try to load last survey from GAS
+  itemList=DEFAULT_ITEMS.map(function(d,i){
+    return {area:d.area,name:d.name,eval:null,note:'',photos:[],_custom:false,_changed:false,_hasHistory:false};
+  });
+
+  // Try load last survey
   fetch(GAS_URL+'?action=history&store='+encodeURIComponent(selectedStore.ma))
     .then(function(r){return r.ok?r.json():null;})
     .then(function(data){
-      if(Array.isArray(data)&&data.length>0&&data[0].items){
-        var lastItems=data[0].items;
-        // Merge: match by area+name
-        for(var i=0;i<lastItems.length;i++){
-          var li=lastItems[i];
-          var found=false;
-          for(var j=0;j<itemList.length;j++){
-            if(itemList[j].area===li.area&&itemList[j].name===li.item){
-              itemList[j].eval=li.result==='Đạt'?'pass':'fail';
-              itemList[j].note=li.note||'';
-              itemList[j].photos=li.photos||[];
-              itemList[j]._fromHistory=true;
-              found=true;break;
-            }
-          }
-          if(!found&&li._custom){
-            // Custom item from last survey
-            itemList.push({
-              area:li.area,name:li.item,
-              eval:li.result==='Đạt'?'pass':'fail',
-              note:li.note||'',photos:li.photos||[],
-              _custom:true,_changed:false,_fromHistory:true
-            });
+      if(!data||!data.length||!data[0].items)return;
+      var lastItems=data[0].items;
+      for(var i=0;i<lastItems.length;i++){
+        var li=lastItems[i],found=false;
+        for(var j=0;j<itemList.length;j++){
+          if(itemList[j].area===li.area&&itemList[j].name===li.item){
+            itemList[j].eval=li.result==='Đạt'?'pass':'fail';
+            itemList[j].note=li.note||'';itemList[j].photos=li.photos||[];
+            itemList[j]._hasHistory=true;found=true;break;
           }
         }
+        if(!found&&li._custom){
+          itemList.push({area:li.area,name:li.item,eval:li.result==='Đạt'?'pass':'fail',note:li.note||'',photos:li.photos||[],_custom:true,_changed:false,_hasHistory:true});
+        }
       }
-    })
-    .catch(function(){})
+    }).catch(function(){})
     .finally(function(){
+      showListCard();
       renderList();
-      document.getElementById('listCard').style.display='block';
-      document.getElementById('submitBar').classList.add('show');
-      document.getElementById('noChangeBar').style.display='block';
-      document.getElementById('listCard').scrollIntoView({behavior:'smooth',block:'start'});
     });
 }
 
-// ── GROUP items by area ──
-function groupByArea(items){
-  var groups={},order=['TRƯỚC CH','TRONG CH','KHO - NVS'];
-  order.forEach(function(a){groups[a]=[];});
-  items.forEach(function(it){
-    var a=it.area;
-    if(!groups[a]) groups[a]=[];
-    groups[a].push(it);
-  });
-  return order.map(function(a){return{area:a,items:groups[a]};});
+// ===== SHOW/HIDE =====
+function showListCard(){
+  document.getElementById('listCard').style.display='block';
+  document.getElementById('btnAddNew').disabled=false;
+  document.getElementById('btnNoChange').disabled=false;
+  document.getElementById('submitBar').classList.add('show');
 }
 
-// ── RENDER ──
+function hideListCard(){
+  document.getElementById('listCard').style.display='none';
+  document.getElementById('btnAddNew').disabled=true;
+  document.getElementById('btnNoChange').disabled=true;
+  document.getElementById('submitBar').classList.remove('show');
+  itemList=[];
+}
+
+// ===== RENDER LIST (grouped by area) =====
 function renderList(){
-  var groups=groupByArea(itemList);
-  var icons={'TRƯỚC CH':'🏪','TRONG CH':'🛒','KHO - NVS':'📦'};
-  var html='';
-  var total=itemList.length,passCount=0,failCount=0;
+  var groups=[];
+  AREA_ORDER.forEach(function(a){
+    var its=itemList.filter(function(e){return e.area===a;});
+    if(its.length) groups.push({area:a,items:its});
+  });
   
+  var total=itemList.length,passCount=0,failCount=0;
+  for(var i=0;i<itemList.length;i++){
+    if(itemList[i].eval==='pass')passCount++;
+    else if(itemList[i].eval==='fail')failCount++;
+  }
+  document.getElementById('tagCount').textContent=total+' mục · ✅'+passCount+' ❌'+failCount;
+  
+  var html='';
   for(var g=0;g<groups.length;g++){
     var grp=groups[g];
-    if(grp.items.length===0)continue;
     html+='<div class="area-group">';
-    html+='<div class="area-title">'+(icons[grp.area]||'📍')+' '+grp.area+' <span style="font-size:11px;color:var(--muted);font-weight:400">('+grp.items.length+' mục)</span></div>';
-    
+    html+='<div class="area-title">'+(AREA_ICONS[grp.area]||'')+' '+grp.area+' <span class="cnt">'+grp.items.length+' mục</span></div>';
     for(var i=0;i<grp.items.length;i++){
       var e=grp.items[i];
-      var cls='';
-      var badge='';
-      if(e.eval==='pass'){cls='pass';badge='<span class="badge pass">✅ Đạt</span>';passCount++;}
-      else if(e.eval==='fail'){cls='fail';badge='<span class="badge fail">❌ Ko đạt</span>';failCount++;}
-      else{badge='<span class="badge" style="background:#eef2f7;color:var(--muted)">⬜ Chưa</span>';}
+      var cls='',badge='',sub='';
+      if(e.eval==='pass'){cls='pass';badge='<span class="badge pass">✅ Đạt</span>';sub='Tình trạng tốt';}
+      else if(e.eval==='fail'){cls='fail';badge='<span class="badge fail">❌ Ko đạt</span>';sub=e.note?e.note.substring(0,80):'Không đạt';}
+      else{badge='<span class="badge pending">⬜ Chưa</span>';sub='Click ✏️ để đánh giá';}
       if(e._custom)badge+=' <span class="badge new">MỚI</span>';
-      if(e._changed&&!e._custom)badge+=' <span class="badge new">đã sửa</span>';
+      if(e._changed&&!e._custom)badge+=' <span class="badge edited">đã sửa</span>';
       
-      var sub='';
-      if(e.eval==='fail'&&e.note)sub=e.note.substring(0,70)+(e.note.length>70?'...':'');
-      else if(e.eval==='pass')sub='Tình trạng tốt';
-      else sub='Click để đánh giá';
-      if(e.photos&&e.photos.length)sub+=' · 📸'+e.photos.length;
+      // Photos thumbnail
+      var photoHtml='';
+      if(e.photos&&e.photos.length){
+        photoHtml='<div class="item-photos">';
+        for(var p=0;p<Math.min(e.photos.length,3);p++){
+          var src=typeof e.photos[p]==='string'?e.photos[p]:e.photos[p].dataUrl;
+          photoHtml+='<img src="'+src+'">';
+        }
+        photoHtml+='</div>';
+      }
+      sub+=photoHtml;
       
       // Find global index
       var gi=-1;
       for(var k=0;k<itemList.length;k++){if(itemList[k]===e){gi=k;break;}}
       
-      html+='<div class="item-card '+cls+'">';
+      html+='<div class="item-card '+cls+(e._custom?' custom':'')+'">';
       html+='<div class="idx">'+(e._custom?'+':(gi+1))+'</div>';
-      html+='<div class="body">';
-      html+='<div class="t">'+e.name+badge+'</div>';
-      html+='<div class="sub">'+sub+'</div>';
-      html+='</div>';
+      html+='<div class="body"><div class="t">'+e.name+badge+'</div><div class="s">'+sub+'</div></div>';
       html+='<div class="acts"><button class="act edit" onclick="toggleEditForm('+gi+')" title="Sửa">✏️</button></div>';
       html+='</div>';
     }
     html+='</div>';
   }
   
-  document.getElementById('itemList').innerHTML=html||'<div class="empty-msg">Chưa có hạng mục nào</div>';
-  document.getElementById('tagCount').textContent=total+' mục · ✅'+passCount+' ❌'+failCount;
+  document.getElementById('itemList').innerHTML=html||'<div class="item-card" style="justify-content:center;color:var(--muted);">Chưa có hạng mục nào</div>';
+  
+  // Update nút "Không thay đổi" vs "Lưu thay đổi"
+  refreshNoChangeBtn();
 }
 
-// ── EDIT FORM ──
+function refreshNoChangeBtn(){
+  var btn=document.getElementById('btnNoChange');
+  var btnSubmit=document.getElementById('btnSubmitNoChange');
+  if(!btn||!selectedStore)return;
+  var changed=itemList.filter(function(e){return e._changed;});
+  if(changed.length>0){
+    btn.textContent='💾 Lưu thay đổi ('+changed.length+')';
+    btn.style.borderColor='var(--red)';btn.style.color='var(--red)';
+    if(btnSubmit){btnSubmit.textContent='💾 Lưu thay đổi ('+changed.length+')';btnSubmit.style.borderColor='var(--red)';btnSubmit.style.color='var(--red)';}
+  }else{
+    btn.textContent='✅ Không thay đổi';
+    btn.style.borderColor='var(--green)';btn.style.color='var(--green)';
+    if(btnSubmit){btnSubmit.textContent='✅ Không đổi';btnSubmit.style.borderColor='var(--green)';btnSubmit.style.color='var(--green)';}
+  }
+}
+
+// ===== EDIT FORM =====
 function toggleEditForm(idx){
   editingIdx=idx;
   var card=document.getElementById('editCard');
   
   if(idx===null){
-    // Thêm mới
+    // Add new
     document.getElementById('formTitle').textContent='Thêm vấn đề mới';
     document.getElementById('editArea').value='';
     document.getElementById('editItemName').value='';
-    document.getElementById('btnEvalPass').style.border='2px solid transparent';
-    document.getElementById('btnEvalFail').style.border='2px solid transparent';
-    document.getElementById('editFailSection').style.display='none';
-    document.getElementById('editNote').value='';
     editEval=null;editPhotos=[];
-    renderEditPhotos();
-    card.classList.add('show');
-    card.scrollIntoView({behavior:'smooth',block:'center'});
+    document.getElementById('btnPass').classList.remove('sel');
+    document.getElementById('btnFail').classList.remove('sel');
+    document.getElementById('failDetail').classList.remove('show');
+    document.getElementById('editNote').value='';
   }else{
-    // Sửa
+    // Edit existing
     var e=itemList[idx];
     document.getElementById('formTitle').textContent='Sửa: '+e.name;
     document.getElementById('editArea').value=e.area;
     document.getElementById('editItemName').value=e.name;
     editEval=e.eval;
     editPhotos=(e.photos||[]).slice();
-    setEditEvalUI();
+    document.getElementById('btnPass').classList.toggle('sel',e.eval==='pass');
+    document.getElementById('btnFail').classList.toggle('sel',e.eval==='fail');
     if(e.eval==='fail'){
+      document.getElementById('failDetail').classList.add('show');
       document.getElementById('editNote').value=e.note||'';
-      document.getElementById('editFailSection').style.display='block';
     }else{
+      document.getElementById('failDetail').classList.remove('show');
       document.getElementById('editNote').value='';
-      document.getElementById('editFailSection').style.display='none';
     }
-    renderEditPhotos();
-    card.classList.add('show');
-    card.scrollIntoView({behavior:'smooth',block:'center'});
   }
+  renderEditPhotos();
+  card.classList.add('show');
+  card.scrollIntoView({behavior:'smooth',block:'center'});
+  refreshNoChangeBtn();
 }
 
 function setEditEval(value){
   editEval=value;
-  setEditEvalUI();
-  document.getElementById('editFailSection').style.display=value==='fail'?'block':'none';
-}
-
-function setEditEvalUI(){
-  var p=document.getElementById('btnEvalPass'),f=document.getElementById('btnEvalFail');
-  p.style.border=editEval==='pass'?'2px solid var(--green)':'2px solid transparent';
-  f.style.border=editEval==='fail'?'2px solid var(--red)':'2px solid transparent';
+  document.getElementById('btnPass').classList.toggle('sel',value==='pass');
+  document.getElementById('btnFail').classList.toggle('sel',value==='fail');
+  document.getElementById('failDetail').classList.toggle('show',value==='fail');
+  if(value!=='fail'){document.getElementById('editNote').value='';editPhotos=[];renderEditPhotos();}
 }
 
 function triggerPhotoInput(){
@@ -464,9 +550,10 @@ function triggerPhotoInput(){
   inp.type='file';inp.accept='image/*';inp.capture='environment';
   inp.onchange=function(){
     if(!inp.files||!inp.files[0])return;
-    var file=inp.files[0],reader=new FileReader();
-    reader.onload=function(ev){if(editPhotos.length>=3)return;editPhotos.push({dataUrl:ev.target.result,name:file.name});renderEditPhotos();};
-    reader.readAsDataURL(file);
+    if(editPhotos.length>=3){toast('⚠️ Tối đa 3 ảnh');return;}
+    var reader=new FileReader();
+    reader.onload=function(ev){editPhotos.push({dataUrl:ev.target.result,name:inp.files[0].name});renderEditPhotos();};
+    reader.readAsDataURL(inp.files[0]);
   };
   inp.click();
 }
@@ -476,17 +563,20 @@ function removeEditPhoto(idx){
 }
 
 function renderEditPhotos(){
-  var c=document.getElementById('editPhotos');
+  var c=document.getElementById('editPhotosContainer');
   var h='';
   for(var i=0;i<editPhotos.length;i++){
-    h+='<div class="photo-box"><img src="'+(typeof editPhotos[i]==='string'?editPhotos[i]:editPhotos[i].dataUrl)+'"><span class="x" onclick="removeEditPhoto('+i+')">✕</span></div>';
+    var src=typeof editPhotos[i]==='string'?editPhotos[i]:editPhotos[i].dataUrl;
+    h+='<div class="photo-box"><img src="'+src+'"><span class="remove" onclick="removeEditPhoto('+i+')">✕</span></div>';
   }
-  if(editPhotos.length<3)h+='<div class="photo-box" onclick="triggerPhotoInput()"><span class="ph">+ Ảnh</span></div>';
+  if(editPhotos.length<3){
+    h+='<div class="photo-box" onclick="triggerPhotoInput()"><span class="placeholder">+ Ảnh</span></div>';
+  }
   c.innerHTML=h;
 }
 
 function saveEditForm(){
-  var area=document.getElementById('editArea').value;
+  var area=document.getElementById('editArea').value.trim();
   var name=document.getElementById('editItemName').value.trim();
   if(!area){toast('⚠️ Chọn khu vực');return;}
   if(!name){toast('⚠️ Nhập tên hạng mục');return;}
@@ -497,29 +587,22 @@ function saveEditForm(){
     if(editPhotos.length===0){toast('⚠️ Cần ít nhất 1 ảnh');return;}
   }
   
+  var data={area:area,name:name,eval:editEval,note:editEval==='fail'?document.getElementById('editNote').value.trim():'',photos:editEval==='fail'?editPhotos.slice():[]};
+  
   if(editingIdx===null){
-    // Thêm mới
-    itemList.push({
-      area:area,name:name,
-      eval:editEval,
-      note:editEval==='fail'?document.getElementById('editNote').value.trim():'',
-      photos:editEval==='fail'?editPhotos.slice():[],
-      _custom:true,_changed:true,_fromHistory:false
-    });
+    data._custom=true;data._changed=true;data._hasHistory=false;
+    itemList.push(data);
     toast('✅ Đã thêm: '+name);
   }else{
-    // Sửa
     var e=itemList[editingIdx];
-    e.area=area;e.name=name;e.eval=editEval;
-    e.note=editEval==='fail'?document.getElementById('editNote').value.trim():'';
-    e.photos=editEval==='fail'?editPhotos.slice():[];
+    e.area=data.area;e.name=data.name;e.eval=data.eval;
+    e.note=data.note;e.photos=data.photos;
     e._changed=true;
     toast('✅ Đã sửa: '+name);
   }
   
   cancelEdit();
   renderList();
-  document.getElementById('editCard').classList.remove('show');
 }
 
 function cancelEdit(){
@@ -527,42 +610,51 @@ function cancelEdit(){
   document.getElementById('editArea').value='';
   document.getElementById('editItemName').value='';
   document.getElementById('editNote').value='';
-  document.getElementById('btnEvalPass').style.border='2px solid transparent';
-  document.getElementById('btnEvalFail').style.border='2px solid transparent';
-  document.getElementById('editFailSection').style.display='none';
+  document.getElementById('btnPass').classList.remove('sel');
+  document.getElementById('btnFail').classList.remove('sel');
+  document.getElementById('failDetail').classList.remove('show');
   document.getElementById('editCard').classList.remove('show');
   renderEditPhotos();
+  refreshNoChangeBtn();
 }
 
-// ── SUBMIT ──
-function confirmNoChange(){
+// ===== NO CHANGE / SAVE =====
+function onNoChange(){
   if(!selectedStore){toast('⚠️ Chọn CH trước');return;}
   var changed=itemList.filter(function(e){return e._changed;});
   if(changed.length>0){submitAll();return;}
+  confirmNoChange();
+}
+
+function confirmNoChange(){
+  if(!selectedStore)return;
   if(isSubmitting)return;
   isSubmitting=true;
-  var btn=document.getElementById('btnNoChange'),orig=btn.textContent;
-  btn.textContent='⏳ Đang lưu...';btn.disabled=true;
+  var b1=document.getElementById('btnNoChange'),b2=document.getElementById('btnSubmitNoChange');
+  b1.textContent='⏳ Đang lưu...';b1.disabled=true;
+  if(b2){b2.textContent='⏳ Đang lưu...';b2.disabled=true;}
   
   var payload={action:'nochange',store:selectedStore.ma,storeName:selectedStore.ten,tinh:selectedStore.tinh,gdv:document.getElementById('selGdv').value,qlkv:document.getElementById('selQlkv').value,timestamp:new Date().toISOString()};
   var done=function(){showCompleted('không đổi');isSubmitting=false;};
-  fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(function(){done()}).catch(function(){done()});
+  fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(function(){done();}).catch(function(){done();});
 }
 
 function submitAll(){
   if(!selectedStore){toast('⚠️ Chọn CH trước');return;}
   if(isSubmitting)return;
   
-  var uneval=itemList.filter(function(e){return!e.eval;});
-  if(uneval.length>0){toast('⚠️ Còn '+uneval.length+' mục chưa đánh giá!');return;}
+  var ue=itemList.filter(function(e){return!e.eval;});
+  if(ue.length>0){toast('⚠️ Còn '+ue.length+' mục chưa đánh giá!');return;}
   var fn=itemList.filter(function(e){return e.eval==='fail'&&(!e.note||!e.note.trim());});
   if(fn.length>0){toast('⚠️ '+fn.length+' mục Ko đạt chưa có diễn giải!');return;}
   var fp=itemList.filter(function(e){return e.eval==='fail'&&(!e.photos||e.photos.length===0);});
   if(fp.length>0){toast('⚠️ '+fp.length+' mục Ko đạt chưa có ảnh!');return;}
   
   isSubmitting=true;
-  var bs=document.getElementById('btnSubmitAll'),bn=document.getElementById('btnNoChange');
-  bs.textContent='⏳ Đang lưu...';bs.disabled=true;if(bn)bn.disabled=true;
+  var b1=document.getElementById('btnSubmitAll');
+  b1.textContent='⏳ Đang lưu...';b1.disabled=true;
+  var b2=document.getElementById('btnNoChange'),b3=document.getElementById('btnSubmitNoChange');
+  if(b2)b2.disabled=true;if(b3)b3.disabled=true;
   
   var pc=0,fc=0,items=[];
   for(var i=0;i<itemList.length;i++){
@@ -570,8 +662,11 @@ function submitAll(){
     if(e.eval==='pass')pc++;else if(e.eval==='fail')fc++;
     items.push({area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.eval==='pass'?'Đạt':(e.note||''),photos:e.photos||[],_custom:e._custom});
   }
+  
   var payload={store:selectedStore.ma,storeName:selectedStore.ten,tinh:selectedStore.tinh,gdv:document.getElementById('selGdv').value,qlkv:document.getElementById('selQlkv').value,items:items,totalItems:itemList.length,passCount:pc,failCount:fc};
+  
   var done=function(rs){isSubmitting=false;showCompleted('đã cập nhật',rs);};
+  
   fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
     .then(function(r){return r.json();})
     .then(function(res){done(res.rowsSaved);})
@@ -582,24 +677,31 @@ function showCompleted(tt,rs){
   var old=document.getElementById('completedBox');if(old)old.remove();
   var pc=0,fc=0;
   for(var i=0;i<itemList.length;i++){if(itemList[i].eval==='pass')pc++;else if(itemList[i].eval==='fail')fc++;}
-  var b=document.createElement('div');b.id='completedBox';b.className='completed-box';
-  b.innerHTML='<div style="font-size:28px;margin-bottom:4px">✅</div><div style="font-size:16px;font-weight:800;color:#166534;margin-bottom:2px">Đã hoàn thành khảo sát!</div><div style="font-size:13px;color:#065f46;margin-bottom:8px">'+selectedStore.ma+' — '+selectedStore.ten+'</div><div style="font-size:12px;color:#047857;background:#a7f3d0;display:inline-block;padding:3px 12px;border-radius:20px;font-weight:600;margin-bottom:10px">✅ '+pc+' Đạt · ❌ '+fc+' Ko đạt · '+itemList.length+' mục'+(rs?' · '+rs+' dòng đã lưu':'')+'</div><div style="margin-top:8px"><button class="btn btn-blue" onclick="doNewSurvey()" style="font-size:13px;">🔍 Khảo sát CH khác</button></div>';
-  document.getElementById('itemListArea').appendChild(b);
-  b.scrollIntoView({behavior:'smooth',block:'center'});
+  
+  var box=document.createElement('div');
+  box.id='completedBox';box.className='completed-box';
+  box.innerHTML=
+    '<div class="icon">✅</div>'+
+    '<div class="title">Đã hoàn thành khảo sát!</div>'+
+    '<div class="store-name">'+selectedStore.ma+' — '+selectedStore.ten+'</div>'+
+    '<div class="summary">✅ '+pc+' Đạt · ❌ '+fc+' Ko đạt · '+itemList.length+' mục'+(rs?' · '+rs+' dòng đã lưu':'')+'</div>'+
+    '<div style="margin-top:10px"><button class="btn btn-blue" onclick="doNewSurvey()" style="font-size:13px;">🔍 Khảo sát cửa hàng khác</button></div>';
+  
+  document.getElementById('itemList').appendChild(box);
+  box.scrollIntoView({behavior:'smooth',block:'center'});
   document.getElementById('submitBar').classList.remove('show');
 }
 
 function doNewSurvey(){
-  var b=document.getElementById('completedBox');if(b)b.remove();
+  var box=document.getElementById('completedBox');if(box)box.remove();
   document.getElementById('selGdv').value='';
   document.getElementById('selQlkv').innerHTML='<option value="">-- Chọn QLKV --</option>';
   document.getElementById('selQlkv').disabled=true;
   document.getElementById('selCh').innerHTML='<option value="">-- Chọn CH --</option>';
   document.getElementById('selCh').disabled=true;
-  document.getElementById('chInfo').style.display='none';
-  document.getElementById('listCard').style.display='none';
-  document.getElementById('submitBar').classList.remove('show');
-  selectedStore=null;itemList=[];isSubmitting=false;
+  hideStoreInfo();hideListCard();
+  selectedStore=null;itemList=[];isSubmitting=false;editingIdx=null;
+  cancelEdit();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
