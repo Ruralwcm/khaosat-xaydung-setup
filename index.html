@@ -125,14 +125,20 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
         </div>
       </div>
       <label>Tình trạng hiện tại</label>
-      <div class="edit-eval">
+      <div class="edit-eval" id="editEvalRow">
         <div class="evb pass" id="evPass" onclick="setEv('pass')">✅ Đã xử lý / Đạt</div>
-        <div class="evb fail" id="evFail" onclick="setEv('fail')">❌ Chưa xử lý / Ko đạt</div>
+        <div class="evb fail sel" id="evFail" onclick="setEv('fail')">❌ Chưa xử lý / Ko đạt</div>
       </div>
-      <div class="fail-box" id="failBox">
-        <label>📝 Diễn giải</label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
-        <label>📸 Ảnh (tối đa 3)</label>
+      <div class="fail-box show" id="failBox">
+        <div class="row">
+          <div><label>📅 Ngày phát sinh <span class="req-star">*</span></label><input type="date" id="eDate" max="" onchange="validateDates()"></div>
+          <div><label>📞 Đã báo SU chưa? <span class="req-star">*</span></label><select id="eSU" onchange="toggleSUDate()"><option value="">-- Chọn --</option><option value="yes">✅ Đã báo</option><option value="no">❌ Chưa báo</option></select></div>
+        </div>
+        <div id="suDateRow" style="display:none"><label>📅 Ngày báo SU gần nhất <span class="req-star">*</span></label><input type="date" id="eSUDate" max="" onchange="validateDates()"><div class="hint" style="font-size:10px;color:var(--muted)">Phải sau ngày phát sinh</div></div>
+        <label>📝 Diễn giải <span class="req-star">*</span></label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
+        <label>📸 Ảnh (tối đa 3, ít nhất 1)</label>
         <div class="photos-row" id="ephotos"></div>
+        <div class="photo-hint" style="font-size:10px;color:var(--red)">⚡ Yêu cầu ít nhất 1 ảnh</div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-blue" onclick="saveEdit()" style="flex:1">💾 Lưu</button>
@@ -308,8 +314,20 @@ function hideList(){
 }
 
 // ─── EDIT ───
-function openAdd(){edI=null;showEditForm('Khai báo vấn đề mới','',null,null,[])}
-function editIssue(i){edI=i;var iss=issues[i];showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'')}
+function openAdd(){
+  edI=null;
+  // Set max date = today
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('eDate').max=today;
+  document.getElementById('eSUDate').max=today;
+  showEditForm('Khai báo vấn đề mới','',null,null,[],'','','');
+}
+function editIssue(i){edI=i;var iss=issues[i];
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('eDate').max=today;
+  document.getElementById('eSUDate').max=today;
+  showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'',iss._date||'',iss._su||'',iss._sudate||'');
+}
 
 // Area change → update item dropdown
 function onAreaChange(){
@@ -334,12 +352,11 @@ function getItemName(){
   return sel.value;
 }
 
-function showEditForm(title,area,name,ieval,photos,note){
+function showEditForm(title,area,name,ieval,photos,note,date,su,sudate){
   document.getElementById('efTitle').textContent=title;
   document.getElementById('ea').value=area;
-  onAreaChange(); // populate dropdown
+  onAreaChange();
   
-  // Set item name
   var sel=document.getElementById('en'),ci=document.getElementById('enCustom');
   if(name&&area&&DEFAULT_ITEMS[area]&&DEFAULT_ITEMS[area].indexOf(name)>=0){
     sel.value=name;ci.style.display='none';
@@ -348,18 +365,47 @@ function showEditForm(title,area,name,ieval,photos,note){
   }else{
     sel.value='';ci.style.display='none';
   }
+
+  var isNew=(edI===null);
   
-  ev=ieval;eps=photos||[];
+  // For NEW issues: always "Ko đạt", show date/SU fields
+  // For UPDATE: show Đạt/Ko đạt toggle, hide date/SU
+  if(isNew){
+    ev='fail';
+    document.getElementById('editEvalRow').style.display='none';
+    document.getElementById('failBox').classList.add('show');
+    document.getElementById('eDate').value=date||'';
+    document.getElementById('eSU').value=su||'';
+    toggleSUDate();
+    document.getElementById('eSUDate').value=sudate||'';
+  }else{
+    ev=ieval||'fail';
+    document.getElementById('editEvalRow').style.display='flex';
+    document.getElementById('failBox').classList.toggle('show',ev==='fail');
+    document.getElementById('eDate').value=date||'';
+    document.getElementById('eSU').value=su||'';
+    toggleSUDate();
+    document.getElementById('eSUDate').value=sudate||'';
+  }
+  
   document.getElementById('evPass').classList.toggle('sel',ev==='pass');
   document.getElementById('evFail').classList.toggle('sel',ev==='fail');
-  document.getElementById('failBox').classList.toggle('show',ev==='fail');
+  eps=photos||[];
   if(ev==='fail'){document.getElementById('enote').value=note||''}else{document.getElementById('enote').value=''}
   rPhotos();
   document.getElementById('editCard').classList.add('show');
   document.getElementById('editCard').scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-function setEv(v){ev=v;document.getElementById('evPass').classList.toggle('sel',v==='pass');document.getElementById('evFail').classList.toggle('sel',v==='fail');document.getElementById('failBox').classList.toggle('show',v==='fail');if(v!=='fail'){eps=[];rPhotos();document.getElementById('enote').value=''}}
+function setEv(v){ev=v;document.getElementById('evPass').classList.toggle('sel',v==='pass');document.getElementById('evFail').classList.toggle('sel',v==='fail');document.getElementById('failBox').classList.toggle('show',v==='fail');if(v!=='fail'){eps=[];rPhotos();document.getElementById('enote').value='';document.getElementById('eDate').value='';document.getElementById('eSU').value='';document.getElementById('eSUDate').value=''}}
+
+function toggleSUDate(){
+  document.getElementById('suDateRow').style.display=document.getElementById('eSU').value==='yes'?'block':'none';
+}
+function validateDates(){
+  var d=document.getElementById('eDate').value,sd=document.getElementById('eSUDate').value;
+  if(d&&sd&&sd<d){toast('⚠️ Ngày báo SU phải sau ngày phát sinh');document.getElementById('eSUDate').value=''}
+}
 
 function tPhoto(){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';
@@ -370,28 +416,39 @@ function rp(i){eps.splice(i,1);rPhotos()}
 function rPhotos(){var c=document.getElementById('ephotos'),h='';for(var i=0;i<eps.length;i++){var s=typeof eps[i]==='string'?eps[i]:eps[i].dataUrl;h+='<div class="pbox"><img src="'+s+'"><span class="x" onclick="rp('+i+')">✕</span></div>'}if(eps.length<3)h+='<div class="pbox" onclick="tPhoto()"><span class="ph">+ Ảnh</span></div>';c.innerHTML=h}
 
 function saveEdit(){
-  var a=document.getElementById('ea').value.trim(),n=getItemName();
-  if(!a){toast('⚠️ Chọn khu vực');return}if(!n){toast('⚠️ Chọn hoặc nhập tên hạng mục');return}if(!ev){toast('⚠️ Chọn tình trạng');return}
-  if(ev==='fail'){var nt=document.getElementById('enote').value.trim();if(!nt){toast('⚠️ Nhập diễn giải');return}if(eps.length===0){toast('⚠️ Cần ít nhất 1 ảnh');return}}
+  var a=document.getElementById('ea').value.trim(),n=getItemName(),isNew=(edI===null);
+  if(!a){toast('⚠️ Chọn khu vực');return}
+  if(!n){toast('⚠️ Chọn hoặc nhập tên hạng mục');return}
+  if(!ev){toast('⚠️ Chọn tình trạng');return}
   
-  var d={area:a,name:n,eval:ev,note:ev==='fail'?document.getElementById('enote').value.trim():'',photos:ev==='fail'?eps.slice():[],_changed:true};
+  if(ev==='fail'){
+    var nt=document.getElementById('enote').value.trim();
+    if(!nt){toast('⚠️ Nhập diễn giải');return}
+    if(eps.length===0){toast('⚠️ Cần ít nhất 1 ảnh');return}
+    var date=document.getElementById('eDate').value,su=document.getElementById('eSU').value,sudate=document.getElementById('eSUDate').value;
+    if(isNew){
+      if(!date){toast('⚠️ Chọn ngày phát sinh');return}
+      if(!su){toast('⚠️ Chọn Đã báo SU chưa?');return}
+      if(su==='yes'&&!sudate){toast('⚠️ Nhập ngày báo SU');return}
+    }
+  }
+  
+  var d={area:a,name:n,eval:ev,note:ev==='fail'?nt:'',photos:ev==='fail'?eps.slice():[],_changed:true,_date:date||'',_su:su||'',_sudate:sudate||''};
   if(edI===null){d._new=true;issues.unshift(d);toast('✅ Đã khai báo: '+n)}
-  else{var iss=issues[edI];iss.area=d.area;iss.name=d.name;iss.eval=d.eval;iss.note=d.note;iss.photos=d.photos;iss._changed=true;toast('✅ Đã cập nhật: '+n)}
+  else{var iss=issues[edI];Object.assign(iss,d);toast('✅ Đã cập nhật: '+n)}
   
-  // If marked as "Đạt", remove from issues list (issue resolved)
+  // If marked as "Đạt", remove from issues list
   if(ev==='pass'&&edI!==null&&!d._new){
-    // Save to GAS then remove
     submitAndRemove(edI);
   }else{
     cancelEdit();renderIssues();
-    // Auto-save to GAS
     autoSave();
   }
 }
 
 function submitAndRemove(i){
   if(submitting)return;submitting=true;
-  var its=issues.map(function(e){return{area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.note||'',photos:e.photos||[]}});
+  var its=issues.map(function(e){return{area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.note||'',photos:e.photos||[],date:e._date||'',su:e._su||'',sudate:e._sudate||''}});
   var p={store:sel.ma,storeName:sel.ten,tinh:sel.tinh,gdv:document.getElementById('sg').value,qlkv:document.getElementById('sq').value,items:its,totalItems:its.length,passCount:1,failCount:its.length-1};
   fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)})
     .then(function(r){return r.json()}).then(function(){
@@ -402,7 +459,7 @@ function submitAndRemove(i){
 
 function autoSave(){
   if(submitting)return;submitting=true;
-  var its=issues.map(function(e){return{area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.note||'',photos:e.photos||[]}});
+  var its=issues.map(function(e){return{area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.note||'',photos:e.photos||[],date:e._date||'',su:e._su||'',sudate:e._sudate||''}});
   var p={store:sel.ma,storeName:sel.ten,tinh:sel.tinh,gdv:document.getElementById('sg').value,qlkv:document.getElementById('sq').value,items:its,totalItems:its.length,passCount:0,failCount:its.length};
   fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)})
     .then(function(r){return r.json()}).catch(function(){})
@@ -410,7 +467,7 @@ function autoSave(){
 }
 
 function cancelEdit(){
-  edI=null;ev=null;eps=[];document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.remove('sel');document.getElementById('failBox').classList.remove('show');document.getElementById('editCard').classList.remove('show');rPhotos()
+  edI=null;ev='fail';eps=[];document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('eDate').value='';document.getElementById('eSU').value='';document.getElementById('eSUDate').value='';document.getElementById('suDateRow').style.display='none';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.add('sel');document.getElementById('failBox').classList.add('show');document.getElementById('editEvalRow').style.display='flex';document.getElementById('editCard').classList.remove('show');rPhotos()
 }
 </script>
 </body>
