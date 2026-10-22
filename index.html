@@ -196,10 +196,10 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
   <div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px">
     <div style="font-size:40px;margin-bottom:12px">🔒</div>
     <div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div>
-    <label style="text-align:left;max-width:280px;margin:8px auto">Email (không đuôi)</label>
-    <input type="text" id="dUsr" placeholder="VD: haodt301" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off">
-    <label style="text-align:left;max-width:280px;margin:8px auto">Mã nhân viên</label>
-    <input type="password" id="dPwd" placeholder="Nhập mã NV..." style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key==='Enter')dashLogin()">
+    <label style="text-align:left;max-width:280px;margin:8px auto">User</label>
+    <input type="text" id="dUsr" placeholder="Nhập user" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off">
+    <label style="text-align:left;max-width:280px;margin:8px auto">Password</label>
+    <input type="password" id="dPwd" placeholder="Nhập password" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key==='Enter')dashLogin()">
     <div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div>
     <button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button>
   </div>
@@ -577,7 +577,7 @@ function renderDash(){
   document.getElementById('tabDash').innerHTML=html;
 }
 
-function dashLogout(){dUser=null;dData=null;document.getElementById('tabDash').innerHTML='<div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px"><div style="font-size:40px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div><label style="text-align:left;max-width:280px;margin:8px auto">Email (không đuôi)</label><input type="text" id="dUsr" placeholder="VD: haodt301" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off"><label style="text-align:left;max-width:280px;margin:8px auto">Mã nhân viên</label><input type="password" id="dPwd" placeholder="Nhập mã NV..." style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key===\'Enter\')dashLogin()"><div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div><button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button></div>'}
+function dashLogout(){dUser=null;dData=null;document.getElementById('tabDash').innerHTML='<div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px"><div style="font-size:40px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div><label style="text-align:left;max-width:280px;margin:8px auto">User</label><input type="text" id="dUsr" placeholder="Nhập user" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off"><label style="text-align:left;max-width:280px;margin:8px auto">Password</label><input type="password" id="dPwd" placeholder="Nhập password" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key===\'Enter\')dashLogin()"><div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div><button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button></div>'}
 
 function switchDashTab(tab,el){
   var tabs=document.querySelectorAll('#tabDash .main-tab');
