@@ -35,6 +35,13 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // action=dashboard → trả về dữ liệu tổng hợp cho Dashboard
+  if (action === 'dashboard') {
+    const data = getDashboardData();
+    return ContentService.createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   // Default: serve Index.html
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('Khảo sát hỏng hóc Xây dựng - Kỹ Thuật')
@@ -169,6 +176,183 @@ function getHistory(storeCode) {
   } catch(e) {
     return [];
   }
+}
+
+// ── DASHBOARD — tổng hợp tiến độ rà soát & xử lý (v11 NEW) ──
+function getDashboardData() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // ── Load Storeslist ──
+    const slSheet = ss.getSheetByName('Storeslist');
+    const storeMap = {}; // { ma: { gdv, qlkv, tinh, ten } }
+    const gdvStats = {}; // { gdv: { totalCH, qlkvMap } }
+    const qlkvStats = {}; // { 'gdv|qlkv': { totalCH } }
+
+    if (slSheet && slSheet.getLastRow() > 1) {
+      const slData = slSheet.getDataRange().getValues();
+      const slHeaders = slData[0].map(h => String(h || '').trim());
+      const iG = slHeaders.findIndex(h => h === 'GĐV' || h === 'GDV');
+      const iQ = slHeaders.findIndex(h => h === 'QLKV');
+      const iM = slHeaders.findIndex(h => h === 'Mã CH' || h === 'Mã SAP' || h === 'SAP');
+      const iT = slHeaders.findIndex(h => h === 'Tên cửa hàng' || h === 'Tên CH');
+      const iP = slHeaders.findIndex(h => h === 'Tỉnh/TP' || h === 'Tỉnh');
+      const iTT = slHeaders.findIndex(h => h === 'Tình trạng' || h === 'Tình Trạng');
+
+      for (let i = 1; i < slData.length; i++) {
+        const r = slData[i];
+        if (iTT >= 0 && String(r[iTT] || '').trim() !== 'Đang hoạt động') continue;
+        const gdv = String(r[iG] || '').trim();
+        const qlkv = String(r[iQ] || '').trim();
+        const ma = String(r[iM] || '').trim();
+        if (!gdv || !qlkv || !ma) continue;
+
+        storeMap[ma] = { gdv, qlkv, tinh: String(r[iP] || '').trim(), ten: String(r[iT] || '').trim() };
+
+        if (!gdvStats[gdv]) gdvStats[gdv] = { totalCH: 0, qlkvMap: {} };
+        gdvStats[gdv].totalCH++;
+        if (!gdvStats[gdv].qlkvMap[qlkv]) gdvStats[gdv].qlkvMap[qlkv] = 0;
+        gdvStats[gdv].qlkvMap[qlkv]++;
+
+        const qk = gdv + '|' + qlkv;
+        if (!qlkvStats[qk]) qlkvStats[qk] = { gdv, qlkv, totalCH: 0 };
+        qlkvStats[qk].totalCH++;
+      }
+    }
+
+    // ── Load CSVC_Tracking ──
+    const trSheet = ss.getSheetByName(SHEET_DATA);
+    const surveyedSet = {};    // ma → true (CH đã được khảo sát)
+    const issueByGdv = {};    // gdv → { total, resolved }
+    const issueByQlkv = {};   // 'gdv|qlkv' → { total, resolved }
+    const weekData = {};       // 'YYYY-WNN' → { surveyed, issues }
+    const surveyDates = {};    // ma → first survey date
+
+    if (trSheet && trSheet.getLastRow() > 1) {
+      const trData = trSheet.getDataRange().getValues();
+      const trHeaders = trData[0].map(h => String(h || '').trim());
+      const iMa = trHeaders.findIndex(h => h === 'Mã CH' || h === 'Mã SAP');
+      const iRes = trHeaders.findIndex(h => h === 'Đánh giá');
+      const iDate = trHeaders.findIndex(h => h.includes('Ngày báo'));
+
+      for (let i = 1; i < trData.length; i++) {
+        const r = trData[i];
+        const ma = String(r[iMa] || '').trim();
+        if (!ma) continue;
+
+        const store = storeMap[ma];
+        if (!store) continue; // skip stores not in Storeslist
+
+        const gdv = store.gdv;
+        const qlkv = store.qlkv;
+        const result = String(r[iRes] || '').trim();
+        const dateStr = String(r[iDate] || '').trim();
+
+        // Mark CH as surveyed
+        surveyedSet[ma] = true;
+        if (!surveyDates[ma] || dateStr < surveyDates[ma]) surveyDates[ma] = dateStr;
+
+        // Extract week
+        const w = weekFromDate(dateStr);
+        if (w) {
+          if (!weekData[w]) weekData[w] = { surveyed: {}, issues: 0 };
+          weekData[w].surveyed[ma] = true;
+          weekData[w].issues++;
+        }
+
+        // Per GĐV
+        if (!issueByGdv[gdv]) issueByGdv[gdv] = { total: 0, resolved: 0 };
+        issueByGdv[gdv].total++;
+        if (result === 'Đạt') issueByGdv[gdv].resolved++;
+
+        // Per QLKV
+        const qk = gdv + '|' + qlkv;
+        if (!issueByQlkv[qk]) issueByQlkv[qk] = { total: 0, resolved: 0 };
+        issueByQlkv[qk].total++;
+        if (result === 'Đạt') issueByQlkv[qk].resolved++;
+      }
+    }
+
+    // ── Build summary ──
+    let totalCH = 0, surveyedCH = 0;
+    const byGdv = [];
+    const byQlkv = [];
+
+    for (const [gdv, stats] of Object.entries(gdvStats).sort()) {
+      totalCH += stats.totalCH;
+      let gSurv = 0, gIss = 0, gRes = 0;
+      const ibg = issueByGdv[gdv];
+      if (ibg) { gIss = ibg.total; gRes = ibg.resolved; }
+
+      // Count surveyed CH for this GĐV
+      for (const ma of Object.keys(surveyedSet)) {
+        if (storeMap[ma] && storeMap[ma].gdv === gdv) gSurv++;
+      }
+
+      byGdv.push({
+        gdv, totalCH: stats.totalCH, surveyed: gSurv,
+        notSurveyed: stats.totalCH - gSurv,
+        pctSurveyed: stats.totalCH > 0 ? Math.round(gSurv / stats.totalCH * 100) : 0,
+        totalIssues: gIss, resolved: gRes, unresolved: gIss - gRes,
+        pctResolved: gIss > 0 ? Math.round(gRes / gIss * 100) : 0
+      });
+    }
+
+    surveyedCH = Object.keys(surveyedSet).length;
+
+    // By QLKV
+    for (const [qk, qs] of Object.entries(qlkvStats).sort()) {
+      let qSurv = 0;
+      for (const ma of Object.keys(surveyedSet)) {
+        if (storeMap[ma] && storeMap[ma].gdv + '|' + storeMap[ma].qlkv === qk) qSurv++;
+      }
+
+      const ibq = issueByQlkv[qk] || { total: 0, resolved: 0 };
+
+      byQlkv.push({
+        gdv: qs.gdv, qlkv: qs.qlkv, totalCH: qs.totalCH, surveyed: qSurv,
+        notSurveyed: qs.totalCH - qSurv,
+        pctSurveyed: qs.totalCH > 0 ? Math.round(qSurv / qs.totalCH * 100) : 0,
+        totalIssues: ibq.total, resolved: ibq.resolved, unresolved: ibq.total - ibq.resolved,
+        pctResolved: ibq.total > 0 ? Math.round(ibq.resolved / ibq.total * 100) : 0
+      });
+    }
+
+    // By week (last 12 weeks)
+    const weeks = Object.entries(weekData).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 12).map(([w, d]) => ({
+      week: w, surveyed: Object.keys(d.surveyed).length, issues: d.issues
+    })).reverse();
+
+    // Totals
+    let allIss = 0, allRes = 0;
+    for (const [_, ib] of Object.entries(issueByGdv)) { allIss += ib.total; allRes += ib.resolved; }
+
+    return {
+      ok: true,
+      summary: {
+        totalCH, surveyedCH, notSurveyed: totalCH - surveyedCH,
+        pctSurveyed: totalCH > 0 ? Math.round(surveyedCH / totalCH * 100) : 0,
+        totalIssues: allIss, resolved: allRes, unresolved: allIss - allRes,
+        pctResolved: allIss > 0 ? Math.round(allRes / allIss * 100) : 0
+      },
+      byGdv,
+      byQlkv,
+      byWeek: weeks,
+      updated: new Date().toISOString()
+    };
+  } catch(e) {
+    return { ok: false, error: e.toString() };
+  }
+}
+
+function weekFromDate(dateStr) {
+  // dateStr format: "DD/MM/YYYY HH:MM:SS"
+  const m = String(dateStr).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (!m) return null;
+  const d = new Date(+m[3], +m[2] - 1, +m[1]);
+  const start = new Date(d.getFullYear(), 0, 1);
+  const weekNum = Math.ceil(((d - start) / 86400000 + start.getDay() + 1) / 7);
+  return d.getFullYear() + '-W' + ('0' + weekNum).slice(-2);
 }
 
 // ── POST: save submission ──
