@@ -304,7 +304,11 @@ function renderIssues(){
   var area=document.getElementById('issueArea'),html='';
   if(!sel){area.innerHTML='';return}
   if(issues.length===0){
-    html='<div class="state-banner no-issues">✅ Cửa hàng không có hỏng hóc Xây dựng - Kỹ Thuật được theo dõi.<br><span style="font-weight:400;font-size:13px">Hãy khai báo nếu phát sinh vấn đề →</span></div>';
+    html='<div class="state-banner no-issues">✅ Cửa hàng không có hỏng hóc Xây dựng - Kỹ Thuật được theo dõi.</div>';
+    html+='<div style="display:flex;gap:8px;margin-top:8px">';
+    html+='<button class="btn btn-green" onclick="confirmNoIssue()" style="flex:1">✅ Không có vấn đề</button>';
+    html+='<button class="btn btn-red" onclick="openAdd()" style="flex:1">➕ Khai báo vấn đề</button>';
+    html+='</div>';
   }else{
     html='<div class="state-banner has-issues">⚠️ Cửa hàng có <b>'+issues.length+' vấn đề</b> đang theo dõi. Vui lòng cập nhật tình trạng mới nhất.</div>';
     for(var i=0;i<issues.length;i++){
@@ -330,8 +334,8 @@ function renderIssues(){
       html+='<div class="acts"><button class="btn btn-sm btn-blue" onclick="editIssue('+i+')">✏️ Cập nhật</button></div>';
       html+='</div>';
     }
+    html+='<button class="btn btn-ghost btn-block" onclick="openAdd()">➕ Khai báo vấn đề mới</button>';
   }
-  html+='<button class="btn btn-ghost btn-block" onclick="openAdd()">➕ Khai báo vấn đề mới</button>';
   area.innerHTML=html;
 }
 
@@ -342,6 +346,7 @@ function hideList(){document.getElementById('listCard').style.display='none';iss
 
 // ─── EDIT ───
 function openAdd(){edI=null;showEditForm('Khai báo vấn đề mới','',null,null,[],'','','')}
+function confirmNoIssue(){toast('✅ Đã xác nhận: Cửa hàng không có vấn đề')}
 function editIssue(i){edI=i;var iss=issues[i];showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'',iss._date||'',iss._su||'',iss._sudate||'')}
 
 function onAreaChange(){
