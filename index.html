@@ -187,10 +187,11 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
 function csvF(){
   fetch(CSV).then(function(r){return r.text()}).then(function(t){
     var rows=pCSV(t),arr=[];
-    for(var i=0;i<rows.length;i++){var r=rows[i];if((r['Tình Trạng']||'').trim()!=='Đang hoạt động')continue;arr.push({gdv:r['GĐV']||'',qlkv:r['QLKV']||'',ma:r['Mã SAP']||'',ten:r['Tên cửa hàng']||'',tinh:r['Tỉnh/TP']||''})}
+    for(var i=0;i<rows.length;i++){var r=rows[i];if((val(r,'Tình Trạng')||'').trim()!=='Đang hoạt động')continue;arr.push({gdv:val(r,'GĐV')||val(r,'GDV')||'',qlkv:val(r,'QLKV')||'',ma:val(r,'Mã SAP')||val(r,'Mã CH')||val(r,'SAP')||'',ten:val(r,'Tên cửa hàng')||val(r,'Tên CH')||'',tinh:val(r,'Tỉnh/TP')||val(r,'Tỉnh')||''})}
     if(arr.length){stores=arr;buildC();}
   }).catch(function(){});
 }
+function val(obj,key){var v=obj[key];if(v!==undefined)return v;var nk=key.normalize('NFD');for(var k in obj){if(k.normalize('NFC')===key||k.normalize('NFD')===nk)return obj[k]}return undefined}
 function pCSV(t){var rows=[],row=[],cur='',iq=false;for(var i=0;i<t.length;i++){var c=t[i];if(iq){if(c=='"'){if(t[i+1]=='"'){cur+='"';i++}else iq=false}else cur+=c}else if(c=='"')iq=true;else if(c===','){row.push(cur);cur=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);cur='';rows.push(row);row=[]}else cur+=c}row.push(cur);rows.push(row);if(rows.length<2)return[];var h=rows[0].map(function(x){return x.trim()});return rows.slice(1).map(function(r){var o={};h.forEach(function(k,i){o[k]=r[i]});return o})}
 function buildC(){
   cascade={};for(var i=0;i<stores.length;i++){var s=stores[i],g=s.gdv||'CPC',q=s.qlkv||'CPC';if(!cascade[g])cascade[g]={};if(!cascade[g][q])cascade[g][q]=[];cascade[g][q].push(s)}
