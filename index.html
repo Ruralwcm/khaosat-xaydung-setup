@@ -170,7 +170,7 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
           <div><label>📅 Ngày phát sinh <span class="r">*</span></label><input type="date" id="eDate" onchange="validateDates()"></div>
           <div><label>📞 Đã báo SU? <span class="r">*</span></label><select id="eSU" onchange="toggleSUDate()"><option value="">-- Chọn --</option><option value="yes">✅ Đã báo</option><option value="no">❌ Chưa báo</option></select></div>
         </div>
-        <div id="suDateRow" style="display:none"><label>📅 Ngày báo SU gần nhất <span class="r">*</span></label><input type="date" id="eSUDate" onchange="validateDates()"><div class="hint">Phải sau ngày phát sinh</div></div>
+        <div id="suDateRow"><label>📅 Ngày báo SU gần nhất</label><input type="date" id="eSUDate" onchange="validateDates()"><div class="hint">Phải sau ngày phát sinh</div></div>
         <label>📝 Diễn giải <span class="r">*</span></label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
         <label>📸 Ảnh (tối đa 3) <span class="r">*</span></label>
         <div class="photos-row" id="ephotos"></div>
