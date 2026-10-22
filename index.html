@@ -132,7 +132,8 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
     <div class="card-head"><span class="dot"></span>① Cửa hàng</div>
     <div class="card-body">
       <div class="row">
-        <div><label>GĐV <span class="r">*</span></label><select id="sg"><option>-- Đang tải --</option></select></div>
+        <div><label>Miền <span class="r">*</span></label><select id="sm"><option>-- Đang tải --</option></select></div>
+        <div><label>GĐV <span class="r">*</span></label><select id="sg" disabled><option>-- Chọn GĐV --</option></select></div>
         <div><label>QLKV <span class="r">*</span></label><select id="sq" disabled><option>-- Chọn QLKV --</option></select></div>
       </div>
       <label>Cửa hàng <span class="r">*</span></label>
@@ -235,28 +236,35 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
 function csvF(){
   fetch(CSV).then(function(r){return r.text()}).then(function(t){
     var rows=pCSV(t),arr=[];
-    for(var i=0;i<rows.length;i++){var r=rows[i];if((val(r,'Tình Trạng')||'').trim()!=='Đang hoạt động')continue;arr.push({gdv:val(r,'GĐV')||val(r,'GDV')||'',qlkv:val(r,'QLKV')||'',ma:val(r,'Mã SAP')||val(r,'Mã CH')||val(r,'SAP')||'',ten:val(r,'Tên cửa hàng')||val(r,'Tên CH')||'',tinh:val(r,'Tỉnh/TP')||val(r,'Tỉnh')||''})}
+    for(var i=0;i<rows.length;i++){var r=rows[i];if((val(r,'Tình Trạng')||'').trim()!=='Đang hoạt động')continue;arr.push({mien:val(r,'Miền')||'',gdv:val(r,'GĐV')||val(r,'GDV')||'',qlkv:val(r,'QLKV')||'',ma:val(r,'Mã SAP')||val(r,'Mã CH')||val(r,'SAP')||'',ten:val(r,'Tên cửa hàng')||val(r,'Tên CH')||'',tinh:val(r,'Tỉnh/TP')||val(r,'Tỉnh')||''})}
     if(arr.length){stores=arr;buildC();}
   }).catch(function(){});
 }
 function val(obj,key){var v=obj[key];if(v!==undefined)return v;var nk=key.normalize('NFD');for(var k in obj){if(k.normalize('NFC')===key||k.normalize('NFD')===nk)return obj[k]}return undefined}
 function pCSV(t){var rows=[],row=[],cur='',iq=false;for(var i=0;i<t.length;i++){var c=t[i];if(iq){if(c=='"'){if(t[i+1]=='"'){cur+='"';i++}else iq=false}else cur+=c}else if(c=='"')iq=true;else if(c===','){row.push(cur);cur=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);cur='';rows.push(row);row=[]}else cur+=c}row.push(cur);rows.push(row);if(rows.length<2)return[];var h=rows[0].map(function(x){return x.trim()});return rows.slice(1).map(function(r){var o={};h.forEach(function(k,i){o[k]=r[i]});return o})}
 function buildC(){
-  cascade={};for(var i=0;i<stores.length;i++){var s=stores[i],g=s.gdv||'CPC',q=s.qlkv||'CPC';if(!cascade[g])cascade[g]={};if(!cascade[g][q])cascade[g][q]=[];cascade[g][q].push(s)}
-  var se=document.getElementById('sg'),ks=Object.keys(cascade).sort();se.innerHTML='<option value="">-- Chọn GĐV --</option>';
-  for(var i=0;i<ks.length;i++){var g=ks[i];se.innerHTML+='<option value="'+g+'">'+g+' ('+Object.keys(cascade[g]).length+' QLKV)</option>'}
+  cascade={};for(var i=0;i<stores.length;i++){var s=stores[i],m=s.mien||'Miền Bắc',g=s.gdv||'CPC',q=s.qlkv||'CPC';if(!cascade[m])cascade[m]={};if(!cascade[m][g])cascade[m][g]={};if(!cascade[m][g][q])cascade[m][g][q]=[];cascade[m][g][q].push(s)}
+  var ms=Object.keys(cascade).sort(),se=document.getElementById('sm');
+  se.innerHTML='<option value="">-- Chọn Miền --</option>';
+  for(var i=0;i<ms.length;i++){var m=ms[i];se.innerHTML+='<option value="'+m+'">'+m+'</option>'}
+  document.getElementById('sg').disabled=true;document.getElementById('sq').disabled=true;document.getElementById('sc').disabled=true;
 }
 
 // ─── CASCADE ───
+document.getElementById('sm').addEventListener('change',function(){
+  var m=this.value;document.getElementById('sg').innerHTML='<option value="">-- Chọn GĐV --</option>';document.getElementById('sq').innerHTML='<option value="">-- Chọn QLKV --</option>';document.getElementById('sq').disabled=true;document.getElementById('sc').innerHTML='<option value="">-- Chọn CH --</option>';document.getElementById('sc').disabled=true;document.getElementById('si').style.display='none';
+  if(!m||!cascade[m]){document.getElementById('sg').disabled=true;return}document.getElementById('sg').disabled=false;
+  var gs=Object.keys(cascade[m]).sort();for(var i=0;i<gs.length;i++){var g=gs[i];document.getElementById('sg').innerHTML+='<option value="'+g+'">'+g+'</option>'}
+});
 document.getElementById('sg').addEventListener('change',function(){
-  var g=this.value;document.getElementById('sq').innerHTML='<option value="">-- Chọn QLKV --</option>';document.getElementById('sc').innerHTML='<option>-- Chọn CH --</option>';document.getElementById('sc').disabled=true;document.getElementById('si').style.display='none';
-  if(!g||!cascade[g]){document.getElementById('sq').disabled=true;return}document.getElementById('sq').disabled=false;
-  var ks=Object.keys(cascade[g]).sort();for(var i=0;i<ks.length;i++){var q=ks[i];document.getElementById('sq').innerHTML+='<option value="'+q+'">'+q+' ('+cascade[g][q].length+' CH)</option>'}
+  var m=document.getElementById('sm').value,g=this.value;document.getElementById('sq').innerHTML='<option value="">-- Chọn QLKV --</option>';document.getElementById('sq').disabled=true;document.getElementById('sc').innerHTML='<option value="">-- Chọn CH --</option>';document.getElementById('sc').disabled=true;document.getElementById('si').style.display='none';
+  if(!m||!g||!cascade[m]||!cascade[m][g])return;document.getElementById('sq').disabled=false;
+  var qs=Object.keys(cascade[m][g]).sort();for(var i=0;i<qs.length;i++){var q=qs[i];document.getElementById('sq').innerHTML+='<option value="'+q+'">'+q+'</option>'}
 });
 document.getElementById('sq').addEventListener('change',function(){
-  var g=document.getElementById('sg').value,q=this.value,ss=document.getElementById('sc');ss.innerHTML='<option value="">-- Chọn CH --</option>';document.getElementById('si').style.display='none';
-  if(!g||!q||!cascade[g]||!cascade[g][q]){ss.disabled=true;return}ss.disabled=false;
-  var chs=cascade[g][q].sort(function(a,b){return(a.ma||'').localeCompare(b.ma||'')});for(var i=0;i<chs.length;i++){var c=chs[i];ss.innerHTML+='<option value="'+c.ma+'" data-name="'+c.ten+'" data-tinh="'+c.tinh+'">'+c.ma+' - '+c.ten+'</option>'}
+  var m=document.getElementById('sm').value,g=document.getElementById('sg').value,q=this.value,ss=document.getElementById('sc');ss.innerHTML='<option value="">-- Chọn CH --</option>';document.getElementById('si').style.display='none';
+  if(!m||!g||!q||!cascade[m]||!cascade[m][g]||!cascade[m][g][q]){ss.disabled=true;return}ss.disabled=false;
+  var chs=cascade[m][g][q].sort(function(a,b){return(a.ma||'').localeCompare(b.ma||'')});ss.innerHTML='<option value="">-- Chọn Cửa hàng ('+chs.length+') --</option>';for(var i=0;i<chs.length;i++){var c=chs[i];ss.innerHTML+='<option value="'+c.ma+'" data-name="'+c.ten+'" data-tinh="'+c.tinh+'">'+c.ma+' - '+c.ten+'</option>'}
 });
 document.getElementById('sc').addEventListener('change',function(){
   var o=this.selectedOptions[0];
