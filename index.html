@@ -172,7 +172,7 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
         </div>
         <div id="suDateRow" style="display:none"><label>📅 Ngày báo SU gần nhất <span class="r">*</span></label><input type="date" id="eSUDate" onchange="validateDates()"><div class="hint">Phải sau ngày phát sinh</div></div>
         <label>📝 Diễn giải <span class="r">*</span></label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
-        <label>📸 Ảnh (tối đa 3) <span class="r">*</span></label>
+        <label>📸 Ảnh (Tối thiểu 1, tối đa 3) <span class="r">*</span></label>
         <div class="photos-row" id="ephotos"></div>
         <div style="font-size:10px;color:var(--red)">⚡ Yêu cầu ít nhất 1 ảnh</div>
       </div>
@@ -396,8 +396,19 @@ function validateDates(){var d=document.getElementById('eDate').value,sd=documen
 
 function tPhoto(){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';
-  inp.onchange=function(){if(!inp.files||!inp.files[0])return;if(eps.length>=3){toast('⚠️ Tối đa 3 ảnh');return}var r=new FileReader();r.onload=function(evt){eps.push({dataUrl:evt.target.result,name:inp.files[0].name});rPhotos()};r.readAsDataURL(inp.files[0])};
+  inp.onchange=function(){if(!inp.files||!inp.files[0])return;if(eps.length>=3){toast('⚠️ Tối đa 3 ảnh');return}
+    var f=inp.files[0],r=new FileReader();r.onload=function(evt){resizeImg(evt.target.result,800,0.7,function(resized){eps.push({dataUrl:resized,name:f.name});rPhotos()})};r.readAsDataURL(f)};
   inp.click();
+}
+function resizeImg(dataUrl,maxW,qual,cb){
+  var img=new Image();img.onload=function(){
+    var w=img.width,h=img.height;
+    if(w<=maxW){cb(dataUrl);return}
+    var r=maxW/w,nh=Math.round(h*r);
+    var c=document.createElement('canvas');c.width=maxW;c.height=nh;
+    var ctx=c.getContext('2d');ctx.drawImage(img,0,0,maxW,nh);
+    cb(c.toDataURL('image/jpeg',qual));
+  };img.src=dataUrl;
 }
 function rp(i){eps.splice(i,1);rPhotos()}
 function rPhotos(){var c=document.getElementById('ephotos'),h='';for(var i=0;i<eps.length;i++){var s=typeof eps[i]==='string'?eps[i]:eps[i].dataUrl;h+='<div class="pbox"><img src="'+s+'"><span class="x" onclick="rp('+i+')">✕</span></div>'}if(eps.length<3)h+='<div class="pbox" onclick="tPhoto()"><span class="ph">+ Ảnh</span></div>';c.innerHTML=h}
