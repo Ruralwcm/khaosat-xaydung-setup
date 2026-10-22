@@ -13,6 +13,15 @@
 body{font-family:'Be Vietnam Pro',-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:100px}
 .topbar{background:linear-gradient(135deg,var(--red),#0f2b50);color:#fff;padding:10px 14px}
 .topbar .t{font-size:16px;font-weight:800}.topbar .v{font-size:11px;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:20px;margin-left:6px}
+
+/* Tabs */
+.main-tabs{display:flex;gap:0;max-width:640px;margin:8px auto 0;padding:0 12px}
+.main-tab{flex:1;padding:10px 12px;border:1px solid #d1d5db;background:#f9fafb;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:.2s;font-family:inherit}
+.main-tab:first-child{border-radius:10px 0 0 10px}
+.main-tab:last-child{border-radius:0 10px 10px 0}
+.main-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tab-view{display:none}
+.tab-view.active{display:block}
 .wrap{max-width:640px;margin:0 auto;padding:0 12px}
 .card{background:var(--card);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-top:12px;overflow:hidden}
 .card-head{display:flex;align-items:center;gap:8px;padding:14px 16px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border)}
@@ -86,6 +95,20 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
 .hint{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* Dashboard extras */
+.tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.tag.ok{background:#dcfce7;color:var(--green)}
+.tag.warn{background:#fef3c7;color:#d97706}
+.tag.bad{background:#fee2e2;color:var(--red)}
+.bar-wrap{width:55px;height:6px;background:#e5e7eb;border-radius:3px;display:inline-block;vertical-align:middle;margin-left:4px}
+.bar{display:block;height:100%;border-radius:3px;min-width:2px}
+.bar.blue{background:var(--blue)}
+.bar.red{background:var(--red)}
+.bar.green{background:var(--green)}
+.bar.gold{background:var(--gold)}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
 </head>
 <body>
@@ -94,6 +117,15 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
     <div><span class="t">🏪 Khảo sát hỏng hóc Xây dựng - Kỹ Thuật</span><span class="v">v11</span></div>
   </div>
 </div>
+
+<!-- Tab Navigation -->
+<div class="main-tabs">
+  <div class="main-tab active" onclick="switchMainTab('survey',this)">📋 Khảo sát</div>
+  <div class="main-tab" onclick="switchMainTab('dash',this)">📊 Dashboard</div>
+</div>
+
+<!-- Tab: Khảo sát -->
+<div class="tab-view active" id="tabSurvey">
 <div class="wrap">
   <!-- ① CH -->
   <div class="card">
@@ -154,6 +186,22 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
   <div class="card" id="confirmCard" style="display:none">
     <div class="card-head"><span class="dot" style="background:var(--green)"></span>④ Xác nhận gửi</div>
     <div class="card-body" id="confirmArea"></div>
+  </div>
+</div>
+</div>
+<!-- /tabSurvey -->
+
+<!-- Tab: Dashboard -->
+<div class="tab-view" id="tabDash" style="min-height:400px">
+  <div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px">
+    <div style="font-size:40px;margin-bottom:12px">🔒</div>
+    <div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div>
+    <label style="text-align:left;max-width:280px;margin:8px auto">Email (không đuôi)</label>
+    <input type="text" id="dUsr" placeholder="VD: haodt301" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off">
+    <label style="text-align:left;max-width:280px;margin:8px auto">Mã nhân viên</label>
+    <input type="password" id="dPwd" placeholder="Nhập mã NV..." style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key==='Enter')dashLogin()">
+    <div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div>
+    <button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button>
   </div>
 </div>
 
@@ -428,6 +476,111 @@ function autoSave(){
 function cancelEdit(){
   edI=null;ev='fail';eps=[];pendingData=null;
   document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('eDate').value='';document.getElementById('eSU').value='';document.getElementById('eSUDate').value='';document.getElementById('suDateRow').style.display='none';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.add('sel');document.getElementById('failBox').classList.add('show');document.getElementById('editEvalRow').style.display='flex';document.getElementById('editCard').classList.remove('show');document.getElementById('confirmCard').style.display='none';rPhotos()
+}
+
+// ─── TAB SWITCH ───
+function switchMainTab(tab,el){
+  document.querySelectorAll('.main-tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.tab-view').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  document.getElementById(tab==='survey'?'tabSurvey':'tabDash').classList.add('active');
+}
+
+// ─── DASHBOARD ───
+var dUsers={'haodt301':{pass:'301',name:'Trần Đăng Hảo',role:'admin'},'pink':{pass:'5508872139',name:'Phạm Bích Hồng',role:'admin'}};
+var dUser=null,dData=null;
+
+function dashLogin(){
+  var u=document.getElementById('dUsr').value.trim().toLowerCase();
+  var p=document.getElementById('dPwd').value.trim();
+  var e=document.getElementById('dashErr');
+  if(!u||!p){e.style.display='block';e.textContent='Nhập đủ Email và Mã NV!';return}
+  var du=dUsers[u];
+  if(!du){e.style.display='block';e.textContent='Tài khoản không tồn tại!';return}
+  if(du.pass!==p){e.style.display='block';e.textContent='Sai Mã NV!';return}
+  dUser=du;loadDash();
+}
+
+function loadDash(){
+  if(!dUser)return;
+  var area=document.getElementById('tabDash');
+  area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--muted)"><span class="dot" style="display:inline-block;width:8px;height:8px;background:var(--blue);border-radius:50%;animation:pulse 1s infinite"></span> Đang tải dữ liệu...</div>';
+
+  fetch(GAS+'?action=dashboard').then(function(r){return r.ok?r.json():null}).then(function(data){
+    if(!data||!data.ok){area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--red)">⚠️ Không tải được dữ liệu. Kiểm tra GAS đã deploy Code.gs mới chưa?</div>';return}
+    dData=data;
+    // auto-add gdv users
+    data.byGdv.forEach(function(g){
+      var k=g.gdv.toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').substring(0,12);
+      if(!dUsers[k])dUsers[k]={pass:String(Math.floor(Math.random()*9000)+1000),name:g.gdv,role:'gdv',gdv:g.gdv};
+    });
+    renderDash();
+  }).catch(function(){area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--red)">⚠️ Lỗi kết nối</div>'});
+}
+
+function renderDash(){
+  var s=dData.summary,u=dUser.name,r=dUser.role;
+  var html='<div class="wrap">';
+  // Header
+  html+='<div style="background:var(--card);border-radius:12px;padding:10px 14px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px">';
+  html+='<b>📊 '+u+'</b><span style="color:var(--muted)">'+(r==='admin'?'Admin':'GĐV')+'</span>';
+  html+='<button class="btn btn-sm btn-ghost" onclick="dashLogout()" style="font-size:10px">↩ Đăng xuất</button></div>';
+  // KPI
+  html+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px">';
+  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--blue)">'+s.totalCH+'</div><div style="font-size:11px;color:var(--muted)">🏪 Tổng CH</div></div></div>';
+  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--green)">'+s.surveyedCH+' <span style="font-size:13px;color:var(--muted)">('+s.pctSurveyed+'%)</span></div><div style="font-size:11px;color:var(--muted)">✅ Đã rà soát</div></div></div>';
+  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--blue)">'+s.totalIssues+'</div><div style="font-size:11px;color:var(--muted)">🔧 Tổng Issues</div></div></div>';
+  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--green)">'+s.resolved+' <span style="font-size:13px;color:var(--muted)">('+s.pctResolved+'%)</span></div><div style="font-size:11px;color:var(--muted)">✅ Đã xử lý</div></div></div>';
+  html+='</div>';
+
+  // Tabs
+  html+='<div class="main-tabs" style="margin-top:12px">';
+  html+='<div class="main-tab active" onclick="switchDashTab(\'rs\',this)">🏪 Rà soát</div>';
+  html+='<div class="main-tab" onclick="switchDashTab(\'xl\',this)">🔧 Xử lý</div>';
+  html+='<div class="main-tab" onclick="switchDashTab(\'qlkv\',this)">👥 QLKV</div></div>';
+
+  // Rà soát
+  html+='<div class="tab-view active" id="dTabRS"><div class="card" style="margin-top:8px">';
+  html+='<div class="card-head"><span class="dot"></span>Theo GĐV</div><div class="card-body no-pad" style="padding:0">';
+  html+='<table style="font-size:12px"><thead><tr><th>GĐV</th><th class="num">Tổng</th><th class="num">Đã KS</th><th class="num">Chưa</th><th class="num">%</th><th></th></tr></thead><tbody>';
+  var list=dData.byGdv.slice();
+  if(r==='gdv')list=list.filter(function(g){return g.gdv===dUser.gdv});
+  for(var i=0;i<list.length;i++){var g=list[i],tag=g.pctSurveyed>=80?'ok':(g.pctSurveyed>=50?'warn':'bad'),c=g.pctSurveyed>=80?'green':(g.pctSurveyed>=50?'gold':'red');
+    html+='<tr><td><b>'+g.gdv+'</b></td><td class="num">'+g.totalCH+'</td><td class="num">'+g.surveyed+'</td><td class="num">'+g.notSurveyed+'</td><td class="num"><span class="tag '+tag+'">'+g.pctSurveyed+'%</span></td><td><span class="bar-wrap"><span class="bar '+c+'" style="width:'+Math.max(g.pctSurveyed,2)+'%"></span></span></td></tr>';}
+  html+='</tbody></table></div></div></div>';
+
+  // Xử lý
+  html+='<div class="tab-view" id="dTabXL"><div class="card" style="margin-top:8px">';
+  html+='<div class="card-head"><span class="dot" style="background:var(--red)"></span>Theo GĐV</div><div class="card-body no-pad" style="padding:0">';
+  html+='<table style="font-size:12px"><thead><tr><th>GĐV</th><th class="num">Issues</th><th class="num">✅ XL</th><th class="num">❌</th><th class="num">%</th><th></th></tr></thead><tbody>';
+  for(var i=0;i<list.length;i++){var g=list[i],tag=g.pctResolved>=80?'ok':(g.pctResolved>=50?'warn':'bad'),c=g.pctResolved>=80?'green':(g.pctResolved>=50?'gold':'red');
+    html+='<tr><td><b>'+g.gdv+'</b></td><td class="num">'+g.totalIssues+'</td><td class="num">'+g.resolved+'</td><td class="num">'+g.unresolved+'</td><td class="num"><span class="tag '+tag+'">'+g.pctResolved+'%</span></td><td><span class="bar-wrap"><span class="bar '+c+'" style="width:'+Math.max(g.pctResolved,2)+'%"></span></span></td></tr>';}
+  html+='</tbody></table></div></div></div>';
+
+  // QLKV
+  html+='<div class="tab-view" id="dTabQLKV"><div class="card" style="margin-top:8px">';
+  html+='<div class="card-head"><span class="dot" style="background:var(--green)"></span>Theo QLKV</div><div class="card-body no-pad" style="padding:0">';
+  html+='<table style="font-size:12px"><thead><tr><th>QLKV</th><th>GĐV</th><th class="num">CH</th><th class="num">Đã KS</th><th class="num">%</th><th class="num">Issues</th><th class="num">✅</th></tr></thead><tbody>';
+  var ql=dData.byQlkv.slice();
+  if(r==='gdv')ql=ql.filter(function(q){return q.gdv===dUser.gdv});
+  for(var i=0;i<ql.length;i++){var q=ql[i],tKS=q.pctSurveyed>=80?'ok':(q.pctSurveyed>=50?'warn':'bad');
+    html+='<tr><td><b>'+q.qlkv+'</b></td><td style="font-size:11px;color:var(--muted)">'+q.gdv+'</td><td class="num">'+q.totalCH+'</td><td class="num">'+q.surveyed+'</td><td class="num"><span class="tag '+tKS+'">'+q.pctSurveyed+'%</span></td><td class="num">'+q.totalIssues+'</td><td class="num">'+q.resolved+'</td></tr>';}
+  html+='</tbody></table></div></div></div>';
+
+  html+='<div style="text-align:center;font-size:10px;color:var(--muted);margin-top:16px;padding-bottom:20px">Cập nhật: '+new Date(dData.updated).toLocaleString('vi-VN')+'</div>';
+  html+='</div>'; // close wrap
+  document.getElementById('tabDash').innerHTML=html;
+}
+
+function dashLogout(){dUser=null;dData=null;document.getElementById('tabDash').innerHTML='<div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px"><div style="font-size:40px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div><label style="text-align:left;max-width:280px;margin:8px auto">Email (không đuôi)</label><input type="text" id="dUsr" placeholder="VD: haodt301" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off"><label style="text-align:left;max-width:280px;margin:8px auto">Mã nhân viên</label><input type="password" id="dPwd" placeholder="Nhập mã NV..." style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key===\'Enter\')dashLogin()"><div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div><button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button></div>'}
+
+function switchDashTab(tab,el){
+  var tabs=document.querySelectorAll('#tabDash .main-tab');
+  var views=document.querySelectorAll('#tabDash .tab-view');
+  tabs.forEach(function(t){t.classList.remove('active')});
+  views.forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  document.getElementById('dTab'+(tab==='rs'?'RS':(tab==='xl'?'XL':'QLKV'))).classList.add('active');
 }
 </script>
 </body>
