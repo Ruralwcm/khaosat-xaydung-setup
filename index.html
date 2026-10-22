@@ -11,8 +11,12 @@
 :root{--red:#d71920;--blue:#1a3c6e;--green:#16a34a;--gold:#f59e0b;--bg:#f4f5f7;--card:#fff;--txt:#1f2937;--muted:#6b7280;--border:#e5e7eb}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Be Vietnam Pro',-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:100px}
-.topbar{background:linear-gradient(135deg,var(--red),#0f2b50);color:#fff;padding:10px 14px}
-.topbar .t{font-size:16px;font-weight:800}.topbar .v{font-size:11px;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:20px;margin-left:6px}
+.topbar{background:linear-gradient(135deg,var(--red),#a31016);color:#fff;padding:10px 14px}
+.topbar .t-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.topbar .t{font-size:16px;font-weight:800;line-height:1.2}.topbar .v{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+.topbar .dash-btn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.topbar .dash-btn:hover{background:rgba(255,255,255,.28)}
+.topbar .back-btn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;display:none}
 
 /* Tabs */
 .main-tabs{display:flex;gap:0;max-width:640px;margin:8px auto 0;padding:0 12px}
@@ -113,15 +117,11 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
 </head>
 <body>
 <div class="topbar">
-  <div class="t-row" style="display:flex;align-items:center;justify-content:space-between">
+  <div class="t-row">
     <div><span class="t">🏪 Khảo sát hỏng hóc Xây dựng - Kỹ Thuật</span><span class="v">v11</span></div>
+    <button class="dash-btn" id="btnDash" onclick="goDash()">📊 Dashboard</button>
+    <button class="back-btn" id="btnBack" onclick="goSurvey()">↩ Quay lại</button>
   </div>
-</div>
-
-<!-- Tab Navigation -->
-<div class="main-tabs">
-  <div class="main-tab active" onclick="switchMainTab('survey',this)">📋 Khảo sát</div>
-  <div class="main-tab" onclick="switchMainTab('dash',this)">📊 Dashboard</div>
 </div>
 
 <!-- Tab: Khảo sát -->
@@ -144,7 +144,7 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
 
   <!-- ② Issues -->
   <div class="card" id="listCard" style="display:none">
-    <div class="card-head"><span class="dot"></span>② Tình trạng</div>
+    <div class="card-head"><span class="dot"></span>② Tình trạng <span class="tag" id="tagCount" style="margin-left:auto">0 vấn đề</span></div>
     <div class="card-body" id="issueArea"></div>
   </div>
 
@@ -314,8 +314,8 @@ function renderIssues(){
   if(issues.length===0){
     html='<div class="state-banner no-issues">✅ Cửa hàng không có hỏng hóc Xây dựng - Kỹ Thuật được theo dõi.</div>';
     html+='<div style="display:flex;gap:8px;margin-top:8px">';
-    html+='<button class="btn btn-green" onclick="confirmNoIssue()" style="flex:1">✅ Không có vấn đề</button>';
-    html+='<button class="btn btn-red" onclick="openAdd()" style="flex:1">➕ Khai báo vấn đề</button>';
+    html+='<button class="btn btn-ghost" style="flex:1;border-color:var(--green);color:var(--green)" onclick="confirmNoIssue()">✅ Không có vấn đề</button>';
+    html+='<button class="btn btn-blue" onclick="openAdd()" style="flex:1">➕ Khai báo vấn đề</button>';
     html+='</div>';
   }else{
     html='<div class="state-banner has-issues">⚠️ Cửa hàng có <b>'+issues.length+' vấn đề</b> đang theo dõi. Vui lòng cập nhật tình trạng mới nhất.</div>';
@@ -323,7 +323,6 @@ function renderIssues(){
       var iss=issues[i],tl=iss._timeline||[];
       html+='<div class="issue-card">';
       html+='<div class="ihd"><span class="name">'+iss.name+'</span>'+(iss._code?'<span class="code">'+iss._code+'</span>':'')+'<span class="status open">❌ Chưa xử lý</span></div>';
-      // Timeline
       if(tl.length>0){
         html+='<div class="timeline">';
         var first=tl[tl.length-1];
@@ -331,7 +330,6 @@ function renderIssues(){
         for(var t=tl.length-2;t>=0;t--){html+='<span>🔄 '+fmtDate(tl[t].date)+': '+(tl[t].result==='Đạt'?'✅ Đã xử lý':'❌ Chưa xử lý')+'</span>'}
         html+='</div>';
       }
-      // Meta
       html+='<div class="meta">';
       if(iss._date)html+='<span>📅 Phát sinh: '+fmtDate(iss._date)+'</span>';
       if(iss._su==='yes')html+='<span>📞 Đã báo SU: '+fmtDate(iss._sudate)+'</span>';
@@ -342,12 +340,14 @@ function renderIssues(){
       html+='<div class="acts"><button class="btn btn-sm btn-blue" onclick="editIssue('+i+')">✏️ Cập nhật</button></div>';
       html+='</div>';
     }
-    html+='<button class="btn btn-ghost btn-block" onclick="openAdd()">➕ Khai báo vấn đề mới</button>';
+    html+='<div style="display:flex;gap:8px;margin-top:8px">';
+    html+='<button class="btn btn-ghost" style="flex:1;border-color:var(--green);color:var(--green)" onclick="confirmNoIssue()">✅ Không thay đổi</button>';
+    html+='<button class="btn btn-blue" onclick="openAdd()" style="flex:1">➕ Khai báo vấn đề</button>';
+    html+='</div>';
   }
+  document.getElementById('tagCount').textContent = issues.length+' vấn đề';
   area.innerHTML=html;
 }
-
-function fmtDate(d){if(!d)return'';var m=d.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m)return m[1]+'/'+m[2];m=d.match(/(\d{4})-(\d{2})-(\d{2})/);if(m)return m[3]+'/'+m[2];return d.substring(0,10)}
 
 function showList(){document.getElementById('listCard').style.display='block'}
 function hideList(){document.getElementById('listCard').style.display='none';issues=[];document.getElementById('issueArea').innerHTML=''}
@@ -492,11 +492,19 @@ function cancelEdit(){
 }
 
 // ─── TAB SWITCH ───
-function switchMainTab(tab,el){
-  document.querySelectorAll('.main-tab').forEach(function(t){t.classList.remove('active')});
-  document.querySelectorAll('.tab-view').forEach(function(t){t.classList.remove('active')});
-  el.classList.add('active');
-  document.getElementById(tab==='survey'?'tabSurvey':'tabDash').classList.add('active');
+function goDash(){
+  document.getElementById('tabSurvey').classList.remove('active');
+  document.getElementById('tabDash').classList.add('active');
+  document.getElementById('btnDash').style.display='none';
+  document.getElementById('btnBack').style.display='inline-flex';
+}
+function goSurvey(){
+  document.getElementById('tabDash').classList.remove('active');
+  document.getElementById('tabSurvey').classList.add('active');
+  document.getElementById('btnDash').style.display='inline-flex';
+  document.getElementById('btnBack').style.display='none';
+  dUser=null;dData=null;
+  document.getElementById('tabDash').innerHTML='<div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px"><div style="font-size:40px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div><label style="text-align:left;max-width:280px;margin:8px auto">User</label><input type="text" id="dUsr" placeholder="Nhập user" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off"><label style="text-align:left;max-width:280px;margin:8px auto">Password</label><input type="password" id="dPwd" placeholder="Nhập password" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key===\'Enter\')dashLogin()"><div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div><button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button></div>';
 }
 
 // ─── DASHBOARD ───
