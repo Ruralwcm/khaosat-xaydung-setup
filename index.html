@@ -413,6 +413,17 @@ function resizeImg(dataUrl,maxW,qual,cb){
 function rp(i){eps.splice(i,1);rPhotos()}
 function rPhotos(){var c=document.getElementById('ephotos'),h='';for(var i=0;i<eps.length;i++){var s=typeof eps[i]==='string'?eps[i]:eps[i].dataUrl;h+='<div class="pbox"><img src="'+s+'"><span class="x" onclick="rp('+i+')">✕</span></div>'}if(eps.length<3)h+='<div class="pbox" onclick="tPhoto()"><span class="ph">+ Ảnh</span></div>';c.innerHTML=h}
 
+// ─── HELPERS ───
+function fmtDate(s){
+  if(!s)return '';
+  // Already DD/MM/YYYY
+  if(/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s))return s.split(' ')[0];
+  // ISO YYYY-MM-DD
+  var m=s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(m)return m[3]+'/'+m[2]+'/'+m[1];
+  return s;
+}
+
 // ─── SAVE → CONFIRM ───
 function saveEdit(){
   var a=document.getElementById('ea').value.trim(),n=getItemName(),isNew=(edI===null);
