@@ -171,6 +171,8 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
           <div><label>📞 Đã báo SU? <span class="r">*</span></label><select id="eSU" onchange="toggleSUDate()"><option value="">-- Chọn --</option><option value="yes">✅ Đã báo</option><option value="no">❌ Chưa báo</option></select></div>
         </div>
         <div id="suDateRow" style="display:none"><label>📅 Ngày báo SU gần nhất <span class="r">*</span></label><input type="date" id="eSUDate" onchange="validateDates()"><div class="hint">Phải sau ngày phát sinh</div></div>
+        <label>📊 Số lượng hỏng/lỗi <span id="slhongDvt" style="color:var(--red);font-weight:600">(cái)</span></label>
+        <input type="number" id="eSlhong" min="1" step="1" value="1" style="max-width:140px">
         <label>📝 Diễn giải <span class="r">*</span></label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
         <label>📸 Ảnh (Tối thiểu 1, tối đa 3) <span class="r">*</span></label>
         <div class="photos-row" id="ephotos"></div>
@@ -217,6 +219,18 @@ var DI={
   'TRƯỚC CH':['Biển hiệu WM+','Mặt tiền/ sơn tường ngoài','Cửa cuốn/ cửa kính','Mái hiên/ mái che','Đèn chiếu sáng ngoài','Vỉa hè','Biển quảng cáo/Poster','Cây xanh','Thùng rác ngoài','Camera an ninh ngoài'],
   'TRONG CH':['Trần nhà/ thạch cao','Tường','Đèn chiếu sáng','Điều hòa/ quạt/ thông gió','Kệ trưng bày','Tủ mát/ tủ đông/ tủ lạnh','Bảng giá','Giỏ hàng/ xe đẩy','Quầy thu ngân','Cân điện tử','Wifi/ Mạng/ Thiết bị IT','Hạng mục khác','Hệ thống âm thanh','Bình chữa cháy/ PCCC','Ổ điện, hệ thống điện','Camera an ninh trong'],
   'KHO - NVS':['Cửa kho / cửa NVS','Kệ kho/ Palet','Sàn kho / NVS','Đường điện','Thiết bị vệ sinh','Đường nước','Thiết bị nhà vệ sinh','Sàn kho / NVS (tổng thể)']
+};
+// ĐVT mapping (hạng mục → đơn vị tính)
+var DVT={
+  'Biển hiệu WM+':'cái','Mặt tiền/ sơn tường ngoài':'vị trí','Cửa cuốn/ cửa kính':'cánh','Mái hiên/ mái che':'vị trí',
+  'Đèn chiếu sáng ngoài':'bóng','Vỉa hè':'vị trí','Biển quảng cáo/Poster':'cái','Cây xanh':'cây',
+  'Thùng rác ngoài':'cái','Camera an ninh ngoài':'cái',
+  'Trần nhà/ thạch cao':'vị trí','Tường':'vị trí','Đèn chiếu sáng':'bóng','Điều hòa/ quạt/ thông gió':'cái',
+  'Kệ trưng bày':'cái','Tủ mát/ tủ đông/ tủ lạnh':'cái','Bảng giá':'cái','Giỏ hàng/ xe đẩy':'cái',
+  'Quầy thu ngân':'cái','Cân điện tử':'cái','Wifi/ Mạng/ Thiết bị IT':'thiết bị','Hạng mục khác':'cái',
+  'Hệ thống âm thanh':'thiết bị','Bình chữa cháy/ PCCC':'bình','Ổ điện, hệ thống điện':'điểm','Camera an ninh trong':'cái',
+  'Cửa kho / cửa NVS':'cánh','Kệ kho/ Palet':'cái','Sàn kho / NVS':'vị trí','Đường điện':'điểm',
+  'Thiết bị vệ sinh':'cái','Đường nước':'điểm','Thiết bị nhà vệ sinh':'cái','Sàn kho / NVS (tổng thể)':'vị trí'
 };
 
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2600)}
@@ -288,7 +302,7 @@ function loadIssues(){
     if(data&&data.length&&data[0].items){
       var li=data[0].items;
       issues=li.filter(function(it){return it.result==='Không đạt'}).map(function(it,i){
-        return{area:it.area||'',name:it.item||'',note:it.note||'',photos:it.photos||[],date:data[0].date||'',_code:it.code||'',_date:it.date||'',_su:it.su||'',_sudate:it.sudate||'',_changed:false};
+        return{area:it.area||'',name:it.item||'',note:it.note||'',photos:it.photos||[],date:data[0].date||'',_code:it.code||'',_date:it.date||'',_su:it.su||'',_sudate:it.sudate||'',_slhong:it.slhong||'',_dvt:it.dvt||'',_changed:false};
       });
       buildTimeline(data,issues);
     }else{issues=[]}
@@ -332,6 +346,7 @@ function renderIssues(){
       }
       html+='<div class="meta">';
       if(iss._date)html+='<span>📅 Phát sinh: '+fmtDate(iss._date)+'</span>';
+      if(iss._slhong)html+='<span>📊 SL hỏng: '+iss._slhong+' '+(iss._dvt||'cái')+'</span>';
       if(iss._su==='yes')html+='<span>📞 Đã báo SU: '+fmtDate(iss._sudate)+'</span>';
       else if(iss._su==='no')html+='<span>📞 Chưa báo SU</span>';
       html+='</div>';
@@ -355,7 +370,7 @@ function hideList(){document.getElementById('listCard').style.display='none';iss
 // ─── EDIT ───
 function openAdd(){edI=null;showEditForm('Khai báo vấn đề mới','',null,null,[],'','','')}
 function confirmNoIssue(){toast('✅ Đã xác nhận: Cửa hàng không có vấn đề')}
-function editIssue(i){edI=i;var iss=issues[i];showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'',iss._date||'',iss._su||'',iss._sudate||'')}
+function editIssue(i){edI=i;var iss=issues[i];showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'',iss._date||'',iss._su||'',iss._sudate||'',iss._slhong||'')}
 
 function onAreaChange(){
   var a=document.getElementById('ea').value,sel=document.getElementById('en');
@@ -364,15 +379,18 @@ function onAreaChange(){
   sel.innerHTML+='<option value="__custom__">(+) Thêm mới...</option>';
   sel.value='';document.getElementById('enCustom').style.display='none';document.getElementById('enCustom').value='';
 }
-function onItemChange(){var v=document.getElementById('en').value,ci=document.getElementById('enCustom');if(v==='__custom__'){ci.style.display='block';ci.focus()}else{ci.style.display='none';ci.value=''}}
+function onItemChange(){var v=document.getElementById('en').value,ci=document.getElementById('enCustom');if(v==='__custom__'){ci.style.display='block';ci.focus()}else{ci.style.display='none';ci.value=''}updateDvt()}
 function getItemName(){var sel=document.getElementById('en');if(sel.value==='__custom__')return document.getElementById('enCustom').value.trim();return sel.value}
+function getDvt(name){if(!name)name=getItemName();return DVT[name]||'cái'}
+function updateDvt(){document.getElementById('slhongDvt').textContent='('+getDvt()+')'}
 
-function showEditForm(title,area,name,ieval,photos,note,date,su,sudate){
+function showEditForm(title,area,name,ieval,photos,note,date,su,sudate,slhong){
   document.getElementById('efTitle').textContent=title;document.getElementById('ea').value=area;onAreaChange();
   var sel=document.getElementById('en'),ci=document.getElementById('enCustom');
   if(name&&area&&DI[area]&&DI[area].indexOf(name)>=0){sel.value=name;ci.style.display='none'}
   else if(name){sel.value='__custom__';ci.style.display='block';ci.value=name}
   else{sel.value='';ci.style.display='none'}
+  updateDvt();
   
   var isNew=(edI===null);
   if(isNew){ev='fail';document.getElementById('editEvalRow').style.display='none';document.getElementById('failBox').classList.add('show')}
@@ -383,6 +401,7 @@ function showEditForm(title,area,name,ieval,photos,note,date,su,sudate){
   document.getElementById('eDate').value=date||'';
   document.getElementById('eSU').value=su||'';toggleSUDate();
   document.getElementById('eSUDate').value=sudate||'';
+  document.getElementById('eSlhong').value=slhong||1;
   eps=photos||[];
   if(ev==='fail'){document.getElementById('enote').value=note||''}else{document.getElementById('enote').value=''}
   rPhotos();
@@ -430,16 +449,17 @@ function saveEdit(){
   if(!a){toast('⚠️ Chọn khu vực');return}if(!n){toast('⚠️ Chọn hoặc nhập tên hạng mục');return}
   if(!ev){toast('⚠️ Chọn tình trạng');return}
   
-  var date='',su='',sudate='',nt='';
+  var date='',su='',sudate='',nt='',slhong=1,dvt=getDvt(n);
   if(ev==='fail'){
     nt=document.getElementById('enote').value.trim();
     if(!nt){toast('⚠️ Nhập diễn giải');return}
     if(eps.length===0){toast('⚠️ Cần ít nhất 1 ảnh');return}
     date=document.getElementById('eDate').value;su=document.getElementById('eSU').value;sudate=document.getElementById('eSUDate').value;
+    slhong=parseInt(document.getElementById('eSlhong').value,10)||1;
     if(isNew){if(!date){toast('⚠️ Chọn ngày phát sinh');return}if(!su){toast('⚠️ Chọn Đã báo SU?');return}if(su==='yes'&&!sudate){toast('⚠️ Nhập ngày báo SU');return}}
   }
   
-  var d={area:a,name:n,eval:ev,note:nt,photos:ev==='fail'?eps.slice():[],_date:date,_su:su,_sudate:sudate,_isNew:isNew};
+  var d={area:a,name:n,eval:ev,note:nt,photos:ev==='fail'?eps.slice():[],_date:date,_su:su,_sudate:sudate,_slhong:slhong,_dvt:dvt,_isNew:isNew};
   pendingData=d;
   
   // Show confirm screen
@@ -459,6 +479,7 @@ function showConfirm(d,isNew){
   html+='<tr><td>Khu vực</td><td>'+d.area+'</td></tr>';
   html+='<tr><td>Hạng mục</td><td><b>'+d.name+'</b></td></tr>';
   html+='<tr><td>Tình trạng</td><td>'+(d.eval==='pass'?'✅ Đã xử lý':'❌ Chưa xử lý')+'</td></tr>';
+  if(d.eval==='fail')html+='<tr><td>SL hỏng/lỗi</td><td><b>'+d._slhong+'</b> ('+d._dvt+')</td></tr>';
   if(d._date)html+='<tr><td>Ngày phát sinh</td><td>'+fmtDate(d._date)+'</td></tr>';
   if(d._su)html+='<tr><td>Báo SU</td><td>'+(d._su==='yes'?'✅ Đã báo: '+fmtDate(d._sudate):'❌ Chưa báo')+'</td></tr>';
   if(d.note)html+='<tr><td>Diễn giải</td><td>'+d.note+'</td></tr>';
@@ -502,7 +523,7 @@ function doConfirm(code){
 
 function autoSave(){
   if(submitting)return;submitting=true;
-  var its=issues.map(function(e){return{area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.note||'',photos:e.photos||[],code:e._code||'',date:e._date||'',su:e._su||'',sudate:e._sudate||''}});
+  var its=issues.map(function(e){return{area:e.area,item:e.name,result:e.eval==='pass'?'Đạt':'Không đạt',note:e.note||'',photos:e.photos||[],code:e._code||'',date:e._date||'',su:e._su||'',sudate:e._sudate||'',slhong:e._slhong||1}});
   var pc=0,fc=0;for(var i=0;i<its.length;i++){if(its[i].result==='Đạt')pc++;else fc++}
   var p={store:sel.ma,storeName:sel.ten,tinh:sel.tinh,gdv:document.getElementById('sg').value,qlkv:document.getElementById('sq').value,items:its,totalItems:its.length,passCount:pc,failCount:fc};
   fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json()}).catch(function(){}).finally(function(){submitting=false});
@@ -510,7 +531,7 @@ function autoSave(){
 
 function cancelEdit(){
   edI=null;ev='fail';eps=[];pendingData=null;
-  document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('eDate').value='';document.getElementById('eSU').value='';document.getElementById('eSUDate').value='';document.getElementById('suDateRow').style.display='none';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.add('sel');document.getElementById('failBox').classList.add('show');document.getElementById('editEvalRow').style.display='flex';document.getElementById('editCard').classList.remove('show');document.getElementById('confirmCard').style.display='none';rPhotos()
+  document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('eDate').value='';document.getElementById('eSU').value='';document.getElementById('eSUDate').value='';document.getElementById('eSlhong').value='1';document.getElementById('suDateRow').style.display='none';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.add('sel');document.getElementById('failBox').classList.add('show');document.getElementById('editEvalRow').style.display='flex';document.getElementById('editCard').classList.remove('show');document.getElementById('confirmCard').style.display='none';updateDvt();rPhotos()
 }
 
 // ─── TAB SWITCH ───
