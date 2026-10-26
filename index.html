@@ -576,7 +576,7 @@ function loadDash(){
     // auto-add gdv users
     data.byGdv.forEach(function(g){
       var k=g.gdv.toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').substring(0,12);
-      if(!dUsers[k])dUsers[k]={pass:'pink123',name:g.gdv,role:'gdv',gdv:g.gdv};
+      if(!dUsers[k])dUsers[k]={pass:'12345678',name:g.gdv,role:'gdv',gdv:g.gdv};
     });
     renderDash();
   }).catch(function(){area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--red)">⚠️ Lỗi kết nối</div>'});
