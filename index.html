@@ -551,7 +551,7 @@ function goSurvey(){
 }
 
 // ─── DASHBOARD ───
-var dUsers={'haodt301':{pass:'301',name:'Trần Đăng Hảo',role:'admin'},'pink':{pass:'5508872139',name:'Phạm Bích Hồng',role:'admin'}};
+var dUsers={'haodt':{pass:'pink123',name:'Trần Đăng Hảo',role:'admin'},'hongpb':{pass:'pink123',name:'Phạm Bích Hồng',role:'admin'}};
 var dUser=null,dData=null;
 
 function dashLogin(){
@@ -576,7 +576,7 @@ function loadDash(){
     // auto-add gdv users
     data.byGdv.forEach(function(g){
       var k=g.gdv.toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').substring(0,12);
-      if(!dUsers[k])dUsers[k]={pass:String(Math.floor(Math.random()*9000)+1000),name:g.gdv,role:'gdv',gdv:g.gdv};
+      if(!dUsers[k])dUsers[k]={pass:'pink123',name:g.gdv,role:'gdv',gdv:g.gdv};
     });
     renderDash();
   }).catch(function(){area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--red)">⚠️ Lỗi kết nối</div>'});
