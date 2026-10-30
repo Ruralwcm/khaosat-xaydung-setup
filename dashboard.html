@@ -109,7 +109,7 @@ tr:hover td{background:#f8fafc}
   <div class="icon">🔒</div>
   <h2>Đăng nhập Dashboard</h2>
   <label>Email (không đuôi)</label>
-  <input type="text" id="usr" placeholder="VD: haodt301" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()">
+  <input type="text" id="usr" placeholder="VD: haodt" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()">
   <label>Mã nhân viên</label>
   <input type="password" id="pwd" placeholder="Nhập mã NV..." autocomplete="off" onkeydown="if(event.key==='Enter')login()">
   <div class="err" id="loginErr">Sai thông tin đăng nhập!</div>
@@ -204,8 +204,8 @@ var GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8sh
 
 // ── USERS ──
 var USERS = {
-  'haodt301':  { pass:'301', name:'Trần Đăng Hảo', role:'admin' },
-  'pink':      { pass:'5508872139', name:'Phạm Bích Hồng', role:'admin' }
+  'haodt':     { pass:'pink123', name:'Trần Đăng Hảo', role:'admin' },
+  'hongpb':    { pass:'pink123', name:'Phạm Bích Hồng', role:'admin' }
 };
 
 var currentUser = null, dashData = null, toastTimer;
@@ -250,7 +250,7 @@ function loadDash(){
     // Auto-add GĐV users
     data.byGdv.forEach(function(g){
       var key = g.gdv.toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').substring(0,12);
-      if(!USERS[key]) USERS[key] = { pass: String(Math.floor(Math.random()*9000)+1000), name: g.gdv, role: 'gdv', gdv: g.gdv };
+      if(!USERS[key]) USERS[key] = { pass: '12345678', name: g.gdv, role: 'gdv', gdv: g.gdv };
     });
 
     renderKpi();
