@@ -2,392 +2,470 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Dashboard · CSVC Xây dựng - Kỹ Thuật</title>
+<title>Dashboard • CSVC Xây dựng - Kỹ Thuật</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--red:#d71920;--blue:#1a3c6e;--gold:#ffc107;--green:#16a34a;--bg:#f4f5f7;--card:#fff;--txt:#1f2937;--muted:#6b7280;--border:#e5e7eb}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:40px}
-.topbar{background:linear-gradient(135deg,#1a3c6e,#0f2440);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-.topbar h1{font-size:16px;font-weight:800}
-.topbar .info{text-align:right;font-size:11px}
-.topbar .info b{display:block}
-.wrap{max-width:820px;margin:0 auto;padding:0 12px}
+  :root{ --red:#d71920; --navy:#1a3c6e; --gold:#ffc107; --green:#1e8e4e; --bg:#f4f6fb;
+    --card:#fff; --line:#e5e9f2; --txt:#1c2434; --mut:#6b7280; }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:'Be Vietnam Pro',system-ui,sans-serif; background:var(--bg); color:var(--txt);
+    min-height:100vh; padding:16px; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px; margin:0 auto}
+  .head{background:linear-gradient(135deg,var(--navy),#2c4a8a); color:#fff; border-radius:16px;
+    padding:20px; box-shadow:0 8px 24px rgba(26,60,110,.18); position:relative}
+  .head h1{font-size:20px; font-weight:800} .head p{font-size:13px; opacity:.85; margin-top:5px}
+  .card{background:var(--card); border-radius:14px; padding:18px; margin-top:14px;
+    border:1px solid var(--line); box-shadow:0 2px 10px rgba(20,30,60,.06)}
+  .card h2{font-size:15px; font-weight:700; color:var(--navy); margin-bottom:12px; display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .kpis{display:grid; grid-template-columns:repeat(5,1fr); gap:10px}
+  @media (max-width:600px){.kpis{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}}
+  .kpi{background:#f6f8fc; border:1px solid var(--line); border-radius:12px; padding:12px 8px; text-align:center}
+  .kpi .n{font-size:26px; font-weight:800; line-height:1} .kpi .l{font-size:11px; color:var(--mut); margin-top:6px}
+  .kpi.red .n{color:var(--red)} .kpi.green .n{color:var(--green)} .kpi.navy .n{color:var(--navy)}
+  .bar-wrap{height:10px; background:#e9edf5; border-radius:8px; overflow:hidden; margin-top:12px}
+  .bar-wrap i{display:block; height:100%; background:linear-gradient(90deg,var(--green),#37b26c); border-radius:8px; transition:width .4s}
 
-/* Login */
-#loginScreen{max-width:360px;margin:80px auto 0;background:var(--card);border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:28px 24px;text-align:center}
-#loginScreen .icon{font-size:40px;margin-bottom:8px}
-#loginScreen h2{font-size:16px;margin-bottom:16px}
-#loginScreen label{font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;text-align:left}
-#loginScreen input{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;font-size:15px;margin-bottom:12px}
-#loginScreen .err{color:var(--red);font-size:12px;margin-bottom:8px;display:none}
+  .tab-btn{background:none;border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;font-family:inherit;color:var(--mut);cursor:pointer;transition:.15s}
+  .tab-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:9px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-.btn-primary{background:var(--blue);color:#fff;width:100%}
-.btn-outline{background:#fff;color:var(--blue);border:1px solid var(--blue)}
-.btn-sm{padding:6px 12px;font-size:11px}
+  .gdv-table{width:100%;table-layout:fixed;border-collapse:collapse;margin-top:4px;font-size:11px}
+  .gdv-table col.col-gdv{width:16%}.gdv-table col.col-num{width:7%}
+  .gdv-table col.col-bar{width:12%}.gdv-table col.col-pct{width:6%}
+  .gdv-table col.col-iss{width:6%}.gdv-table col.col-res{width:6%}
+  .gdv-table col.col-isspct{width:7%}
+  .gdv-table th{background:#f6f8fc;color:var(--mut);font-size:10.5px;font-weight:700;padding:8px 6px;text-align:center;border-bottom:2px solid var(--line);white-space:nowrap}
+  .gdv-table th.col-gdv{text-align:left}
+  .gdv-table td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gdv-table td.col-gdv{text-align:left;font-weight:600}
+  .gdv-table .bar-cell{padding:7px 6px;vertical-align:middle}
+  .gdv-table .bar-cell i{display:block;height:7px;background:linear-gradient(90deg,var(--green),#37b26c);border-radius:5px}
+  .gdv-table .bar-cell i.warn{background:linear-gradient(90deg,var(--gold),#f59e0b)}
+  .gdv-table .bar-cell i.bad{background:linear-gradient(90deg,var(--red),#f86c6c)}
+  .gdv-table .qlkv-name{font-weight:500;font-size:11.5px;padding-left:20px}
+  .gdv-sub{display:none}
+  .grow{cursor:pointer; user-select:none}
+  .grow .ar{display:inline-block; width:14px; font-size:11px; transition:.2s}
+  .grow .ar.open{transform:rotate(90deg)}
 
-/* KPI Row */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 10px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center}
-.kpi .n{font-size:22px;font-weight:800;color:var(--blue)}
-.kpi .l{font-size:11px;color:var(--muted);margin-top:2px}
-.kpi .sub{font-size:10px;color:var(--muted)}
-.kpi.red .n{color:var(--red)}
-.kpi.green .n{color:var(--green)}
-.kpi.gold .n{color:#d97706}
+  .tag{display:inline-block; padding:2px 8px; border-radius:16px; font-size:10px; font-weight:700}
+  .tag.ok{background:#e6f6ec; color:var(--green)} .tag.warn{background:#fef3c7; color:#d97706} .tag.bad{background:#fdeeee; color:var(--red)}
 
-/* Tabs */
-.tabs{display:flex;gap:0;margin-top:14px}
-.tab{flex:1;padding:10px 12px;border:1px solid var(--border);background:#f9fafb;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:.2s}
-.tab:first-child{border-radius:10px 0 0 10px}
-.tab:last-child{border-radius:0 10px 10px 0}
-.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.tab-content{display:none}
-.tab-content.active{display:block}
+  .hdr-acts{float:right; display:flex; gap:6px; flex-wrap:wrap}
+  .hdr-btn{background:rgba(255,255,255,.16); color:#fff; border:none; border-radius:16px;
+    padding:5px 11px; font-size:11.5px; font-weight:600; font-family:inherit; cursor:pointer; white-space:nowrap}
+  .hdr-btn:hover{background:rgba(255,255,255,.26)}
 
-/* Filters */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
-.filters select{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:#fff;min-width:120px}
-.filters label{font-size:11px;font-weight:600;color:var(--muted)}
+  .foot{text-align:center; color:var(--mut); font-size:11px; margin-top:16px}
+  .empty{text-align:center; color:var(--mut); padding:24px 0; font-size:13.5px}
+  .loading{text-align:center;padding:40px;color:var(--mut)}
+  .loading::after{content:'...';animation:dots 1.5s steps(4,end) infinite}
+  @keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
 
-/* Card & Table */
-.card{background:var(--card);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-top:14px;overflow:hidden}
-.card-head{display:flex;align-items:center;gap:8px;padding:13px 16px;font-weight:700;font-size:14px;border-bottom:1px solid var(--border)}
-.card-head .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.card-head .dot.blue{background:var(--blue)}
-.card-head .dot.red{background:var(--red)}
-.card-head .dot.green{background:var(--green)}
-.card-head .cnt{font-size:12px;font-weight:400;color:var(--muted);margin-left:auto}
-.card-body{padding:8px 12px;overflow-x:auto}
-.card-body.no-pad{padding:0}
+  /* Sort */
+  .sort-arrow{font-size:10px;margin-left:3px;opacity:.4}
+  .sort-arrow.on{opacity:1;color:var(--navy)}
+  th.sortable{cursor:pointer;user-select:none}
+  th.sortable:hover{color:var(--navy)}
 
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);white-space:nowrap}
-th{color:var(--muted);font-weight:600;font-size:11px;position:sticky;top:0;background:var(--card);z-index:1}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f8fafc}
+  /* Login */
+  .login-box{max-width:360px;margin:60px auto;background:var(--card);border-radius:14px;padding:28px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+  .login-box .lock{font-size:48px;margin-bottom:12px}
+  .login-box h2{font-size:18px;margin-bottom:8px;color:var(--navy)}
+  .login-box label{display:block;text-align:left;font-size:12px;font-weight:600;color:var(--mut);margin:8px 0 4px}
+  .login-box input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;outline:none}
+  .login-box input:focus{border-color:var(--navy)}
+  .login-box .err{color:var(--red);font-size:12px;margin:8px 0;display:none}
+  .login-box .btn{width:100%;padding:11px;margin-top:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
 
-.bar-wrap{width:55px;height:6px;background:#e5e7eb;border-radius:3px;display:inline-block;vertical-align:middle;margin-left:4px}
-.bar{display:block;height:100%;border-radius:3px;min-width:2px}
-.bar.blue{background:var(--blue)}
-.bar.red{background:var(--red)}
-.bar.green{background:var(--green)}
-.bar.gold{background:var(--gold)}
-
-.tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
-.tag.ok{background:#dcfce7;color:var(--green)}
-.tag.warn{background:#fef3c7;color:#d97706}
-.tag.bad{background:#fee2e2;color:var(--red)}
-
-.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
-.toast.show{opacity:1}
-
-.updated{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;padding-bottom:20px}
-.logout-btn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit}
-
-@media(max-width:600px){
-  .kpi-row{grid-template-columns:repeat(2,1fr)}
-}
+  /* Export overlay */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;padding:14px}
+  .modal{background:#fff;border-radius:14px;padding:18px;max-width:500px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,.2)}
+  .modal h3{font-size:15px;font-weight:800;margin-bottom:12px;color:var(--navy)}
+  .modal .progress-text{font-size:13px;color:var(--mut);margin:12px 0;text-align:center}
+  .btn2{flex:1;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+  .btn2.ghost{background:#f0f2f7;color:var(--txt)}
+  .btn2.blue{background:var(--navy);color:#fff}
+  .btn2.green{background:var(--green);color:#fff}
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <h1>📊 Dashboard · CSVC Xây dựng - Kỹ Thuật</h1>
-  <div class="info">
-    <b id="userName">---</b>
-    <span id="userRole">---</span>
-    <button class="logout-btn" onclick="logout()" style="margin-top:4px">↩ Đăng xuất</button>
-  </div>
-</div>
-
+<div id="app">
 <!-- Login -->
-<div id="loginScreen">
-  <div class="icon">🔒</div>
-  <h2>Đăng nhập Dashboard</h2>
-  <label>Email (không đuôi)</label>
-  <input type="text" id="usr" placeholder="VD: haodt" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()">
-  <label>Mã nhân viên</label>
-  <input type="password" id="pwd" placeholder="Nhập mã NV..." autocomplete="off" onkeydown="if(event.key==='Enter')login()">
-  <div class="err" id="loginErr">Sai thông tin đăng nhập!</div>
-  <button class="btn btn-primary" onclick="login()">Đăng nhập</button>
-</div>
-
-<!-- Dashboard -->
-<div id="dash" style="display:none">
-  <div class="wrap">
-    <!-- KPI -->
-    <div class="kpi-row" id="kpiArea"></div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('rasoat',this)">🏪 Tiến độ Rà soát</div>
-      <div class="tab" onclick="switchTab('xuly',this)">🔧 Tiến độ Xử lý</div>
-      <div class="tab" onclick="switchTab('qlkv',this)">👥 Chi tiết QLKV</div>
-    </div>
-
-    <!-- Tab 1: Rà soát -->
-    <div class="tab-content active" id="tabRasoat">
-      <div class="filters">
-        <label>Sắp xếp:</label>
-        <select id="fSortRS" onchange="renderRasoat()">
-          <option value="pctAsc">% Rà soát thấp→cao</option>
-          <option value="pctDesc">% Rà soát cao→thấp</option>
-          <option value="name">Tên GĐV</option>
-        </select>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="dot blue"></span>Theo GĐV<span class="cnt" id="cntRS">0 GĐV</span></div>
-        <div class="card-body no-pad">
-          <table id="tRasoat"><thead><tr>
-            <th>GĐV</th><th class="num">Tổng CH</th><th class="num">Đã rà soát</th><th class="num">Chưa rà soát</th><th class="num">%</th><th></th>
-          </tr></thead><tbody></tbody></table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab 2: Xử lý -->
-    <div class="tab-content" id="tabXuly">
-      <div class="filters">
-        <label>Sắp xếp:</label>
-        <select id="fSortXL" onchange="renderXuly()">
-          <option value="pctAsc">% Xử lý thấp→cao</option>
-          <option value="pctDesc">% Xử lý cao→thấp</option>
-          <option value="issuesDesc">Nhiều issues nhất</option>
-          <option value="name">Tên GĐV</option>
-        </select>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="dot red"></span>Theo GĐV<span class="cnt" id="cntXL">0 GĐV</span></div>
-        <div class="card-body no-pad">
-          <table id="tXuly"><thead><tr>
-            <th>GĐV</th><th class="num">Tổng Issues</th><th class="num">✅ Đã xử lý</th><th class="num">❌ Chưa xử lý</th><th class="num">% XL</th><th></th>
-          </tr></thead><tbody></tbody></table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab 3: QLKV -->
-    <div class="tab-content" id="tabQlkv">
-      <div class="filters">
-        <label>GĐV:</label>
-        <select id="fGdvQlkv" onchange="renderQlkv()"><option value="">— Tất cả —</option></select>
-        <label>Sắp xếp:</label>
-        <select id="fSortQlkv" onchange="renderQlkv()">
-          <option value="pctAsc">% Rà soát thấp→cao</option>
-          <option value="pctDesc">% Rà soát cao→thấp</option>
-          <option value="name">Tên QLKV</option>
-        </select>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="dot green"></span>Theo QLKV<span class="cnt" id="cntQLKV">0 QLKV</span></div>
-        <div class="card-body no-pad">
-          <table id="tQlkv"><thead><tr>
-            <th>QLKV</th><th>GĐV</th><th class="num">Tổng CH</th><th class="num">Đã rà soát</th><th class="num">Chưa</th><th class="num">% KS</th><th></th><th class="num">Issues</th><th class="num">✅ XL</th><th class="num">❌</th><th class="num">%XL</th>
-          </tr></thead><tbody></tbody></table>
-        </div>
-      </div>
-    </div>
-
-    <div class="updated" id="updatedAt">Cập nhật: ---</div>
+<div id="loginSection">
+  <div class="login-box">
+    <div class="lock">🔒</div>
+    <h2>Dashboard • CSVC Xây dựng - Kỹ Thuật</h2>
+    <label>Email (không đuôi)</label>
+    <input type="text" id="lUser" placeholder="Nhập user" autocomplete="off">
+    <label>Mã nhân viên</label>
+    <input type="password" id="lPass" placeholder="Nhập password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="err" id="lErr">Tài khoản không tồn tại!</div>
+    <button class="btn" onclick="doLogin()">Đăng nhập</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Dashboard (hidden until login) -->
+<div id="dashSection" style="display:none">
+<div class="wrap">
+  <div class="head">
+    <div class="hdr-acts">
+      <button class="hdr-btn" onclick="refreshData()">🔄 Tải lại</button>
+      <button class="hdr-btn" onclick="exportExcel()">📥 Xuất Excel</button>
+    </div>
+    <h1>📊 Tiến độ Khảo sát CSVC</h1>
+    <p>cập nhật: <span id="updated">--</span> · <span id="userLabel"></span> · <button class="hdr-btn" onclick="doLogout()" style="background:rgba(255,255,255,.22)">Đăng xuất</button></p>
+  </div>
+
+  <div class="card">
+    <h2>📈 Tổng quan</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kTotal">—</div><div class="l">Tổng CH</div></div>
+      <div class="kpi green"><div class="n" id="kDone">—</div><div class="l">Đã khảo sát</div></div>
+      <div class="kpi navy"><div class="n" id="kPct">—</div><div class="l">% hoàn thành</div></div>
+      <div class="kpi red"><div class="n" id="kMissing">—</div><div class="l">Chưa khảo sát</div></div>
+      <div class="kpi red"><div class="n" id="kIssues">—</div><div class="l">Vấn đề chưa xử lý</div></div>
+    </div>
+    <div class="bar-wrap"><i id="barFill" style="width:0%"></i></div>
+  </div>
+
+  <div class="card">
+    <h2>
+      <span>📋</span>
+      <button class="tab-btn active" id="tabGdv" onclick="switchTab('gdv')">Theo GĐV</button>
+      <button class="tab-btn" id="tabQlkv" onclick="switchTab('qlkv')">Theo QLKV</button>
+    </h2>
+    <div id="gdvSection">Đang tải...</div>
+    <div id="qlkvSection" style="display:none">Đang tải...</div>
+  </div>
+
+  <div class="foot">Dashboard · CSVC Xây dựng - Kỹ Thuật <span style="color:var(--mut)">v2.0</span></div>
+</div>
+</div>
+</div>
 
 <script>
 // ── CONFIG ──
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
-
-// ── USERS ──
+var GAS='https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
 var USERS = {
   'haodt':     { pass:'pink123', name:'Trần Đăng Hảo', role:'admin' },
   'hongpb':    { pass:'pink123', name:'Phạm Bích Hồng', role:'admin' }
 };
 
 var currentUser = null, dashData = null, toastTimer;
-function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show')},2600); }
+var currentTab = 'gdv';
+var sortCol = null, sortDir = 1;
+
+var $ = function(id){ return document.getElementById(id); };
+
+function toast(m){
+  var t = $('toast') || (function(){var el=document.createElement('div');el.id='toast';el.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none';document.body.appendChild(el);return el;})();
+  t.textContent = m; t.classList.add('show'); t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.opacity = '0'; }, 2600);
+}
 
 // ── LOGIN ──
-function login(){
-  var usr = document.getElementById('usr').value.trim().toLowerCase();
-  var pwd = document.getElementById('pwd').value.trim();
-  var errEl = document.getElementById('loginErr');
-  if(!usr || !pwd){ errEl.style.display='block'; errEl.textContent='Nhập đủ Email và Mã NV!'; return; }
-  var u = USERS[usr];
-  if(!u){ errEl.style.display='block'; errEl.textContent='Tài khoản không tồn tại!'; return; }
-  if(u.pass !== pwd){ errEl.style.display='block'; errEl.textContent='Sai Mã NV!'; return; }
-  currentUser = u;
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('dash').style.display='block';
-  document.getElementById('userName').textContent = u.name;
-  document.getElementById('userRole').textContent = u.role === 'admin' ? 'Admin' : 'GĐV';
+function doLogin(){
+  var u = $('lUser').value.trim().toLowerCase();
+  var p = $('lPass').value.trim();
+  var e = $('lErr');
+  if (!u || !p){ e.style.display='block'; e.textContent='Nhập đủ Email và Mã NV!'; return; }
+  var du = USERS[u];
+  if (!du){ e.style.display='block'; e.textContent='Tài khoản không tồn tại!'; return; }
+  if (du.pass !== p){ e.style.display='block'; e.textContent='Sai Mã NV!'; return; }
+  currentUser = du;
+  $('loginSection').style.display = 'none';
+  $('dashSection').style.display = 'block';
+  $('userLabel').innerHTML = '<b>' + du.name + '</b> <span class="tag ok">' + du.role + '</span>';
   loadDash();
 }
 
-function logout(){
+function doLogout(){
   currentUser = null; dashData = null;
-  document.getElementById('loginScreen').style.display='block';
-  document.getElementById('dash').style.display='none';
-  document.getElementById('tRasoat tbody').innerHTML='';
-  document.getElementById('tXuly tbody').innerHTML='';
-  document.getElementById('tQlkv tbody').innerHTML='';
-  document.getElementById('usr').value=''; document.getElementById('pwd').value='';
+  $('loginSection').style.display = 'block';
+  $('dashSection').style.display = 'none';
+  $('lUser').value = ''; $('lPass').value = '';
 }
 
-// ── LOAD DATA ──
+// ── DATA ──
+function fetchJSON(url){
+  return fetch(url, {cache:'no-store'}).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+}
+
 function loadDash(){
-  document.getElementById('kpiArea').innerHTML = '<div class="kpi"><div class="n">...</div><div class="l">Đang tải...</div></div>';
-  document.getElementById('updatedAt').textContent = 'Đang tải...';
+  if (!currentUser) return;
+  $('updated').textContent = 'Đang tải...';
+  $('gdvSection').innerHTML = '<div class="loading">Đang tải dữ liệu</div>';
+  $('qlkvSection').innerHTML = '<div class="loading">Đang tải dữ liệu</div>';
 
-  fetch(GAS_URL+'?action=dashboard').then(function(r){return r.ok?r.json():null}).then(function(data){
-    if(!data || !data.ok){ toast('⚠️ Không tải được dữ liệu dashboard. Kiểm tra GAS đã deploy Code.gs mới chưa?'); return; }
+  fetchJSON(GAS + '?action=dashboard').then(function(data){
+    if (!data || !data.ok){
+      renderError();
+      return;
+    }
     dashData = data;
-
-    // Auto-add GĐV users
-    data.byGdv.forEach(function(g){
-      var key = g.gdv.toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').substring(0,12);
-      if(!USERS[key]) USERS[key] = { pass: '12345678', name: g.gdv, role: 'gdv', gdv: g.gdv };
-    });
-
-    renderKpi();
-    renderAll();
-    document.getElementById('updatedAt').textContent = 'Cập nhật: ' + new Date(data.updated).toLocaleString('vi-VN');
-  }).catch(function(e){
-    toast('⚠️ Lỗi kết nối: ' + (e.message||'không xác định'));
+    $('updated').textContent = new Date(data.updated || Date.now()).toLocaleString('vi-VN');
+    renderKPIs(data.summary);
+    renderTab();
+  }).catch(function(){
+    renderError();
   });
 }
 
-// ── RENDER KPI ──
-function renderKpi(){
-  var s = dashData.summary;
-  var html = '';
-  html += '<div class="kpi"><div class="n">'+s.totalCH+'</div><div class="l">🏪 Tổng CH active</div></div>';
-  html += '<div class="kpi green"><div class="n">'+s.surveyedCH+'</div><div class="l">✅ Đã rà soát</div><div class="sub">'+s.pctSurveyed+'%</div></div>';
-  html += '<div class="kpi red"><div class="n">'+s.notSurveyed+'</div><div class="l">⏳ Chưa rà soát</div></div>';
-  html += '<div class="kpi"><div class="n">'+s.totalIssues+'</div><div class="l">🔧 Tổng Issues</div><div class="sub">'+s.resolved+' đã XL ('+s.pctResolved+'%)</div></div>';
-  document.getElementById('kpiArea').innerHTML = html;
+function renderError(){
+  $('updated').textContent = 'Lỗi tải dữ liệu';
+  $('gdvSection').innerHTML = '<div class="empty">⚠️ Không tải được dữ liệu. Kiểm tra GAS đã deploy Code.gs mới chưa?</div>';
+  $('qlkvSection').innerHTML = '<div class="empty">⚠️ Không tải được dữ liệu. Kiểm tra GAS đã deploy Code.gs mới chưa?</div>';
+  ['kTotal','kDone','kPct','kMissing','kIssues'].forEach(function(id){ $(id).textContent = '—'; });
+  $('barFill').style.width = '0%';
 }
 
-// ── RENDER ALL ──
-function renderAll(){
-  renderRasoat();
-  renderXuly();
-  renderQlkv();
+function refreshData(){
+  $('updated').textContent = 'Đang tải...';
+  fetchJSON(GAS + '?action=dashboard').then(function(data){
+    if (!data || !data.ok){ renderError(); return; }
+    dashData = data;
+    $('updated').textContent = new Date(data.updated || Date.now()).toLocaleString('vi-VN');
+    renderKPIs(data.summary);
+    renderTab();
+    toast('🔄 Dữ liệu đã được cập nhật');
+  }).catch(function(){ renderError(); });
 }
 
-// ── TAB 1: RÀ SOÁT ──
-function renderRasoat(){
-  var list = dashData.byGdv.slice();
-  if(currentUser.role==='gdv') list = list.filter(function(g){return g.gdv===currentUser.gdv});
+// ── KPI ──
+function renderKPIs(s){
+  $('kTotal').textContent = s.totalCH || 0;
+  $('kDone').textContent = s.surveyedCH || 0;
+  $('kPct').textContent = (s.pctSurveyed || 0) + '%';
+  $('kMissing').textContent = s.notSurveyed || 0;
+  $('kIssues').textContent = s.unresolved || 0;
 
-  var sort = document.getElementById('fSortRS').value;
-  if(sort==='pctAsc') list.sort(function(a,b){return a.pctSurveyed-b.pctSurveyed});
-  else if(sort==='pctDesc') list.sort(function(a,b){return b.pctSurveyed-a.pctSurveyed});
-  else list.sort(function(a,b){return a.gdv.localeCompare(b.gdv)});
+  $('barFill').style.width = (s.pctSurveyed || 0) + '%';
+}
 
-  document.getElementById('cntRS').textContent = list.length+' GĐV';
-  var html = '';
-  for(var i=0;i<list.length;i++){
+// ── TABS ──
+function switchTab(tab){
+  currentTab = tab;
+  if (tab === 'gdv'){
+    $('tabGdv').classList.add('active');
+    $('tabQlkv').classList.remove('active');
+    $('gdvSection').style.display = 'block';
+    $('qlkvSection').style.display = 'none';
+  } else {
+    $('tabQlkv').classList.add('active');
+    $('tabGdv').classList.remove('active');
+    $('qlkvSection').style.display = 'block';
+    $('gdvSection').style.display = 'none';
+  }
+  renderTab();
+}
+
+function renderTab(){
+  if (currentTab === 'gdv') renderGdvTab();
+  else renderQlkvTab();
+}
+
+// ── GĐV TAB ──
+function renderGdvTab(){
+  if (!dashData){ $('gdvSection').innerHTML = '<div class="empty">Chưa có dữ liệu</div>'; return; }
+  var list = (dashData.byGdv || []).slice();
+
+  // Sort by pctSurveyed ascending by default
+  if (!sortCol) list.sort(function(a,b){ return (a.pctSurveyed||0) - (b.pctSurveyed||0); });
+  else applySort(list);
+
+  if (!list.length){
+    $('gdvSection').innerHTML = '<div class="empty">Chưa có dữ liệu khảo sát</div>';
+    return;
+  }
+
+  var html = '<div style="overflow-x:auto"><table class="gdv-table">';
+  html += '<colgroup><col class="col-gdv"><col class="col-num"><col class="col-num"><col class="col-num"><col class="col-bar"><col class="col-pct"><col class="col-iss"><col class="col-res"><col class="col-isspct"></colgroup>';
+  html += '<thead><tr>';
+  html += '<th class="col-gdv">GĐV</th>';
+  html += '<th class="col-num sortable" onclick="doSort(\'totalCH\')">Tổng CH ' + sortIcon('totalCH') + '</th>';
+  html += '<th class="col-num sortable" onclick="doSort(\'surveyed\')">Đã KS ' + sortIcon('surveyed') + '</th>';
+  html += '<th class="col-num sortable" onclick="doSort(\'notSurveyed\')">Chưa KS ' + sortIcon('notSurveyed') + '</th>';
+  html += '<th class="col-bar">Tiến độ</th>';
+  html += '<th class="col-pct sortable" onclick="doSort(\'pctSurveyed\')">% ' + sortIcon('pctSurveyed') + '</th>';
+  html += '<th class="col-iss sortable" onclick="doSort(\'totalIssues\')">Vấn đề ' + sortIcon('totalIssues') + '</th>';
+  html += '<th class="col-res sortable" onclick="doSort(\'resolved\')">Đã XL ' + sortIcon('resolved') + '</th>';
+  html += '<th class="col-isspct sortable" onclick="doSort(\'pctResolved\')">%XL ' + sortIcon('pctResolved') + '</th>';
+  html += '</tr></thead><tbody>';
+
+  for (var i = 0; i < list.length; i++){
     var g = list[i];
-    var tag = g.pctSurveyed>=80?'ok':(g.pctSurveyed>=50?'warn':'bad');
-    var color = g.pctSurveyed>=80?'green':(g.pctSurveyed>=50?'gold':'red');
+    var barColor = g.pctSurveyed >= 80 ? '' : (g.pctSurveyed >= 50 ? ' class="warn"' : ' class="bad"');
     html += '<tr>';
-    html += '<td><b>'+g.gdv+'</b></td>';
-    html += '<td class="num">'+g.totalCH+'</td>';
-    html += '<td class="num">'+g.surveyed+'</td>';
-    html += '<td class="num">'+g.notSurveyed+'</td>';
-    html += '<td class="num"><span class="tag '+tag+'">'+g.pctSurveyed+'%</span></td>';
-    html += '<td><span class="bar-wrap"><span class="bar '+color+'" style="width:'+Math.max(g.pctSurveyed,2)+'%"></span></span></td>';
+    html += '<td class="col-gdv">' + esc(g.gdv || '—') + '</td>';
+    html += '<td>' + g.totalCH + '</td>';
+    html += '<td class="num">' + g.surveyed + '</td>';
+    html += '<td class="num" style="color:' + (g.notSurveyed > 0 ? 'var(--red)' : 'var(--green)') + '">' + g.notSurveyed + '</td>';
+    html += '<td class="bar-cell"><i' + barColor + ' style="width:' + (g.pctSurveyed || 0) + '%"></i></td>';
+    html += '<td class="num"><span class="tag ' + (g.pctSurveyed >= 80 ? 'ok' : (g.pctSurveyed >= 50 ? 'warn' : 'bad')) + '">' + g.pctSurveyed + '%</span></td>';
+    html += '<td>' + g.totalIssues + '</td>';
+    html += '<td style="color:var(--green)">' + g.resolved + '</td>';
+    html += '<td class="num"><span class="tag ' + (g.pctResolved >= 70 ? 'ok' : (g.pctResolved >= 40 ? 'warn' : 'bad')) + '">' + (g.pctResolved || 0) + '%</span></td>';
     html += '</tr>';
   }
-  document.querySelector('#tRasoat tbody').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px">Không có dữ liệu</td></tr>';
+  html += '</tbody></table></div>';
+  $('gdvSection').innerHTML = html;
 }
 
-// ── TAB 2: XỬ LÝ ──
-function renderXuly(){
-  var list = dashData.byGdv.slice();
-  if(currentUser.role==='gdv') list = list.filter(function(g){return g.gdv===currentUser.gdv});
+// ── QLKV TAB ──
+function renderQlkvTab(){
+  if (!dashData){ $('qlkvSection').innerHTML = '<div class="empty">Chưa có dữ liệu</div>'; return; }
+  var list = (dashData.byQlkv || []).slice();
 
-  var sort = document.getElementById('fSortXL').value;
-  if(sort==='pctAsc') list.sort(function(a,b){return a.pctResolved-b.pctResolved});
-  else if(sort==='pctDesc') list.sort(function(a,b){return b.pctResolved-a.pctResolved});
-  else if(sort==='issuesDesc') list.sort(function(a,b){return b.totalIssues-a.totalIssues});
-  else list.sort(function(a,b){return a.gdv.localeCompare(b.gdv)});
-
-  document.getElementById('cntXL').textContent = list.length+' GĐV';
-  var html = '';
-  for(var i=0;i<list.length;i++){
-    var g = list[i];
-    var tag = g.pctResolved>=80?'ok':(g.pctResolved>=50?'warn':'bad');
-    var color = g.pctResolved>=80?'green':(g.pctResolved>=50?'gold':'red');
-    html += '<tr>';
-    html += '<td><b>'+g.gdv+'</b></td>';
-    html += '<td class="num">'+g.totalIssues+'</td>';
-    html += '<td class="num">'+g.resolved+'</td>';
-    html += '<td class="num">'+g.unresolved+'</td>';
-    html += '<td class="num"><span class="tag '+tag+'">'+g.pctResolved+'%</span></td>';
-    html += '<td><span class="bar-wrap"><span class="bar '+color+'" style="width:'+Math.max(g.pctResolved,2)+'%"></span></span></td>';
-    html += '</tr>';
-  }
-  document.querySelector('#tXuly tbody').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px">Chưa có issues nào được khai báo</td></tr>';
-}
-
-// ── TAB 3: QLKV ──
-function renderQlkv(){
-  var list = dashData.byQlkv.slice();
-  var fGdv = document.getElementById('fGdvQlkv').value;
-  var fSort = document.getElementById('fSortQlkv').value;
-
-  // Build filter
-  var gdvSet = {};
-  list.forEach(function(q){ gdvSet[q.gdv]=true; });
-  var sel = document.getElementById('fGdvQlkv');
-  sel.innerHTML = '<option value="">— Tất cả GĐV —</option>';
-  Object.keys(gdvSet).sort().forEach(function(g){ sel.innerHTML += '<option value="'+g+'">'+g+'</option>'; });
-  sel.value = fGdv;
-
-  if(currentUser.role==='gdv') list = list.filter(function(q){return q.gdv===currentUser.gdv});
-  else if(fGdv) list = list.filter(function(q){return q.gdv===fGdv});
-
-  if(fSort==='pctAsc') list.sort(function(a,b){return a.pctSurveyed-b.pctSurveyed});
-  else if(fSort==='pctDesc') list.sort(function(a,b){return b.pctSurveyed-a.pctSurveyed});
-  else list.sort(function(a,b){return(a.qlkv||'').localeCompare(b.qlkv||'')});
-
-  document.getElementById('cntQLKV').textContent = list.length+' QLKV';
-  var html = '';
-  for(var i=0;i<list.length;i++){
+  // Group by GĐV
+  var gdvGroups = {};
+  for (var i = 0; i < list.length; i++){
     var q = list[i];
-    var tagKS = q.pctSurveyed>=80?'ok':(q.pctSurveyed>=50?'warn':'bad');
-    var tagXL = q.pctResolved>=80?'ok':(q.pctResolved>=50?'warn':'bad');
-    var cKS = q.pctSurveyed>=80?'green':(q.pctSurveyed>=50?'gold':'red');
-    html += '<tr>';
-    html += '<td><b>'+q.qlkv+'</b></td>';
-    html += '<td style="font-size:11px;color:var(--muted)">'+q.gdv+'</td>';
-    html += '<td class="num">'+q.totalCH+'</td>';
-    html += '<td class="num">'+q.surveyed+'</td>';
-    html += '<td class="num">'+q.notSurveyed+'</td>';
-    html += '<td class="num"><span class="tag '+tagKS+'">'+q.pctSurveyed+'%</span></td>';
-    html += '<td><span class="bar-wrap"><span class="bar '+cKS+'" style="width:'+Math.max(q.pctSurveyed,2)+'%"></span></span></td>';
-    html += '<td class="num">'+q.totalIssues+'</td>';
-    html += '<td class="num">'+q.resolved+'</td>';
-    html += '<td class="num">'+q.unresolved+'</td>';
-    html += '<td class="num"><span class="tag '+tagXL+'">'+q.pctResolved+'%</span></td>';
-    html += '</tr>';
+    if (!gdvGroups[q.gdv]) gdvGroups[q.gdv] = [];
+    gdvGroups[q.gdv].push(q);
   }
-  document.querySelector('#tQlkv tbody').innerHTML = html || '<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:16px">Không có dữ liệu</td></tr>';
+
+  if (!list.length){
+    $('qlkvSection').innerHTML = '<div class="empty">Chưa có dữ liệu khảo sát</div>';
+    return;
+  }
+
+  // Sort GĐV groups by pctSurveyed ascending
+  var gdvNames = Object.keys(gdvGroups).sort(function(a,b){
+    var ta = 0, tb = 0, ca = 0, cb = 0;
+    gdvGroups[a].forEach(function(q){ ta += q.surveyed; ca += q.totalCH; });
+    gdvGroups[b].forEach(function(q){ tb += q.surveyed; cb += q.totalCH; });
+    return (ca>0?ta/ca:0) - (cb>0?tb/cb:0);
+  });
+
+  var html = '<div style="overflow-x:auto"><table class="gdv-table">';
+  html += '<colgroup><col class="col-gdv"><col class="col-num"><col class="col-num"><col class="col-num"><col class="col-bar"><col class="col-pct"><col class="col-iss"><col class="col-res"><col class="col-isspct"></colgroup>';
+  html += '<thead><tr>';
+  html += '<th class="col-gdv">QLKV / GĐV</th>';
+  html += '<th class="col-num">Tổng CH</th><th class="col-num">Đã KS</th><th class="col-num">Chưa KS</th>';
+  html += '<th class="col-bar">Tiến độ</th><th class="col-pct">%</th>';
+  html += '<th class="col-iss">Vấn đề</th><th class="col-res">Đã XL</th><th class="col-isspct">%XL</th>';
+  html += '</tr></thead><tbody>';
+
+  for (var g = 0; g < gdvNames.length; g++){
+    var gdv = gdvNames[g];
+    var ql = gdvGroups[gdv];
+    // Sort QLKV within group by pctSurveyed ascending
+    ql.sort(function(a,b){ return (a.pctSurveyed||0) - (b.pctSurveyed||0); });
+
+    // GĐV header row
+    var gTotal = 0, gSurv = 0, gIss = 0, gRes = 0;
+    ql.forEach(function(q){ gTotal += q.totalCH; gSurv += q.surveyed; gIss += q.totalIssues; gRes += q.resolved; });
+    var gPct = gTotal > 0 ? Math.round(gSurv / gTotal * 100) : 0;
+    var gPctRes = gIss > 0 ? Math.round(gRes / gIss * 100) : 0;
+    var barCol = gPct >= 80 ? '' : (gPct >= 50 ? ' class="warn"' : ' class="bad"');
+
+    html += '<tr class="grow" onclick="toggleGdv(this)">';
+    html += '<td class="col-gdv"><span class="ar">▶</span> <b>' + esc(gdv) + '</b></td>';
+    html += '<td><b>' + gTotal + '</b></td>';
+    html += '<td class="num"><b>' + gSurv + '</b></td>';
+    html += '<td class="num" style="color:' + ((gTotal-gSurv) > 0 ? 'var(--red)' : 'var(--green)') + '"><b>' + (gTotal - gSurv) + '</b></td>';
+    html += '<td class="bar-cell"><i' + barCol + ' style="width:' + gPct + '%"></i></td>';
+    html += '<td class="num"><span class="tag ' + (gPct >= 80 ? 'ok' : (gPct >= 50 ? 'warn' : 'bad')) + '">' + gPct + '%</span></td>';
+    html += '<td><b>' + gIss + '</b></td>';
+    html += '<td style="color:var(--green)"><b>' + gRes + '</b></td>';
+    html += '<td class="num"><span class="tag ' + (gPctRes >= 70 ? 'ok' : (gPctRes >= 40 ? 'warn' : 'bad')) + '">' + gPctRes + '%</span></td>';
+    html += '</tr>';
+
+    // QLKV rows
+    for (var q = 0; q < ql.length; q++){
+      var qd = ql[q];
+      var bc = qd.pctSurveyed >= 80 ? '' : (qd.pctSurveyed >= 50 ? ' class="warn"' : ' class="bad"');
+      html += '<tr class="gdv-sub">';
+      html += '<td class="col-gdv qlkv-name">' + esc(qd.qlkv || '—') + '</td>';
+      html += '<td>' + qd.totalCH + '</td>';
+      html += '<td class="num">' + qd.surveyed + '</td>';
+      html += '<td class="num" style="color:' + (qd.notSurveyed > 0 ? 'var(--red)' : 'var(--green)') + '">' + qd.notSurveyed + '</td>';
+      html += '<td class="bar-cell"><i' + bc + ' style="width:' + (qd.pctSurveyed || 0) + '%"></i></td>';
+      html += '<td class="num"><span class="tag ' + (qd.pctSurveyed >= 80 ? 'ok' : (qd.pctSurveyed >= 50 ? 'warn' : 'bad')) + '">' + qd.pctSurveyed + '%</span></td>';
+      html += '<td>' + qd.totalIssues + '</td>';
+      html += '<td style="color:var(--green)">' + qd.resolved + '</td>';
+      html += '<td class="num"><span class="tag ' + (qd.pctResolved >= 70 ? 'ok' : (qd.pctResolved >= 40 ? 'warn' : 'bad')) + '">' + (qd.pctResolved || 0) + '%</span></td>';
+      html += '</tr>';
+    }
+  }
+  html += '</tbody></table></div>';
+  $('qlkvSection').innerHTML = html;
 }
 
-function switchTab(tab,el){
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
-  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active')});
-  el.classList.add('active');
-  var id = tab==='rasoat'?'tabRasoat':(tab==='xuly'?'tabXuly':'tabQlkv');
-  document.getElementById(id).classList.add('active');
+function toggleGdv(tr){
+  var ar = tr.querySelector('.ar');
+  if (ar) ar.classList.toggle('open');
+  var next = tr.nextElementSibling;
+  while (next && next.classList.contains('gdv-sub')){
+    next.style.display = next.style.display === 'table-row' ? 'none' : 'table-row';
+    next = next.nextElementSibling;
+  }
 }
+
+// ── SORT ──
+function doSort(col){
+  if (sortCol === col){ sortDir *= -1; }
+  else { sortCol = col; sortDir = 1; }
+  renderTab();
+}
+
+function sortIcon(col){ return '<span class="sort-arrow' + (sortCol === col ? ' on' : '') + '">' + (sortCol === col && sortDir === 1 ? '▲' : '▼') + '</span>'; }
+
+function applySort(list){
+  if (!sortCol) return;
+  list.sort(function(a,b){
+    var va = a[sortCol] || 0, vb = b[sortCol] || 0;
+    if (typeof va === 'string') return sortDir * va.localeCompare(vb, 'vi');
+    return sortDir * (va - vb);
+  });
+}
+
+// ── EXPORT ──
+function exportExcel(){
+  if (!dashData){ toast('⚠️ Chưa có dữ liệu để xuất'); return; }
+
+  // Build CSV with 2 sheets worth of data
+  var csv = '\uFEFF';
+  csv += 'TIẾN ĐỘ KHẢO SÁT CSVC - ' + new Date().toLocaleString('vi-VN') + '\n\n';
+
+  // Summary
+  var s = dashData.summary;
+  csv += 'TỔNG QUAN\n';
+  csv += 'Tổng CH,Đã KS,Chưa KS,% Hoàn thành,Tổng vấn đề,Đã xử lý,Chưa xử lý,% Xử lý\n';
+  csv += [s.totalCH, s.surveyedCH, s.notSurveyed, s.pctSurveyed+'%', s.totalIssues, s.resolved, s.unresolved, s.pctResolved+'%'].join(',') + '\n\n';
+
+  // By GĐV
+  csv += 'THEO GĐV\n';
+  csv += 'GĐV,Tổng CH,Đã KS,Chưa KS,% KS,Vấn đề,Đã XL,Chưa XL,% XL\n';
+  (dashData.byGdv || []).forEach(function(g){
+    csv += [g.gdv, g.totalCH, g.surveyed, g.notSurveyed, g.pctSurveyed+'%', g.totalIssues, g.resolved, g.totalIssues-g.resolved, g.pctResolved+'%'].join(',') + '\n';
+  });
+
+  csv += '\nTHEO QLKV\n';
+  csv += 'GĐV,QLKV,Tổng CH,Đã KS,Chưa KS,% KS,Vấn đề,Đã XL,Chưa XL,% XL\n';
+  (dashData.byQlkv || []).forEach(function(q){
+    csv += [q.gdv, q.qlkv, q.totalCH, q.surveyed, q.notSurveyed, q.pctSurveyed+'%', q.totalIssues, q.resolved, q.totalIssues-q.resolved, q.pctResolved+'%'].join(',') + '\n';
+  });
+
+  var blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'CSVC_Khao_Sat_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('✅ Đã xuất file CSV');
+}
+
+function esc(s){
+  return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+loadDash();
 </script>
 </body>
 </html>
