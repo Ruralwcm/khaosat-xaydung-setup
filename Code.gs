@@ -1,12 +1,22 @@
 // ============================================================
-// Code.gs — Google Apps Script for Khảo sát hỏng hóc Xây dựng - Kỹ Thuật (v12)
+// Code.gs — Google Apps Script for Khảo sát hỏng hóc Xây dựng - Kỹ Thuật (v14)
 // v12 NEW: action=data endpoint for full export (all CSVC_Tracking rows)
+// v13 FIX: đọc Storeslist từ sheet nguồn Storelist Rural (openById) + normalize NFC header (fix 'Mã SAP' dấu ngã tổ hợp)
+// v14 NEW: action=unsurveyed → danh sách CH chưa khảo sát (cho "Cùng nhắc đồng đội")
 // ============================================================
 
 // ── CONFIG ──
 const SHEET_DATA   = 'CSVC_Tracking';          // Tab lưu kết quả khảo sát
 const SHEET_ITEMS  = 'HANG_MUC';               // Tab danh sách hạng mục
 const DRIVE_FOLDER = 'CSVC_Khao_Sat_Anh';      // Folder lưu ảnh Drive
+const STORESLIST_ID = '1UMtB9MOxGOaZvxN5VAUGAS1bPaAL2tVVFEViGANd4Tk'; // Storelist Rural (nguồn danh sách CH)
+
+// Lấy tab Storeslist từ sheet nguồn Storelist Rural (không copy vào sheet survey)
+function getStoreslistSheet() {
+  try {
+    return SpreadsheetApp.openById(STORESLIST_ID).getSheetByName('Storeslist');
+  } catch (e) { return null; }
+}
 
 // ── WEB APP ──
 function doGet(e) {
@@ -44,6 +54,13 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // v14 NEW: action=unsurveyed → danh sách CH chưa khảo sát (cho "Cùng nhắc đồng đội")
+  if (action === 'unsurveyed') {
+    const data = getUnsurveyedStores();
+    return ContentService.createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   // Default: serve Index.html
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('Khảo sát hỏng hóc Xây dựng - Kỹ Thuật')
@@ -53,14 +70,13 @@ function doGet(e) {
 // ── GET STORE DATA ──
 function getStoreData() {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName('Storeslist');
+    const sheet = getStoreslistSheet();
     if (!sheet) return [];
 
     const data = sheet.getDataRange().getValues();
     if (data.length < 2) return [];
 
-    const headers = data[0].map(h => String(h || '').trim());
+    const headers = data[0].map(h => String(h || '').normalize('NFC').trim());
     const idxGDV = headers.findIndex(h => h === 'GĐV' || h === 'GDV');
     const idxQLKV = headers.findIndex(h => h === 'QLKV');
     const idxMa = headers.findIndex(h => h === 'Mã CH' || h === 'Mã SAP' || h === 'SAP');
@@ -111,6 +127,55 @@ function getAllSurveyData() {
     }
 
     return { ok: true, headers: headers, rows: rows, total: rows.length };
+  } catch(e) {
+    return { ok: false, error: e.toString() };
+  }
+}
+
+// ── v14 NEW: GET UNSURVEYED STORES (CH chưa khảo sát) ──
+function getUnsurveyedStores() {
+  try {
+    const slSheet = getStoreslistSheet();
+    const activeStores = [];
+    if (slSheet && slSheet.getLastRow() > 1) {
+      const slData = slSheet.getDataRange().getValues();
+      const slHeaders = slData[0].map(h => String(h || '').normalize('NFC').trim());
+      const iG = slHeaders.findIndex(h => h === 'GĐV' || h === 'GDV');
+      const iQ = slHeaders.findIndex(h => h === 'QLKV');
+      const iM = slHeaders.findIndex(h => h === 'Mã CH' || h === 'Mã SAP' || h === 'SAP');
+      const iT = slHeaders.findIndex(h => h === 'Tên cửa hàng' || h === 'Tên CH');
+      const iP = slHeaders.findIndex(h => h === 'Tỉnh/TP' || h === 'Tỉnh');
+      const iTT = slHeaders.findIndex(h => h === 'Tình trạng' || h === 'Tình Trạng');
+      for (let i = 1; i < slData.length; i++) {
+        const r = slData[i];
+        if (iTT >= 0 && String(r[iTT] || '').trim() !== 'Đang hoạt động') continue;
+        const gdv = String(r[iG] || '').trim();
+        const qlkv = String(r[iQ] || '').trim();
+        const ma = String(r[iM] || '').trim();
+        if (!gdv || !qlkv || !ma) continue;
+        activeStores.push({ ma: ma, ten: String(r[iT] || '').trim(), tinh: String(r[iP] || '').trim(), gdv: gdv, qlkv: qlkv });
+      }
+    }
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const trSheet = ss.getSheetByName(SHEET_DATA);
+    const surveyed = {};
+    if (trSheet && trSheet.getLastRow() > 1) {
+      const trData = trSheet.getDataRange().getValues();
+      const trHeaders = trData[0].map(h => String(h || '').trim());
+      const iMa = trHeaders.findIndex(h => h === 'Mã CH' || h === 'Mã SAP');
+      if (iMa >= 0) {
+        for (let i = 1; i < trData.length; i++) {
+          const ma = String(trData[i][iMa] || '').trim();
+          if (ma) surveyed[ma] = true;
+        }
+      }
+    }
+
+    const uns = activeStores.filter(s => !surveyed[s.ma]);
+    const byGdv = {};
+    uns.forEach(s => { if (!byGdv[s.gdv]) byGdv[s.gdv] = []; byGdv[s.gdv].push(s); });
+    return { ok: true, total: uns.length, totalActive: activeStores.length, byGdv: byGdv, stores: uns };
   } catch(e) {
     return { ok: false, error: e.toString() };
   }
@@ -186,14 +251,14 @@ function getHistory(storeCode) {
 function getDashboardData() {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const slSheet = ss.getSheetByName('Storeslist');
+    const slSheet = getStoreslistSheet();
     const storeMap = {};
     const gdvStats = {};
     const qlkvStats = {};
 
     if (slSheet && slSheet.getLastRow() > 1) {
       const slData = slSheet.getDataRange().getValues();
-      const slHeaders = slData[0].map(h => String(h || '').trim());
+      const slHeaders = slData[0].map(h => String(h || '').normalize('NFC').trim());
       const iG = slHeaders.findIndex(h => h === 'GĐV' || h === 'GDV');
       const iQ = slHeaders.findIndex(h => h === 'QLKV');
       const iM = slHeaders.findIndex(h => h === 'Mã CH' || h === 'Mã SAP' || h === 'SAP');
