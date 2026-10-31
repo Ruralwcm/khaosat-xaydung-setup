@@ -112,6 +112,7 @@
 <div class="wrap">
   <div class="head">
     <div class="hdr-acts">
+      <button class="hdr-btn" onclick="showUnsurveyed()">📋 CH chưa KS</button>
       <button class="hdr-btn" onclick="refreshData()">🔄 Tải lại</button>
       <button class="hdr-btn" onclick="exportExcel()">📥 Xuất Excel</button>
     </div>
@@ -146,6 +147,21 @@
 </div>
 </div>
 
+<!-- CH chưa KS modal -->
+<div class="overlay" id="unsurveyedOverlay" style="display:none">
+  <div class="modal" style="max-width:760px">
+    <h3>🤝 Cùng nhắc đồng đội — CH chưa khảo sát</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span class="tag warn" id="unsurveyedCount">—</span>
+      <span>
+        <button class="tab-btn" onclick="copyUnsurveyed()">📋 Sao chép</button>
+        <button class="tab-btn" onclick="hideUnsurveyed()">Đóng</button>
+      </span>
+    </div>
+    <div id="unsurveyedBody" style="max-height:60vh;overflow:auto;font-size:12px">Đang tải...</div>
+  </div>
+</div>
+
 <script>
 // ── CONFIG ──
 var GAS='https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
@@ -157,6 +173,7 @@ var USERS = {
 var currentUser = null, dashData = null, toastTimer;
 var currentTab = 'gdv';
 var sortCol = null, sortDir = 1;
+var unsurveyedData = null;
 
 var $ = function(id){ return document.getElementById(id); };
 
@@ -458,6 +475,84 @@ function exportExcel(){
   a.click();
   URL.revokeObjectURL(a.href);
   toast('✅ Đã xuất file CSV');
+}
+
+// ── CH CHƯA KS (Cùng nhắc đồng đội) ──
+function showUnsurveyed(){
+  $('unsurveyedOverlay').style.display = 'flex';
+  $('unsurveyedBody').innerHTML = '<div class="loading">Đang tải danh sách CH chưa khảo sát</div>';
+  $('unsurveyedCount').textContent = '—';
+  fetchJSON(GAS + '?action=unsurveyed').then(function(data){
+    if (!data || !data.ok){
+      $('unsurveyedBody').innerHTML = '<div class="empty">⚠️ Không tải được danh sách. Kiểm tra GAS đã deploy Code.gs v14 chưa?</div>';
+      return;
+    }
+    unsurveyedData = data;
+    $('unsurveyedCount').textContent = data.total + ' CH chưa khảo sát';
+    renderUnsurveyed(data);
+  });
+}
+
+function renderUnsurveyed(data){
+  var byGdv = data.byGdv || {};
+  var names = Object.keys(byGdv).sort(function(a,b){
+    return byGdv[b].length - byGdv[a].length;
+  });
+  if (!names.length){
+    $('unsurveyedBody').innerHTML = '<div class="empty">✅ Tất cả CH đã được khảo sát xong!</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < names.length; i++){
+    var gdv = names[i];
+    var stores = byGdv[gdv];
+    html += '<div style="margin-bottom:12px">';
+    html += '<div style="font-weight:700;color:var(--navy);margin-bottom:4px">👤 ' + esc(gdv) + ' <span class="tag warn">' + stores.length + ' CH</span></div>';
+    html += '<table class="gdv-table" style="margin-top:2px"><thead><tr>';
+    html += '<th class="col-gdv" style="width:14%">Mã CH</th><th class="col-gdv" style="width:42%;text-align:left">Tên CH</th><th style="width:20%;text-align:left">Tỉnh</th><th style="width:24%;text-align:left">QLKV</th>';
+    html += '</tr></thead><tbody>';
+    for (var j = 0; j < stores.length; j++){
+      var s = stores[j];
+      html += '<tr>';
+      html += '<td>' + esc(s.ma) + '</td>';
+      html += '<td style="text-align:left">' + esc(s.ten) + '</td>';
+      html += '<td style="text-align:left">' + esc(s.tinh) + '</td>';
+      html += '<td style="text-align:left">' + esc(s.qlkv) + '</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+  }
+  $('unsurveyedBody').innerHTML = html;
+}
+
+function copyUnsurveyed(){
+  if (!unsurveyedData){ toast('⚠️ Chưa có dữ liệu'); return; }
+  var byGdv = unsurveyedData.byGdv || {};
+  var names = Object.keys(byGdv).sort();
+  var lines = ['🤝 DANH SÁCH CH CHƯA KHẢO SÁT CSVC'];
+  for (var i = 0; i < names.length; i++){
+    var gdv = names[i];
+    lines.push('\n👤 ' + gdv + ' (' + byGdv[gdv].length + ' CH)');
+    byGdv[gdv].forEach(function(s){
+      lines.push('• ' + s.ma + ' — ' + s.ten + ' — ' + s.tinh + ' (QLKV: ' + s.qlkv + ')');
+    });
+  }
+  var txt = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast('✅ Đã sao chép danh sách'); }, function(){ fallbackCopy(txt); });
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt){
+  var ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('✅ Đã sao chép danh sách'); } catch(e){ toast('⚠️ Không sao chép được'); }
+  document.body.removeChild(ta);
+}
+
+function hideUnsurveyed(){
+  $('unsurveyedOverlay').style.display = 'none';
 }
 
 function esc(s){
