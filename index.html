@@ -190,6 +190,12 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
     <div class="card-head"><span class="dot" style="background:var(--green)"></span>④ Xác nhận gửi</div>
     <div class="card-body" id="confirmArea"></div>
   </div>
+
+  <!-- ⑤ Cùng nhắc đồng đội -->
+  <div class="card" id="nhanDoiCard" style="display:none">
+    <div class="card-head"><span class="dot" style="background:var(--blue)"></span>🤝 Cùng nhắc đồng đội làm khảo sát bạn nhé!</div>
+    <div class="card-body" id="nhanDoiArea"></div>
+  </div>
 </div>
 </div>
 <!-- /tabSurvey -->
@@ -212,7 +218,7 @@ select:disabled{background:#f1f5f9;color:#94a3b8}
 
 <script>
 var GAS='https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
-var CSV='https://docs.google.com/spreadsheets/d/1fMmEm1GC9aei_3oeu2vcadPVsUM9ms9eVhm99d7pF8A/gviz/tq?tqx=out:csv&gid=900581387';
+var CSV='https://docs.google.com/spreadsheets/d/1UMtB9MOxGOaZvxN5VAUGAS1bPaAL2tVVFEViGANd4Tk/gviz/tq?tqx=out:csv&gid=164583655';
 var cascade={},stores=[],issues=[],sel=null,edI=null,ev=null,eps=[],submitting=false,tt,pendingData=null;
 
 var DI={
@@ -519,6 +525,7 @@ function doConfirm(code){
   // Send to GAS
   autoSave();
   toast('✅ Đã gửi · Mã: '+code);
+  showNhanDoi();
 }
 
 function autoSave(){
@@ -527,6 +534,29 @@ function autoSave(){
   var pc=0,fc=0;for(var i=0;i<its.length;i++){if(its[i].result==='Đạt')pc++;else fc++}
   var p={store:sel.ma,storeName:sel.ten,tinh:sel.tinh,gdv:document.getElementById('sg').value,qlkv:document.getElementById('sq').value,items:its,totalItems:its.length,passCount:pc,failCount:fc};
   fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json()}).catch(function(){}).finally(function(){submitting=false});
+}
+
+function showNhanDoi(){
+  var gdv=document.getElementById('sg').value;
+  fetch(GAS+'?action=unsurveyed').then(function(r){return r.ok?r.json():null}).then(function(data){
+    if(!data||!data.ok)return;
+    var stores=(data.stores||[]).filter(function(s){return s.gdv===gdv});
+    if(!stores.length){document.getElementById('nhanDoiCard').style.display='none';return;}
+    var byQ={};
+    stores.forEach(function(s){if(!byQ[s.qlkv])byQ[s.qlkv]=[];byQ[s.qlkv].push(s)});
+    var qs=Object.keys(byQ);
+    var esc2=function(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+    var html='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">Còn <b>'+stores.length+' CH</b> trong đội '+(gdv?esc2(gdv):'')+' chưa khảo sát. Nhắn đồng đội hoàn thành nhé 💪</div>';
+    for(var i=0;i<qs.length;i++){
+      var q=qs[i],arr=byQ[q];
+      html+='<div style="margin-bottom:8px"><b>👤 '+esc2(q)+'</b> <span class="tag warn">'+arr.length+' CH</span><ul style="margin:4px 0 0 18px;font-size:12px">';
+      arr.forEach(function(s){html+='<li>'+esc2(s.ma)+' · '+esc2(s.ten)+' · '+esc2(s.tinh)+'</li>'});
+      html+='</ul></div>';
+    }
+    document.getElementById('nhanDoiArea').innerHTML=html;
+    document.getElementById('nhanDoiCard').style.display='block';
+    document.getElementById('nhanDoiCard').scrollIntoView({behavior:'smooth',block:'center'});
+  });
 }
 
 function cancelEdit(){
