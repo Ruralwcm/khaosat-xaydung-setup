@@ -1,8 +1,9 @@
 // ============================================================
-// Code.gs — Google Apps Script for Khảo sát hỏng hóc Xây dựng - Kỹ Thuật (v14)
+// Code.gs — Google Apps Script for Khảo sát hỏng hóc Xây dựng - Kỹ Thuật (v14.1)
 // v12 NEW: action=data endpoint for full export (all CSVC_Tracking rows)
 // v13 FIX: đọc Storeslist từ sheet nguồn Storelist Rural (openById) + normalize NFC header (fix 'Mã SAP' dấu ngã tổ hợp)
 // v14 NEW: action=unsurveyed → danh sách CH chưa khảo sát (cho "Cùng nhắc đồng đội")
+// v14.1 FIX: getStoreData trả về 'mien' (Miền) từ Storelist → cascade Miền hoạt động
 // ============================================================
 
 // ── CONFIG ──
@@ -83,6 +84,7 @@ function getStoreData() {
     const idxTen = headers.findIndex(h => h === 'Tên cửa hàng' || h === 'Tên CH' || h === 'Store Name');
     const idxTinh = headers.findIndex(h => h === 'Tỉnh/TP' || h === 'Tỉnh' || h === 'Province');
     const idxTT = headers.findIndex(h => h === 'Tình trạng' || h === 'Tình Trạng' || h === 'Status');
+    const idxMien = headers.findIndex(h => h === 'Miền');
 
     if (idxGDV < 0 || idxQLKV < 0 || idxMa < 0) return [];
 
@@ -101,7 +103,8 @@ function getStoreData() {
       result.push({
         gdv: gdv, qlkv: qlkv, ma: ma,
         ten: String(row[idxTen] || '').trim(),
-        tinh: String(row[idxTinh] || '').trim()
+        tinh: String(row[idxTinh] || '').trim(),
+        mien: idxMien >= 0 ? String(row[idxMien] || '').trim() : ''
       });
     }
     return result;
