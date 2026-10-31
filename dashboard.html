@@ -93,22 +93,7 @@
 </head>
 <body>
 <div id="app">
-<!-- Login -->
-<div id="loginSection">
-  <div class="login-box">
-    <div class="lock">🔒</div>
-    <h2>Dashboard • CSVC Xây dựng - Kỹ Thuật</h2>
-    <label>Email (không đuôi)</label>
-    <input type="text" id="lUser" placeholder="Nhập user" autocomplete="off">
-    <label>Mã nhân viên</label>
-    <input type="password" id="lPass" placeholder="Nhập password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="err" id="lErr">Tài khoản không tồn tại!</div>
-    <button class="btn" onclick="doLogin()">Đăng nhập</button>
-  </div>
-</div>
-
-<!-- Dashboard (hidden until login) -->
-<div id="dashSection" style="display:none">
+<div id="dashSection">
 <div class="wrap">
   <div class="head">
     <div class="hdr-acts">
@@ -117,7 +102,7 @@
       <button class="hdr-btn" onclick="exportExcel()">📥 Xuất Excel</button>
     </div>
     <h1>📊 Tiến độ Khảo sát CSVC</h1>
-    <p>cập nhật: <span id="updated">--</span> · <span id="userLabel"></span> · <button class="hdr-btn" onclick="doLogout()" style="background:rgba(255,255,255,.22)">Đăng xuất</button></p>
+    <p>cập nhật: <span id="updated">--</span></p>
   </div>
 
   <div class="card">
@@ -165,12 +150,8 @@
 <script>
 // ── CONFIG ──
 var GAS='https://script.google.com/macros/s/AKfycbzxPXoDhsPYDe7RbBBfGyW8shFxsB3Q6sv7SvxKSP31H9uKOvtGLSyoHRSRUj-jo3Mo/exec';
-var USERS = {
-  'haodt':     { pass:'pink123', name:'Trần Đăng Hảo', role:'admin' },
-  'hongpb':    { pass:'pink123', name:'Phạm Bích Hồng', role:'admin' }
-};
 
-var currentUser = null, dashData = null, toastTimer;
+var currentUser = {name:'Khách', role:'viewer'}, dashData = null, toastTimer;
 var currentTab = 'gdv';
 var sortCol = null, sortDir = 1;
 var unsurveyedData = null;
@@ -182,29 +163,6 @@ function toast(m){
   t.textContent = m; t.classList.add('show'); t.style.opacity = '1';
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function(){ t.style.opacity = '0'; }, 2600);
-}
-
-// ── LOGIN ──
-function doLogin(){
-  var u = $('lUser').value.trim().toLowerCase();
-  var p = $('lPass').value.trim();
-  var e = $('lErr');
-  if (!u || !p){ e.style.display='block'; e.textContent='Nhập đủ Email và Mã NV!'; return; }
-  var du = USERS[u];
-  if (!du){ e.style.display='block'; e.textContent='Tài khoản không tồn tại!'; return; }
-  if (du.pass !== p){ e.style.display='block'; e.textContent='Sai Mã NV!'; return; }
-  currentUser = du;
-  $('loginSection').style.display = 'none';
-  $('dashSection').style.display = 'block';
-  $('userLabel').innerHTML = '<b>' + du.name + '</b> <span class="tag ok">' + du.role + '</span>';
-  loadDash();
-}
-
-function doLogout(){
-  currentUser = null; dashData = null;
-  $('loginSection').style.display = 'block';
-  $('dashSection').style.display = 'none';
-  $('lUser').value = ''; $('lPass').value = '';
 }
 
 // ── DATA ──
