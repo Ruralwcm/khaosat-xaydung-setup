@@ -6,213 +6,183 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Khảo sát hỏng hóc Xây dựng - Kỹ Thuật</title>
+<title>Khảo sát vấn đề xây dựng kỹ thuật · WinMart+ Rural</title>
 <style>
-:root{--red:#d71920;--blue:#1a3c6e;--green:#16a34a;--gold:#f59e0b;--bg:#f4f5f7;--card:#fff;--txt:#1f2937;--muted:#6b7280;--border:#e5e7eb}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Be Vietnam Pro',-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:100px}
-.topbar{background:linear-gradient(135deg,var(--red),#a31016);color:#fff;padding:10px 14px}
-.topbar .t-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.topbar .t{font-size:16px;font-weight:800;line-height:1.2}.topbar .v{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
-.topbar .dash-btn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
-.topbar .dash-btn:hover{background:rgba(255,255,255,.28)}
-.topbar .back-btn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;display:none}
+:root{--red:#d71920;--navy:#1a3c6e;--green:#1e8e4e;--gold:#ffc107;--bg:#f4f6fb;--card:#ffffff;--line:#e5e9f2;--txt:#1c2434;--mut:#6b7280}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding:16px;-webkit-font-smoothing:antialiased;padding-bottom:80px}
+.wrap{max-width:560px;margin:0 auto}
 
-/* Tabs */
-.main-tabs{display:flex;gap:0;max-width:640px;margin:8px auto 0;padding:0 12px}
-.main-tab{flex:1;padding:10px 12px;border:1px solid #d1d5db;background:#f9fafb;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:.2s;font-family:inherit}
-.main-tab:first-child{border-radius:10px 0 0 10px}
-.main-tab:last-child{border-radius:0 10px 10px 0}
-.main-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.tab-view{display:none}
-.tab-view.active{display:block}
-.wrap{max-width:640px;margin:0 auto;padding:0 12px}
-.card{background:var(--card);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-top:12px;overflow:hidden}
-.card-head{display:flex;align-items:center;gap:8px;padding:14px 16px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border)}
-.card-head .dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0}
-.card-head .tag{margin-left:auto;font-size:11px;background:#eef2f7;padding:3px 8px;border-radius:20px;color:var(--muted)}
-.card-body{padding:14px 16px}
-label{display:block;font-size:12px;font-weight:600;color:#374151;margin:8px 0 3px}
+/* Header */
+.head{background:linear-gradient(135deg,var(--navy),#2c4a8a);color:#fff;border-radius:16px;padding:18px 20px 20px;box-shadow:0 8px 24px rgba(26,60,110,.18);margin-bottom:14px}
+.head h1{font-size:16px;font-weight:800;line-height:1.3}
+.head .sub{font-size:11px;opacity:.85;margin-top:4px}
+.head .head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.head .vbadge{display:inline-block;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:600;margin-top:8px}
+.head .dash-link{color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.16);padding:8px 14px;border-radius:10px;white-space:nowrap}
+
+/* Card */
+.card{background:var(--card);border-radius:14px;padding:18px;margin-top:14px;box-shadow:0 2px 10px rgba(20,30,60,.06);border:1px solid var(--line)}
+.card h2{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:2px}
+.card h2 .tag{margin-left:auto;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#fef3c7;color:#92400e;white-space:nowrap}
+.card-body{padding:0}
+
+/* Form elements */
+label{font-size:11.5px;font-weight:600;color:var(--mut);display:block;margin:10px 0 5px}
 label:first-child{margin-top:0}
 label .r{color:var(--red)}
-input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,60,110,.12)}
-textarea{min-height:50px;resize:vertical;font-size:12px}
+input,select,textarea{width:100%;font-size:14px;font-family:inherit;padding:10px 11px;border:1.5px solid var(--line);border-radius:10px;background:#fafbfd;color:var(--txt);outline:none;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--navy);background:#fff}
 select:disabled{background:#f1f5f9;color:#94a3b8}
+textarea{min-height:50px;resize:vertical;font-size:12px}
 .row{display:flex;gap:8px}.row>div{flex:1;min-width:0}
-.store-info{background:#f0fdf4;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;display:none}
+.store-info{margin-top:12px;font-size:12px;padding:8px 10px;background:#f0fdf4;border-radius:8px;display:none}.store-info b{color:var(--navy)}
 
-.state-banner{padding:14px 16px;border-radius:10px;margin-bottom:8px;font-size:14px;font-weight:600;line-height:1.5}
+/* State banners */
+.state-banner{padding:14px 16px;border-radius:10px;margin-bottom:8px;font-size:13px;font-weight:600;line-height:1.5}
 .state-banner.has-issues{background:#fef3c7;border:1px solid #fde68a;color:#92400e}
 .state-banner.no-issues{background:#dbeafe;border:1px solid #bfdbfe;color:#1e40af}
 
-.issue-card{border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:8px;background:#fafbfc}
+/* Issue card */
+.issue-card{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;background:#fafbfd}
 .issue-card .ihd{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .issue-card .ihd .name{font-weight:700;font-size:14px;flex:1}
-.issue-card .ihd .code{font-size:10px;color:var(--muted);background:#eef2f7;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.issue-card .ihd .code{font-size:10px;color:var(--mut);background:#eef2f7;padding:2px 6px;border-radius:4px;white-space:nowrap}
 .issue-card .ihd .status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;white-space:nowrap}
-.issue-card .ihd .status.open{background:#fef2f2;color:#dc2626}
-.issue-card .ihd .status.done{background:#dcfce7;color:#16a34a}
-.issue-card .timeline{font-size:11px;color:var(--muted);margin-bottom:4px}
-.issue-card .timeline span{margin-right:6px}
-.issue-card .note{font-size:12px;color:var(--muted);margin-top:4px;padding:6px 8px;background:#f8fafc;border-radius:6px}
-.issue-card .meta{font-size:11px;color:var(--muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
-.issue-card .photos{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px}.issue-card .photos img{width:42px;height:42px;border-radius:4px;object-fit:cover;border:1px solid var(--border)}
+.issue-card .ihd .status.open{background:#fef2f2;color:var(--red)}
+.issue-card .ihd .status.done{background:#dcfce7;color:var(--green)}
+.issue-card .timeline{font-size:11px;color:var(--mut);margin-bottom:4px}.issue-card .timeline span{margin-right:6px}
+.issue-card .note{font-size:12px;color:var(--mut);margin-top:4px;padding:6px 8px;background:#f8fafc;border-radius:6px}
+.issue-card .meta{font-size:11px;color:var(--mut);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
+.issue-card .photos{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px}.issue-card .photos img{width:42px;height:42px;border-radius:4px;object-fit:cover;border:1px solid var(--line)}
 .issue-card .acts{margin-top:8px;text-align:right}
 
+/* Buttons */
 .btn{display:inline-flex;align-items:center;gap:4px;padding:10px 16px;border-radius:9px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
 .btn:active{transform:scale(.97)}
 .btn-red{background:var(--red);color:#fff}
-.btn-blue{background:var(--blue);color:#fff}
+.btn-blue{background:var(--navy);color:#fff}
 .btn-green{background:var(--green);color:#fff}
-.btn-ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
-.btn-sm{padding:6px 12px;font-size:11px}
-.btn-block{width:100%;margin-top:8px}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-sm{padding:6px 12px;font-size:11px}.btn-block{width:100%;margin-top:8px}.btn:disabled{opacity:.45;cursor:not-allowed}
 
-.edit-card{display:none;margin-top:12px}
-.edit-card.show{display:block}
+/* Edit card */
+.edit-card{display:none;margin-top:12px}.edit-card.show{display:block}
 .edit-eval{display:flex;gap:10px}
 .edit-eval .evb{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid transparent;text-align:center}
 .edit-eval .evb.pass{background:#f0fdf4;color:var(--green)}.edit-eval .evb.pass.sel{border-color:var(--green);background:#dcfce7}
 .edit-eval .evb.fail{background:#fef2f2;color:var(--red)}.edit-eval .evb.fail.sel{border-color:var(--red);background:#fee2e2}
-.fail-box{display:none;margin-top:10px;padding:10px;background:#fff5f5;border-radius:8px;border:1px dashed #fca5a5}
-.fail-box.show{display:block}
-.fail-box label{font-size:11px;color:#b91c1c}
+.fail-box{display:none;margin-top:10px;padding:10px;background:#fff5f5;border-radius:8px;border:1px dashed #fca5a5}.fail-box.show{display:block}
+.fail-box label{font-size:11px;color:var(--red)}
 .photos-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 .pbox{width:52px;height:52px;border:2px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0}
 .pbox img{width:100%;height:100%;object-fit:cover}
 .pbox .x{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px}
-.pbox .ph{font-size:8px;color:#94a3b8;text-align:center}
-.pbox:hover{border-color:var(--red)}
+.pbox .ph{font-size:8px;color:#94a3b8;text-align:center}.pbox:hover{border-color:var(--red)}
 
-/* Confirm table */
+/* Confirm box */
 .confirm-box{background:#f0fdf4;border:2px solid var(--green);border-radius:12px;padding:16px;margin-top:10px}
 .confirm-box h3{font-size:15px;color:#166534;margin-bottom:8px}
-.confirm-box .code-big{font-size:20px;font-weight:800;color:var(--blue);background:#dbeafe;display:inline-block;padding:4px 14px;border-radius:8px;margin-bottom:8px}
+.confirm-box .code-big{font-size:20px;font-weight:800;color:var(--navy);background:#dbeafe;display:inline-block;padding:4px 14px;border-radius:8px;margin-bottom:8px}
 .confirm-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
-.confirm-table td{padding:4px 8px;border-bottom:1px solid #e5e7eb}
-.confirm-table td:first-child{font-weight:600;color:var(--muted);width:40%}
-.confirm-acts{display:flex;gap:8px;margin-top:12px}
-.confirm-acts .btn{flex:1}
+.confirm-table td{padding:4px 8px;border-bottom:1px solid var(--line)}
+.confirm-table td:first-child{font-weight:600;color:var(--mut);width:40%}
+.confirm-acts{display:flex;gap:8px;margin-top:12px}.confirm-acts .btn{flex:1}
 
+/* Toast */
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
-.hint{font-size:10px;color:var(--muted);margin-top:3px}
+.hint{font-size:10px;color:var(--mut);margin-top:3px}
 
-/* Dashboard extras */
+/* Tags */
 .tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
 .tag.ok{background:#dcfce7;color:var(--green)}
 .tag.warn{background:#fef3c7;color:#d97706}
 .tag.bad{background:#fee2e2;color:var(--red)}
-.bar-wrap{width:55px;height:6px;background:#e5e7eb;border-radius:3px;display:inline-block;vertical-align:middle;margin-left:4px}
-.bar{display:block;height:100%;border-radius:3px;min-width:2px}
-.bar.blue{background:var(--blue)}
-.bar.red{background:var(--red)}
-.bar.green{background:var(--green)}
-.bar.gold{background:var(--gold)}
 
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="t-row">
-    <div><span class="t">🏪 Khảo sát hỏng hóc Xây dựng - Kỹ Thuật</span><span class="v">v11</span></div>
-    <button class="dash-btn" id="btnDash" onclick="goDash()">📊 Dashboard</button>
-    <button class="back-btn" id="btnBack" onclick="goSurvey()">↩ Quay lại</button>
-  </div>
-</div>
-
-<!-- Tab: Khảo sát -->
-<div class="tab-view active" id="tabSurvey">
 <div class="wrap">
+<div class="head">
+  <div class="head-row">
+    <div>
+      <h1>🏪 Khảo sát vấn đề xây dựng kỹ thuật</h1>
+      <p>Rà soát CSVC — ghi nhận hỏng hóc & theo dõi xử lý</p>
+    </div>
+  </div>
+  <span class="vbadge">v12</span>
+  <a class="dash-link" style="text-decoration:none;margin-top:6px;display:inline-block" href="dashboard.html" target="_blank">📊 Xem Dashboard →</a>
+</div>
   <!-- ① CH -->
   <div class="card">
-    <div class="card-head"><span class="dot"></span>① Cửa hàng</div>
-    <div class="card-body">
-      <div class="row">
-        <div><label>Miền <span class="r">*</span></label><select id="sm"><option>-- Đang tải --</option></select></div>
-        <div><label>GĐV <span class="r">*</span></label><select id="sg" disabled><option>-- Chọn GĐV --</option></select></div>
-        <div><label>QLKV <span class="r">*</span></label><select id="sq" disabled><option>-- Chọn QLKV --</option></select></div>
-      </div>
-      <label>Cửa hàng <span class="r">*</span></label>
-      <select id="sc" disabled><option>-- Chọn CH --</option></select>
-      <div class="store-info" id="si">Mã: <b id="sMa">-</b> · Tỉnh: <b id="sTinh">-</b> · <b id="sTen">-</b></div>
+    <h2><span class="dot"></span>① Cửa hàng</h2>
+    <div class="row">
+      <div><label>Miền <span class="r">*</span></label><select id="sm"><option>-- Đang tải --</option></select></div>
+      <div><label>GĐV <span class="r">*</span></label><select id="sg" disabled><option>-- Chọn GĐV --</option></select></div>
+      <div><label>QLKV <span class="r">*</span></label><select id="sq" disabled><option>-- Chọn QLKV --</option></select></div>
     </div>
+    <label>Cửa hàng <span class="r">*</span></label>
+    <select id="sc" disabled><option>-- Chọn CH --</option></select>
+    <div class="store-info" id="si">Mã: <b id="sMa">-</b> · Tỉnh: <b id="sTinh">-</b> · <b id="sTen">-</b></div>
   </div>
 
   <!-- ② Issues -->
   <div class="card" id="listCard" style="display:none">
-    <div class="card-head"><span class="dot"></span>② Tình trạng <span class="tag" id="tagCount" style="margin-left:auto">0 vấn đề</span></div>
-    <div class="card-body" id="issueArea"></div>
+    <h2><span class="dot"></span>② Tình trạng <span class="tag" id="tagCount" style="margin-left:auto">0 vấn đề</span></h2>
+    <div id="issueArea"></div>
   </div>
 
   <!-- ③ Edit -->
   <div class="card edit-card" id="editCard">
-    <div class="card-head"><span class="dot" style="background:var(--gold)"></span>③ <span id="efTitle">Khai báo vấn đề</span></div>
-    <div class="card-body">
+    <h2><span class="dot" style="background:var(--gold)"></span>③ <span id="efTitle">Khai báo vấn đề</span></h2>
+    <div class="row">
+      <div style="flex:0 0 38%"><label>Khu vực <span class="r">*</span></label>
+        <select id="ea" onchange="onAreaChange()"><option value="">-- Chọn --</option><option>TRƯỚC CH</option><option>TRONG CH</option><option>KHO - NVS</option></select></div>
+      <div style="flex:1"><label>Tên hạng mục <span class="r">*</span></label>
+        <select id="en" onchange="onItemChange()"><option value="">-- Chọn hạng mục --</option></select>
+        <input type="text" id="enCustom" placeholder="Nhập tên hạng mục mới..." style="display:none;margin-top:4px">
+      </div>
+    </div>
+    <label>Tình trạng</label>
+    <div class="edit-eval" id="editEvalRow">
+      <div class="evb pass" id="evPass" onclick="setEv('pass')">✅ Đã xử lý / Đạt</div>
+      <div class="evb fail sel" id="evFail" onclick="setEv('fail')">❌ Chưa xử lý / Ko đạt</div>
+    </div>
+    <div class="fail-box show" id="failBox">
       <div class="row">
-        <div style="flex:0 0 38%"><label>Khu vực <span class="r">*</span></label>
-          <select id="ea" onchange="onAreaChange()"><option value="">-- Chọn --</option><option>TRƯỚC CH</option><option>TRONG CH</option><option>KHO - NVS</option></select></div>
-        <div style="flex:1"><label>Tên hạng mục <span class="r">*</span></label>
-          <select id="en" onchange="onItemChange()"><option value="">-- Chọn hạng mục --</option></select>
-          <input type="text" id="enCustom" placeholder="Nhập tên hạng mục mới..." style="display:none;margin-top:4px">
-        </div>
+        <div><label>📅 Ngày phát sinh <span class="r">*</span></label><input type="date" id="eDate" onchange="validateDates()"></div>
+        <div><label>📞 Đã báo SU? <span class="r">*</span></label><select id="eSU" onchange="toggleSUDate()"><option value="">-- Chọn --</option><option value="yes">✅ Đã báo</option><option value="no">❌ Chưa báo</option></select></div>
       </div>
-      <label>Tình trạng</label>
-      <div class="edit-eval" id="editEvalRow">
-        <div class="evb pass" id="evPass" onclick="setEv('pass')">✅ Đã xử lý / Đạt</div>
-        <div class="evb fail sel" id="evFail" onclick="setEv('fail')">❌ Chưa xử lý / Ko đạt</div>
-      </div>
-      <div class="fail-box show" id="failBox">
-        <div class="row">
-          <div><label>📅 Ngày phát sinh <span class="r">*</span></label><input type="date" id="eDate" onchange="validateDates()"></div>
-          <div><label>📞 Đã báo SU? <span class="r">*</span></label><select id="eSU" onchange="toggleSUDate()"><option value="">-- Chọn --</option><option value="yes">✅ Đã báo</option><option value="no">❌ Chưa báo</option></select></div>
-        </div>
-        <div id="suDateRow" style="display:none"><label>📅 Ngày báo SU gần nhất <span class="r">*</span></label><input type="date" id="eSUDate" onchange="validateDates()"><div class="hint">Phải sau ngày phát sinh</div></div>
-        <label>📊 Số lượng hỏng/lỗi <span id="slhongDvt" style="color:var(--red);font-weight:600">(cái)</span></label>
-        <input type="number" id="eSlhong" min="1" step="1" value="1" style="max-width:140px">
-        <label>📝 Diễn giải <span class="r">*</span></label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
-        <label>📸 Ảnh (Tối thiểu 1, tối đa 3) <span class="r">*</span></label>
-        <div class="photos-row" id="ephotos"></div>
-        <div style="font-size:10px;color:var(--red)">⚡ Yêu cầu ít nhất 1 ảnh</div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-blue" onclick="saveEdit()" style="flex:1">💾 Lưu</button>
-        <button class="btn btn-ghost" onclick="cancelEdit()">Huỷ</button>
-      </div>
+      <div id="suDateRow" style="display:none"><label>📅 Ngày báo SU gần nhất <span class="r">*</span></label><input type="date" id="eSUDate" onchange="validateDates()"><div class="hint">Phải sau ngày phát sinh</div></div>
+      <label>📊 Số lượng hỏng/lỗi <span id="slhongDvt" style="color:var(--red);font-weight:600">(cái)</span></label>
+      <input type="number" id="eSlhong" min="1" step="1" value="1" style="max-width:140px">
+      <label>📝 Diễn giải <span class="r">*</span></label><textarea id="enote" placeholder="Mô tả tình trạng..."></textarea>
+      <label>📸 Ảnh (Tối thiểu 1, tối đa 3) <span class="r">*</span></label>
+      <div class="photos-row" id="ephotos"></div>
+      <div style="font-size:10px;color:var(--red)">⚡ Yêu cầu ít nhất 1 ảnh</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-blue" onclick="saveEdit()" style="flex:1">💾 Lưu</button>
+      <button class="btn btn-ghost" onclick="cancelEdit()">Huỷ</button>
     </div>
   </div>
 
   <!-- ④ Confirm (shown after save) -->
   <div class="card" id="confirmCard" style="display:none">
-    <div class="card-head"><span class="dot" style="background:var(--green)"></span>④ Xác nhận gửi</div>
-    <div class="card-body" id="confirmArea"></div>
+    <h2><span class="dot" style="background:var(--green)"></span>④ Xác nhận gửi</h2>
+    <div id="confirmArea"></div>
   </div>
 
   <!-- ⑤ Cùng nhắc đồng đội -->
   <div class="card" id="nhanDoiCard" style="display:none">
-    <div class="card-head"><span class="dot" style="background:var(--blue)"></span>🤝 Cùng nhắc đồng đội làm khảo sát bạn nhé!</div>
-    <div class="card-body" id="nhanDoiArea"></div>
+    <h2><span class="dot" style="background:var(--navy)"></span>🤝 Cùng nhắc đồng đội làm khảo sát bạn nhé!</h2>
+    <div id="nhanDoiArea"></div>
   </div>
 </div>
-</div>
-<!-- /tabSurvey -->
-
-<!-- Tab: Dashboard -->
-<div class="tab-view" id="tabDash" style="min-height:400px">
-  <div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px">
-    <div style="font-size:40px;margin-bottom:12px">🔒</div>
-    <div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div>
-    <label style="text-align:left;max-width:280px;margin:8px auto">User</label>
-    <input type="text" id="dUsr" placeholder="Nhập user" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off">
-    <label style="text-align:left;max-width:280px;margin:8px auto">Password</label>
-    <input type="password" id="dPwd" placeholder="Nhập password" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key==='Enter')dashLogin()">
-    <div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div>
-    <button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button>
-  </div>
-</div>
+<!-- /wrap -->
 
 <div class="toast" id="toast"></div>
 
@@ -578,118 +548,6 @@ function cancelEdit(){
   document.getElementById('ea').value='';document.getElementById('en').value='';document.getElementById('enCustom').value='';document.getElementById('enCustom').style.display='none';document.getElementById('enote').value='';document.getElementById('eDate').value='';document.getElementById('eSU').value='';document.getElementById('eSUDate').value='';document.getElementById('eSlhong').value='1';document.getElementById('suDateRow').style.display='none';document.getElementById('evPass').classList.remove('sel');document.getElementById('evFail').classList.add('sel');document.getElementById('failBox').classList.add('show');document.getElementById('editEvalRow').style.display='flex';document.getElementById('editCard').classList.remove('show');document.getElementById('confirmCard').style.display='none';updateDvt();rPhotos()
 }
 
-// ─── TAB SWITCH ───
-function goDash(){
-  document.getElementById('tabSurvey').classList.remove('active');
-  document.getElementById('tabDash').classList.add('active');
-  document.getElementById('btnDash').style.display='none';
-  document.getElementById('btnBack').style.display='inline-flex';
-}
-function goSurvey(){
-  document.getElementById('tabDash').classList.remove('active');
-  document.getElementById('tabSurvey').classList.add('active');
-  document.getElementById('btnDash').style.display='inline-flex';
-  document.getElementById('btnBack').style.display='none';
-  dUser=null;dData=null;
-  document.getElementById('tabDash').innerHTML='<div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px"><div style="font-size:40px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div><label style="text-align:left;max-width:280px;margin:8px auto">User</label><input type="text" id="dUsr" placeholder="Nhập user" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off"><label style="text-align:left;max-width:280px;margin:8px auto">Password</label><input type="password" id="dPwd" placeholder="Nhập password" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key===\'Enter\')dashLogin()"><div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div><button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button></div>';
-}
-
-// ─── DASHBOARD ───
-var dUsers={'haodt':{pass:'pink123',name:'Trần Đăng Hảo',role:'admin'},'hongpb':{pass:'pink123',name:'Phạm Bích Hồng',role:'admin'}};
-var dUser=null,dData=null;
-
-function dashLogin(){
-  var u=document.getElementById('dUsr').value.trim().toLowerCase();
-  var p=document.getElementById('dPwd').value.trim();
-  var e=document.getElementById('dashErr');
-  if(!u||!p){e.style.display='block';e.textContent='Nhập đủ Email và Mã NV!';return}
-  var du=dUsers[u];
-  if(!du){e.style.display='block';e.textContent='Tài khoản không tồn tại!';return}
-  if(du.pass!==p){e.style.display='block';e.textContent='Sai Mã NV!';return}
-  dUser=du;loadDash();
-}
-
-function loadDash(){
-  if(!dUser)return;
-  var area=document.getElementById('tabDash');
-  area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--muted)"><span class="dot" style="display:inline-block;width:8px;height:8px;background:var(--blue);border-radius:50%;animation:pulse 1s infinite"></span> Đang tải dữ liệu...</div>';
-
-  fetch(GAS+'?action=dashboard').then(function(r){return r.ok?r.json():null}).then(function(data){
-    if(!data||!data.ok){area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--red)">⚠️ Không tải được dữ liệu. Kiểm tra GAS đã deploy Code.gs mới chưa?</div>';return}
-    dData=data;
-    // auto-add gdv users
-    data.byGdv.forEach(function(g){
-      var k=g.gdv.toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').substring(0,12);
-      if(!dUsers[k])dUsers[k]={pass:'12345678',name:g.gdv,role:'gdv',gdv:g.gdv};
-    });
-    renderDash();
-  }).catch(function(){area.innerHTML='<div class="wrap" style="text-align:center;padding:40px;color:var(--red)">⚠️ Lỗi kết nối</div>'});
-}
-
-function renderDash(){
-  var s=dData.summary,u=dUser.name,r=dUser.role;
-  var html='<div class="wrap">';
-  // Header
-  html+='<div style="background:var(--card);border-radius:12px;padding:10px 14px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px">';
-  html+='<b>📊 '+u+'</b><span style="color:var(--muted)">'+(r==='admin'?'Admin':'GĐV')+'</span>';
-  html+='<button class="btn btn-sm btn-ghost" onclick="dashLogout()" style="font-size:10px">↩ Đăng xuất</button></div>';
-  // KPI
-  html+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px">';
-  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--blue)">'+s.totalCH+'</div><div style="font-size:11px;color:var(--muted)">🏪 Tổng CH</div></div></div>';
-  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--green)">'+s.surveyedCH+' <span style="font-size:13px;color:var(--muted)">('+s.pctSurveyed+'%)</span></div><div style="font-size:11px;color:var(--muted)">✅ Đã rà soát</div></div></div>';
-  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--blue)">'+s.totalIssues+'</div><div style="font-size:11px;color:var(--muted)">🔧 Tổng Issues</div></div></div>';
-  html+='<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:22px;font-weight:800;color:var(--green)">'+s.resolved+' <span style="font-size:13px;color:var(--muted)">('+s.pctResolved+'%)</span></div><div style="font-size:11px;color:var(--muted)">✅ Đã xử lý</div></div></div>';
-  html+='</div>';
-
-  // Tabs
-  html+='<div class="main-tabs" style="margin-top:12px">';
-  html+='<div class="main-tab active" onclick="switchDashTab(\'rs\',this)">🏪 Rà soát</div>';
-  html+='<div class="main-tab" onclick="switchDashTab(\'xl\',this)">🔧 Xử lý</div>';
-  html+='<div class="main-tab" onclick="switchDashTab(\'qlkv\',this)">👥 QLKV</div></div>';
-
-  // Rà soát
-  html+='<div class="tab-view active" id="dTabRS"><div class="card" style="margin-top:8px">';
-  html+='<div class="card-head"><span class="dot"></span>Theo GĐV</div><div class="card-body no-pad" style="padding:0">';
-  html+='<table style="font-size:12px"><thead><tr><th>GĐV</th><th class="num">Tổng</th><th class="num">Đã KS</th><th class="num">Chưa</th><th class="num">%</th><th></th></tr></thead><tbody>';
-  var list=dData.byGdv.slice();
-  if(r==='gdv')list=list.filter(function(g){return g.gdv===dUser.gdv});
-  for(var i=0;i<list.length;i++){var g=list[i],tag=g.pctSurveyed>=80?'ok':(g.pctSurveyed>=50?'warn':'bad'),c=g.pctSurveyed>=80?'green':(g.pctSurveyed>=50?'gold':'red');
-    html+='<tr><td><b>'+g.gdv+'</b></td><td class="num">'+g.totalCH+'</td><td class="num">'+g.surveyed+'</td><td class="num">'+g.notSurveyed+'</td><td class="num"><span class="tag '+tag+'">'+g.pctSurveyed+'%</span></td><td><span class="bar-wrap"><span class="bar '+c+'" style="width:'+Math.max(g.pctSurveyed,2)+'%"></span></span></td></tr>';}
-  html+='</tbody></table></div></div></div>';
-
-  // Xử lý
-  html+='<div class="tab-view" id="dTabXL"><div class="card" style="margin-top:8px">';
-  html+='<div class="card-head"><span class="dot" style="background:var(--red)"></span>Theo GĐV</div><div class="card-body no-pad" style="padding:0">';
-  html+='<table style="font-size:12px"><thead><tr><th>GĐV</th><th class="num">Issues</th><th class="num">✅ XL</th><th class="num">❌</th><th class="num">%</th><th></th></tr></thead><tbody>';
-  for(var i=0;i<list.length;i++){var g=list[i],tag=g.pctResolved>=80?'ok':(g.pctResolved>=50?'warn':'bad'),c=g.pctResolved>=80?'green':(g.pctResolved>=50?'gold':'red');
-    html+='<tr><td><b>'+g.gdv+'</b></td><td class="num">'+g.totalIssues+'</td><td class="num">'+g.resolved+'</td><td class="num">'+g.unresolved+'</td><td class="num"><span class="tag '+tag+'">'+g.pctResolved+'%</span></td><td><span class="bar-wrap"><span class="bar '+c+'" style="width:'+Math.max(g.pctResolved,2)+'%"></span></span></td></tr>';}
-  html+='</tbody></table></div></div></div>';
-
-  // QLKV
-  html+='<div class="tab-view" id="dTabQLKV"><div class="card" style="margin-top:8px">';
-  html+='<div class="card-head"><span class="dot" style="background:var(--green)"></span>Theo QLKV</div><div class="card-body no-pad" style="padding:0">';
-  html+='<table style="font-size:12px"><thead><tr><th>QLKV</th><th>GĐV</th><th class="num">CH</th><th class="num">Đã KS</th><th class="num">%</th><th class="num">Issues</th><th class="num">✅</th></tr></thead><tbody>';
-  var ql=dData.byQlkv.slice();
-  if(r==='gdv')ql=ql.filter(function(q){return q.gdv===dUser.gdv});
-  for(var i=0;i<ql.length;i++){var q=ql[i],tKS=q.pctSurveyed>=80?'ok':(q.pctSurveyed>=50?'warn':'bad');
-    html+='<tr><td><b>'+q.qlkv+'</b></td><td style="font-size:11px;color:var(--muted)">'+q.gdv+'</td><td class="num">'+q.totalCH+'</td><td class="num">'+q.surveyed+'</td><td class="num"><span class="tag '+tKS+'">'+q.pctSurveyed+'%</span></td><td class="num">'+q.totalIssues+'</td><td class="num">'+q.resolved+'</td></tr>';}
-  html+='</tbody></table></div></div></div>';
-
-  html+='<div style="text-align:center;font-size:10px;color:var(--muted);margin-top:16px;padding-bottom:20px">Cập nhật: '+new Date(dData.updated).toLocaleString('vi-VN')+'</div>';
-  html+='</div>'; // close wrap
-  document.getElementById('tabDash').innerHTML=html;
-}
-
-function dashLogout(){dUser=null;dData=null;document.getElementById('tabDash').innerHTML='<div class="wrap" style="text-align:center;color:var(--muted);padding:80px 20px"><div style="font-size:40px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:600;margin-bottom:8px">Vui lòng đăng nhập để xem Dashboard</div><label style="text-align:left;max-width:280px;margin:8px auto">User</label><input type="text" id="dUsr" placeholder="Nhập user" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off"><label style="text-align:left;max-width:280px;margin:8px auto">Password</label><input type="password" id="dPwd" placeholder="Nhập password" style="max-width:280px;margin:0 auto 8px;display:block" autocomplete="off" onkeydown="if(event.key===\'Enter\')dashLogin()"><div class="err" id="dashErr" style="color:var(--red);font-size:12px;margin-bottom:8px;display:none">Sai thông tin đăng nhập!</div><button class="btn btn-blue" onclick="dashLogin()" style="margin-top:8px">Đăng nhập</button></div>'}
-
-function switchDashTab(tab,el){
-  var tabs=document.querySelectorAll('#tabDash .main-tab');
-  var views=document.querySelectorAll('#tabDash .tab-view');
-  tabs.forEach(function(t){t.classList.remove('active')});
-  views.forEach(function(t){t.classList.remove('active')});
-  el.classList.add('active');
-  document.getElementById('dTab'+(tab==='rs'?'RS':(tab==='xl'?'XL':'QLKV'))).classList.add('active');
-}
 </script>
 </body>
 </html>
