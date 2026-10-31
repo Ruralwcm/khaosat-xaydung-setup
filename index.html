@@ -375,7 +375,21 @@ function hideList(){document.getElementById('listCard').style.display='none';iss
 
 // ─── EDIT ───
 function openAdd(){edI=null;showEditForm('Khai báo vấn đề mới','',null,null,[],'','','')}
-function confirmNoIssue(){toast('✅ Đã xác nhận: Cửa hàng không có vấn đề')}
+function confirmNoIssue(){
+  if(!sel){toast('⚠️ Chưa chọn cửa hàng');return}
+  var now=new Date(),ymd=now.getFullYear().toString().slice(2)+('0'+(now.getMonth()+1)).slice(-2)+('0'+now.getDate()).slice(-2);
+  var code='CSVC-'+ymd+'-'+('00'+(Math.floor(Math.random()*900)+100)).slice(-3);
+  var its=[{area:'TỔNG QUAN', item:'Không có vấn đề', result:'Đạt', note:'CH không có vấn đề', photos:[], code:code, date:'', su:'', sudate:'', slhong:0}];
+  var p={store:sel.ma, storeName:sel.ten, tinh:sel.tinh, gdv:document.getElementById('sg').value, qlkv:document.getElementById('sq').value, items:its, totalItems:1, passCount:1, failCount:0};
+  toast('⏳ Đang gửi...');
+  fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json()}).then(function(res){
+    if(res&&res.ok){
+      toast('✅ Đã ghi nhận: '+sel.ma+' · Mã: '+code);
+      loadIssues();
+      showNhanDoi();
+    }else{toast('⚠️ Lỗi gửi, thử lại')}
+  }).catch(function(){toast('⚠️ Lỗi kết nối, thử lại')});
+}
 function editIssue(i){edI=i;var iss=issues[i];showEditForm('Cập nhật: '+iss.name,iss.area,iss.name,iss.eval||'fail',(iss.photos||[]).slice(),iss.note||'',iss._date||'',iss._su||'',iss._sudate||'',iss._slhong||'')}
 
 function onAreaChange(){
